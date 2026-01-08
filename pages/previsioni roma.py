@@ -2,11 +2,11 @@ import streamlit as st
 
 st.title("Previsioni Meteo Roma")
 
-st.markdown("### Previsioni complete (orarie e giornaliere) da Meteoblue")
+# st.markdown("### Previsioni complete (orarie e giornaliere) da Meteoblue")
 st.markdown("""
-<iframe src="https://www.meteoblue.com/en/weather/widget/daily/rome_italy_3169070?geoloc=fixed&days=7&tempunit=C&windunit=kmh&layout=light" 
-        width="100%" height="600" frameborder="0" allowtransparency="true" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+<iframe src="https://www.meteoblue.com/it/tempo/widget/meteogram/roma_italia_3169070?geoloc=fixed&temperature_units=CELSIUS&windspeed_units=KILOMETER_PER_HOUR&precipitation_units=MILLIMETER&forecast_days=4&layout=bright&autowidth=auto&user_key=2e2679f1d09611f6&embed_key=9c2daca7cdbb6426&sig=ec704368eda16bc0c704a15cfbd0b2f6296c8d90590ae916006ef5e1ea61ef61" frameborder="0" scrolling="NO" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" style="width: 100%;height: 700px;border: 0;overflow: hidden;"></iframe>
 """, unsafe_allow_html=True)
+
 
 st.markdown("### Previsioni avanzate interattive (Windy)")
 st.markdown("""
