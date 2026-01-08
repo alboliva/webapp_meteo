@@ -5,9 +5,11 @@
 42.4385,13.5860,CAMPO IMPERATORE,https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
 42.0645,13.1867,MARSIA 1,https://imgproxy.windy.com/_/full/plain/current/1637697480/original.jpg
 42.0645,13.1867,MARSIA 2,https://imgproxy.windy.com/_/full/plain/current/1674822493/original.jpg
-41.9333,13.1500,MONTE LIVATA
+42.5206,13.5556,PIETRACAMELA,https://imgproxy.windy.com/_/full/plain/current/1694696935/original.jpg
 41.8344,14.2653,CAPRACOTTA,https://www.meteo2.it/custom/webcam/capracotta/webcam.php
 41.8079,13.7888,PESCASSEROLI 1,https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
 41.8487,14.0785,ROCCARASO 1,https://coppodellorso.com/bob.php?d=20260107065751 
 41.8487,14.0785,ROCCARASO 2,https://coppodellorso.com/pano.php?d=20260107065705
+41.8487,14.0785,ROCCARASO 3,https://www.meteoregioneabruzzo.it/rete-meteo/roccaraso-pianoaremogna/webcam_aremogna.php
+42.2089,13.3967,CAMPO FELICE,https://www.meteoaquilano.it/webcam/FI9900P_00626EA28CAE/snap/webcam.php
 
