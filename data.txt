@@ -1,0 +1,13 @@
+41.8789,14.2933,PESCOPENNATARO,https://imgproxy.windy.com/_/full/plain/current/1692700370/original.jpg
+41.9000,13.8841,SCANNO,https://imgproxy.windy.com/_/full/plain/current/1548834305/original.jpg
+41.9200,13.8640,LAGO DI SCANNO,https://imgproxy.windy.com/_/full/plain/current/1620894161/original.jpg
+41.9409,13.7597,SAN SEBASTIANO DEI MARSI,https://imgproxy.windy.com/_/full/plain/current/1428165218/original.jpg
+42.4385,13.5860,CAMPO IMPERATORE,https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
+42.0645,13.1867,MARSIA 1,https://imgproxy.windy.com/_/full/plain/current/1637697480/original.jpg
+42.0645,13.1867,MARSIA 2,https://imgproxy.windy.com/_/full/plain/current/1674822493/original.jpg
+41.9333,13.1500,MONTE LIVATA
+41.8344,14.2653,CAPRACOTTA,https://www.meteo2.it/custom/webcam/capracotta/webcam.php
+41.8079,13.7888,PESCASSEROLI 1,https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
+41.8487,14.0785,ROCCARASO 1,https://coppodellorso.com/bob.php?d=20260107065751 
+41.8487,14.0785,ROCCARASO 2,https://coppodellorso.com/pano.php?d=20260107065705
+
