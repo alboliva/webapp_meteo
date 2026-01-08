@@ -44,32 +44,9 @@ def leggi_webcam():
                 pass
     return webcam
 
-def crea_mappa(gruppi_webcam):
-    m = folium.Map(location=[41.8719, 12.5674], zoom_start=6, tiles="CartoDB positron")
-    for (lat, lon), cams in gruppi_webcam.items():
-        nome_tooltip = cams[0]["nome"] + (f" (+{len(cams)-1} altre)" if len(cams) > 1 else "")
-        immagini_html = ""
-        for cam in cams:
-            immagini_html += f"""
-                <div style="margin-bottom: 20px; text-align: center;">
-                    <strong>{cam['nome']}</strong><br>
-                    <span style="color: #555;">{cam['temp']}</span><br>
-                    <img src="{cam['url']}" width="280" style="border-radius: 8px; margin-top: 8px;">
-                </div>
-            """
-        html_popup = f'<div style="width:{POPUP_CONTENT_WIDTH}px; max-height:{POPUP_HEIGHT}px; overflow-y:auto; padding:10px;">{immagini_html}</div>'
-        iframe = folium.IFrame(html_popup, width=POPUP_CONTENT_WIDTH + 30, height=POPUP_HEIGHT + 20)
-        popup = folium.Popup(iframe, max_width=360)
-        folium.Marker(
-            [lat, lon],
-            popup=popup,
-            tooltip=nome_tooltip,
-            icon=folium.Icon(color="red", icon="camera", prefix="fa")
-        ).add_to(m)
-    return m
 
 def crea_galleria(webcam_list):
-    st.subheader("Galleria Webcam")
+    # st.subheader("Galleria Webcam")
 
     # ==================== PARAMETRI FACILI DA MODIFICARE ====================
     CARD_HEIGHT = 220          # ←←← Altezza totale della card bianca (aumenta/diminuisci qui)
@@ -143,7 +120,7 @@ def crea_galleria(webcam_list):
             """, unsafe_allow_html=True)
 
 # ==================== MAIN ====================
-st.title("Webcam e Mappa Interattiva Italia")
+st.title("Webcam Gallery Italia")
 
 webcam_list = leggi_webcam()
 
@@ -155,8 +132,6 @@ if webcam_list:
         key = (round(cam["lat"], 4), round(cam["lon"], 4))
         gruppi[key].append(cam)
 
-    mappa = crea_mappa(gruppi)
-    folium_static(mappa, width=800, height=500)
 
     crea_galleria(webcam_list)
 else:
