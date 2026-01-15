@@ -20,11 +20,13 @@ def get_temperature(lat, lon):
     except:
         return "N/A"
 
+
 def leggi_webcam():
     webcam = []
     if not os.path.exists(DATA_FILE):
         st.error(f"File {DATA_FILE} non trovato! Crea data.txt nella root.")
         return []
+
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         for linea in f:
             linea = linea.strip()
@@ -34,27 +36,41 @@ def leggi_webcam():
             if len(parti) != 4:
                 continue
             try:
-                lat = float(parti[0])
-                lon = float(parti[1])
+                lat = float(parti[0].strip())
+                lon = float(parti[1].strip())
                 nome = parti[2].strip()
                 url = parti[3].strip()
+
+                # Determiniamo se è YouTube embed
+                is_youtube = "youtube.com/embed" in url.lower() or "youtu.be" in url.lower()
+
                 temp = get_temperature(lat, lon)
-                webcam.append({"lat": lat, "lon": lon, "nome": nome, "url": url, "temp": temp})
+
+                webcam.append({
+                    "lat": lat,
+                    "lon": lon,
+                    "nome": nome,
+                    "url": url,
+                    "temp": temp,
+                    "is_youtube": is_youtube
+                })
             except:
-                pass
+                pass  # salta righe malformate
+
     return webcam
 
 
 def crea_galleria(webcam_list):
-    # st.subheader("Galleria Webcam")
-
     # ==================== PARAMETRI FACILI DA MODIFICARE ====================
-    CARD_HEIGHT = 220          # ←←← Altezza totale della card bianca (aumenta/diminuisci qui)
-    CARD_WIDTH = 220           # Larghezza approssimativa della card (per uniformità)
-    IMAGE_HEIGHT = "97%"      # L'immagine riempie tutta la card
-    TITLE_FONT_SIZE = "0.9em"  # Dimensione titolo
-    TITLE_PADDING = "15px"     # Spazio interno del titolo
-    ROW_SPACING = 40           # ←←← Spazio verticale tra una riga di card e la successiva
+    CARD_HEIGHT = 260
+    CARD_WIDTH = 240
+    IMAGE_HEIGHT = "97%"
+    TITLE_FONT_SIZE = "0.9em"
+    TITLE_PADDING = "14px"
+
+    # Parametri per la distanza tra le card
+    ROW_SPACING = 60           # spazio verticale tra le righe di card
+    CARD_HORIZONTAL_GAP = 16   # spazio orizzontale tra le colonne
 
     # ==================== CSS ====================
     st.markdown(f"""
@@ -87,14 +103,41 @@ def crea_galleria(webcam_list):
         top: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+        background: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent);
         color: white;
         font-weight: bold;
         font-size: {TITLE_FONT_SIZE};
         padding: {TITLE_PADDING};
         text-align: center;
         border-radius: 12px 12px 0 0;
-        pointer-events: none;  /* Permette click sotto */
+        pointer-events: none;
+        z-index: 2;
+    }}
+    .youtube-container {{
+        position: relative;
+        width: 100%;
+        height: 100%;
+        flex-grow: 1;
+    }}
+    .youtube-iframe {{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }}
+
+    /* Distanza orizzontale tra le colonne */
+    div[data-testid="column"] {{
+        padding-left: {CARD_HORIZONTAL_GAP}px !important;
+        padding-right: {CARD_HORIZONTAL_GAP}px !important;
+    }}
+
+    /* Migliora il centramento quando poche card per riga */
+    div[data-testid="stHorizontalBlock"] {{
+        justify-content: center !important;
+        gap: {CARD_HORIZONTAL_GAP * 1.5}px !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -108,16 +151,39 @@ def crea_galleria(webcam_list):
         with col:
             temp_part = f", {cam['temp']}" if cam['temp'] != "N/A" else ""
 
-            st.markdown(f"""
-            <div class="webcam-card">
-                <a href="{cam['url']}" target="_blank" style="display:block; height:100%; width:100%;">
-                    <img src="{cam['url']}" class="webcam-image" alt="{cam['nome']}">
-                    <div class="webcam-title-overlay">
-                        {cam['nome']}{temp_part}
+            if cam["is_youtube"]:
+                # Parametri YouTube
+                yt_params = "?autoplay=0&mute=0&loop=1&playlist=CNRHB5XdWzg&rel=0&modestbranding=1&controls=1"
+                embed_url = cam["url"] + yt_params
+
+                st.markdown(f"""
+                <div class="webcam-card">
+                    <div class="youtube-container">
+                        <iframe
+                            class="youtube-iframe"
+                            src="{embed_url}"
+                            frameborder="0"
+                            allowfullscreen
+                        ></iframe>
                     </div>
-                </a>
-            </div>
-            """, unsafe_allow_html=True)
+                    <div class="webcam-title-overlay">
+                        {cam['nome']}{temp_part} 🎥 LIVE
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                # Card classica immagine
+                st.markdown(f"""
+                <div class="webcam-card">
+                    <a href="{cam['url']}" target="_blank" style="display:block; height:100%; width:100%;">
+                        <img src="{cam['url']}" class="webcam-image" alt="{cam['nome']}" loading="lazy">
+                        <div class="webcam-title-overlay">
+                            {cam['nome']}{temp_part}
+                        </div>
+                    </a>
+                </div>
+                """, unsafe_allow_html=True)
+
 
 # ==================== MAIN ====================
 st.title("Webcam Gallery Italia")
@@ -125,14 +191,11 @@ st.title("Webcam Gallery Italia")
 webcam_list = leggi_webcam()
 
 if webcam_list:
-    st.write(f"Trovate {len(webcam_list)} webcam.")
-
+    st.write(f"Trovate {len(webcam_list)} webcam / live stream.")
     gruppi = defaultdict(list)
     for cam in webcam_list:
         key = (round(cam["lat"], 4), round(cam["lon"], 4))
         gruppi[key].append(cam)
-
-
     crea_galleria(webcam_list)
 else:
-    st.info("Aggiungi webcam nel file data.txt per visualizzare mappa e galleria.")
+    st.info("Aggiungi webcam o live stream nel file data.txt per visualizzare la galleria.")
