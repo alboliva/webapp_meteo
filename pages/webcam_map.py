@@ -20,11 +20,26 @@ def get_temperature(lat, lon):
     except:
         return "N/A"
 
+def get_altitude(lat, lon):
+    """Recupera altitudine in metri da coordinate usando Open-Elevation (gratuito, no key)"""
+    url = f"https://api.open-elevation.com/api/v1/lookup?locations={lat},{lon}"
+    try:
+        response = requests.get(url, timeout=8)
+        data = response.json()
+        if 'results' in data and len(data['results']) > 0:
+            alt = data['results'][0].get('elevation')
+            if alt is not None:
+                return f"{int(alt)} m"
+    except Exception:
+        pass
+    return "N/A"  # se fallisce, mostra N/A
+
 def leggi_webcam():
     webcam = []
     if not os.path.exists(DATA_FILE):
         st.error(f"File {DATA_FILE} non trovato! Crea data.txt nella root.")
         return []
+    
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         for linea in f:
             linea = linea.strip()
@@ -34,14 +49,24 @@ def leggi_webcam():
             if len(parti) != 4:
                 continue
             try:
-                lat = float(parti[0])
-                lon = float(parti[1])
+                lat = float(parti[0].strip())
+                lon = float(parti[1].strip())
                 nome = parti[2].strip()
                 url = parti[3].strip()
+                is_youtube = "youtube.com/embed" in url.lower() or "youtu.be" in url.lower()
                 temp = get_temperature(lat, lon)
-                webcam.append({"lat": lat, "lon": lon, "nome": nome, "url": url, "temp": temp})
+                alt = get_altitude(lat, lon)  # ← NUOVA!
+                webcam.append({
+                    "lat": lat,
+                    "lon": lon,
+                    "nome": nome,
+                    "url": url,
+                    "temp": temp,
+                    "alt": alt,           # ← aggiunto
+                    "is_youtube": is_youtube
+                })
             except:
-                pass
+                pass  # salta righe malformate
     return webcam
 
 def crea_mappa(gruppi_webcam):

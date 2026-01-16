@@ -1,15 +1,24 @@
-41.8789,14.2933,PESCOPENNATARO,https://imgproxy.windy.com/_/full/plain/current/1692700370/original.jpg
-41.90244900584614, 13.879186691982644,SCANNO,https://imgproxy.windy.com/_/full/plain/current/1548834305/original.jpg
-41.919448924363905, 13.871158457961865,LAGO DI SCANNO,https://imgproxy.windy.com/_/full/plain/current/1620894161/original.jpg
-41.9409,13.7597,SAN SEBASTIANO DEI MARSI,https://imgproxy.windy.com/_/full/plain/current/1428165218/original.jpg
-42.4385,13.5860,CAMPO IMPERATORE,https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
-42.0645,13.1867,MARSIA 1,https://imgproxy.windy.com/_/full/plain/current/1637697480/original.jpg
-42.0645,13.1867,MARSIA 2,https://imgproxy.windy.com/_/full/plain/current/1674822493/original.jpg
-42.5206,13.5556,PIETRACAMELA,https://imgproxy.windy.com/_/full/plain/current/1694696935/original.jpg
+41.830321, 14.023167,ROCCARASO LIVE,https://www.youtube.com/embed/CNRHB5XdWzg
+41.7973, 14.0602,ROCCARASO PIANO AREMOGNA,https://www.meteoregioneabruzzo.it/rete-meteo/roccaraso-pianoaremogna/webcam_aremogna.php
+41.836973080974026, 14.045093595396693,ROCCARASO PISTE,https://coppodellorso.com/bob.php?d=20260107065751 
+41.836973080974026, 14.045093595396693,ROCCARASO CAMPO SCUOLA,https://coppodellorso.com/pano.php?d=20260107065705
+#42.2089,13.3967,CAMPO FELICE,https://www.meteoaquilano.it/webcam/FI9900P_00626EA28CAE/snap/webcam.php
 41.8344,14.2653,CAPRACOTTA,https://www.meteo2.it/custom/webcam/capracotta/webcam.php
 41.8079,13.7888,PESCASSEROLI 1,https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
-41.8487,14.0785,ROCCARASO 1,https://coppodellorso.com/bob.php?d=20260107065751 
-41.8487,14.0785,ROCCARASO 2,https://coppodellorso.com/pano.php?d=20260107065705
-41.87644890340079, 14.001009515994449,ROCCARASO 3,https://www.meteoregioneabruzzo.it/rete-meteo/roccaraso-pianoaremogna/webcam_aremogna.php
-42.2089,13.3967,CAMPO FELICE,https://www.meteoaquilano.it/webcam/FI9900P_00626EA28CAE/snap/webcam.php
-41.830321, 14.023167,ROCCARASO 4,https://www.youtube.com/embed/CNRHB5XdWzg
+42.448180951543385, 13.551977031637048,RIF.DUCA ABRUZZI,https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
+42.06850534535964, 13.186203514099862,MARSIA 1,https://imgproxy.windy.com/_/full/plain/current/1637697480/original.jpg
+42.07345349796034, 13.182711788831682,MARSIA 2,https://imgproxy.windy.com/_/full/plain/current/1674822493/original.jpg
+
+41.7807474997981, 13.829787679561957,OPI,https://imgproxy.windy.com/_/full/plain/current/1576354307/original.jpg
+41.75170140747769, 13.815641102331215,FORCA D'ACERO,https://imgproxy.windy.com/_/full/plain/current/1576777052/original.jpg
+41.837410589413224, 13.930328600682437,PASSO GODI,https://imgproxy.windy.com/_/full/plain/current/1503643628/original.jpg
+41.93833333, 13.88972222,SCANNO CIMA SERRA,https://imgproxy.windy.com/_/full/plain/current/1548167184/original.jpg
+41.90244900584614, 13.879186691982644,SCANNO,https://imgproxy.windy.com/_/full/plain/current/1548834305/original.jpg
+41.919448924363905, 13.871158457961865,LAGO DI SCANNO,https://imgproxy.windy.com/_/full/plain/current/1620894161/original.jpg
+41.8789,14.2933,PESCOPENNATARO,https://imgproxy.windy.com/_/full/plain/current/1692700370/original.jpg
+41.9403719640237, 13.759179283121739,SAN SEBASTIANO DEI MARSI,https://imgproxy.windy.com/_/full/plain/current/1428165218/original.jpg
+41.920356974425424, 13.756914170140876,BISEGNA,https://imgproxy.windy.com/_/full/plain/current/1422869761/original.jpg
+
+#42.5206,13.5556,PIETRACAMELA,https://imgproxy.windy.com/_/full/plain/current/1694696935/original.jpg
+
+
