@@ -1,38 +1,131 @@
 import streamlit as st
-import requests  # Per API meteo opzionale
+import requests
+from datetime import datetime, timedelta, timezone
+from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 
-# Configurazione app
-st.set_page_config(page_title="App Meteo Roma", layout="wide")
+# =============================================================================
+# CONFIGURAZIONE
+# =============================================================================
+
+st.set_page_config(
+    page_title="Meteo Rismi - Sintesi Automatica",
+    layout="wide",
+    page_icon="🌤️",
+    initial_sidebar_state="expanded"
+)
+
+# ==================== ID VIDEO GIULIACCI (cambia manualmente) ====================
+VIDEO_ID_GIULIACCI = "cz-qju5LcFk"   # ← CAMBIA QUESTO VALORE quando esce un nuovo video!
+
+# =============================================================================
+# FUNZIONI AUTOMATICHE
+# =============================================================================
+
+@st.cache_data(ttl=1800)  # 30 minuti
+def get_openmeteo_data():
+    url = (
+        "https://api.open-meteo.com/v1/forecast?"
+        "latitude=41.9028&longitude=12.4964&"
+        "current=temperature_2m,apparent_temperature,precipitation,pressure_msl,"
+        "wind_speed_10m,wind_direction_10m,weathercode&"
+        "hourly=freezing_level_height,snow_depth&"
+        "daily=temperature_2m_max,temperature_2m_min,precipitation_sum&"
+        "timezone=Europe/Rome"
+    )
+    try:
+        return requests.get(url, timeout=10).json()
+    except:
+        return None
 
 
-# Home page
-def home_page():
-    st.title("Benvenuto in Meteo Rismi")
+def analyze_weather_rules(data):
+    if not data:
+        return {}
+    curr = data["current"]
+    freezing = data["hourly"].get("freezing_level_height", [2500])[0]
+    snow_cm = data["hourly"].get("snow_depth", [0])[0] * 100
+    wind_dir = curr["wind_direction_10m"]
+    afflusso_freddo = 20 <= wind_dir <= 100 and curr["wind_speed_10m"] > 12
+    return {
+        "pressione": "bassa" if curr["pressure_msl"] < 1012 else "alta" if curr["pressure_msl"] > 1020 else "neutra",
+        "freddo": curr["temperature_2m"] < 8,
+        "molto_freddo": curr["temperature_2m"] < 4,
+        "instabilita": curr["precipitation"] > 0 or data["daily"]["precipitation_sum"][0] > 2,
+        "neve_bassa_quota": freezing < 1400 and snow_cm > 0.05,
+        "zero_termico": f"≈ {int(freezing)} m",
+        "afflusso_freddo": afflusso_freddo,
+        "gelate_notturne": curr["temperature_2m"] < 3
+    }
 
-    # Riquadro sommario
-    with st.expander("Sommario Condizioni Meteo, 8 Gennaio ore 1.38", expanded=True):
-        # Testo personalizzato
-        st.write("""
-1. ANALISI SINOTTICA GENERALE \n
-   Il quadro barico sull’Europa centro-meridionale è dominato da una circolazione depressionaria attiva sul Mediterraneo occidentale, con minimo principale tra Penisola Iberica e bacino algerino. Tale configurazione favorisce sull’Italia un flusso settentrionale e nord-orientale nei bassi strati, associato ad aria più fredda di origine continentale che scivola verso il Centro-Sud, mentre il Nord risente marginalmente di un campo di pressione più elevato. Le mappe di geopotenziale a 500 hPa mostrano una saccatura ben strutturata sul Mediterraneo, con asse inclinato NE–SW, responsabile di condizioni di instabilità diffusa sulle regioni centro-meridionali. Al suolo il gradiente barico risulta moderato, con ventilazione più sostenuta lungo le coste e sui mari esposti. La situazione si presenta sostanzialmente poco evolutiva nel breve termine, con tendenza alla persistenza dello schema sinottico almeno fino a 72 ore.
 
-2. SITUAZIONE METEO PER AREE GEOGRAFICHE \n
-   Al Nord prevalgono condizioni di stabilità atmosferica, con cieli in prevalenza sereni o poco nuvolosi. Nelle ore notturne e mattutine sono possibili foschie e banchi di nebbia nelle pianure interne e nei fondovalle, in dissolvimento nel corso della giornata. Le temperature minime risultano in diminuzione, con gelate locali, mentre le massime si mantengono stazionarie o in lieve aumento. Sui settori alpini di confine non si escludono locali addensamenti nuvolosi con deboli precipitazioni nevose a quote medio-alte.
-   Al Centro il tempo si presenta più variabile. Sulle regioni tirreniche e sull’Appennino si osserva nuvolosità irregolare, talora compatta, con possibilità di deboli precipitazioni intermittenti, più probabili nelle ore pomeridiane e serali. Ventilazione debole o moderata dai quadranti settentrionali. Temperature minime in calo nelle aree interne, massime generalmente stazionarie.
-   Al Sud e sulle Isole maggiori persistono condizioni di maggiore instabilità. Sono attesi annuvolamenti diffusi con precipitazioni sparse, localmente a carattere di rovescio, più frequenti lungo il basso Tirreno e sulle zone ioniche. Sui rilievi appenninici meridionali le precipitazioni potranno assumere carattere nevoso a quote medie. I venti risultano moderati o tesi, prevalentemente settentrionali, con mari mossi o molto mossi.
+def get_dynamic_snow_map():
+    now = datetime.now(timezone.utc)
+    start_hour = 12 if now.hour >= 13 else 0
+    start = now.replace(hour=start_hour, minute=0, second=0, microsecond=0)
+    end = start + timedelta(days=7)
+    start_str = start.strftime("%Y-%m-%dT%H:00:00Z")
+    end_str = end.strftime("%Y-%m-%dT%H:00:00Z")
+    return f"https://www.wxcharts.com/api/contentwithoverlay/ecmwf_op/italy/snowdepth/{start_str}/{end_str}"
 
-3. ANALISI DELLE MAPPE METEOROLOGICHE \n
-   Le mappe di pressione al suolo evidenziano valori più bassi sul Mediterraneo occidentale e più elevati sull’Europa centro-orientale, configurando un flusso orientato da nord-est sull’Italia. Le mappe di temperatura mostrano anomalie negative più marcate al Centro-Sud, mentre il Nord si colloca su valori prossimi alla media stagionale. Le elaborazioni delle precipitazioni indicano accumuli generalmente modesti ma diffusi sulle regioni centro-meridionali, con distribuzione irregolare e fenomeni a carattere intermittente. Le mappe del vento confermano rinforzi lungo le coste tirreniche meridionali, adriatiche e ioniche, con raffiche localmente sostenute. L’analisi satellitare evidenzia nubi medio-basse estese sul Centro-Sud e ampie schiarite al Nord, mentre i radar mostrano celle precipitativi sparse e non organizzate.
 
-4. EVOLUZIONE PREVISIONALE \n
-   Nella giornata successiva è previsto il mantenimento dell’attuale configurazione, con ulteriore afflusso di aria fredda nei bassi strati verso il Centro-Sud. L’instabilità tenderà a concentrarsi sulle regioni meridionali e sulle Isole, mentre il Nord continuerà a beneficiare di condizioni più asciutte e stabili. Le temperature notturne rimarranno rigide, con diffuse gelate nelle zone interne. In una prospettiva a 72 ore, si intravede una graduale attenuazione dell’instabilità al Centro-Nord per il temporaneo rinforzo di un campo anticiclonico debole, mentre al Sud potranno persistere residui fenomeni legati alla circolazione ciclonica mediterranea.
+@st.cache_data(ttl=3600)
+def get_giuliacci_transcript(video_id):
+    try:
+        transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['it', 'it-IT'])
+        text = "\n".join([f"[{int(entry['start']//60):02d}:{int(entry['start']%60):02d}] {entry['text']}" for entry in transcript_list])
+        if len(text) > 3000:
+            text = text[:3000] + "\n\n... (trascrizione parziale - vedi video completo)"
+        return {"success": True, "text": text}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
-5. CRITICITÀ METEOROLOGICHE \n
-   Non si segnalano al momento criticità di elevata intensità. Restano tuttavia da monitorare le gelate notturne su pianure e valli interne del Nord e del Centro, le nevicate a quote medie sui rilievi meridionali e la ventilazione sostenuta con mare agitato sui bacini meridionali. Possibili disagi locali sono legati a precipitazioni improvvise e raffiche di vento nelle aree più esposte.
 
-6. INDICI E CONSIDERAZIONI FINALI \n
-   Il contesto termico risulta complessivamente in linea o lievemente inferiore alle medie stagionali, con maggiore anomalia negativa al Sud. L’indice di instabilità rimane moderato, sufficiente a generare rovesci sparsi ma non fenomeni organizzati di lunga durata. La situazione generale richiede un monitoraggio costante delle mappe sinottiche e dei dati osservativi, in quanto piccole variazioni nella posizione del minimo barico potrebbero determinare differenze significative nella distribuzione dei fenomeni, soprattutto sulle regioni centro-meridionali.
-""")
+# =============================================================================
+# PAGINA PRINCIPALE
+# =============================================================================
 
-# Esegui home (Streamlit gestisce multi-page automaticamente)
-home_page()
+st.title("Meteo Rismi – Sintesi Automatica")
+
+with st.expander("Sommario Condizioni Meteo – Generato Automaticamente", expanded=True):
+    data = get_openmeteo_data()
+    
+    if data:
+        curr = data["current"]
+        daily = data["daily"]
+        rules = analyze_weather_rules(data)
+        now_str = datetime.now().strftime("%d %B %Y – %H:%M")
+        
+        st.markdown(f"""
+**Aggiornamento automatico — {now_str}**
+
+**Roma / Lazio oggi**  
+Temperatura attuale: **{curr['temperature_2m']:.1f}°C** (percepita {curr['apparent_temperature']:.1f}°C)  
+Mass/Min attesa: **{daily['temperature_2m_max'][0]:.1f}°C** / **{daily['temperature_2m_min'][0]:.1f}°C**  
+Precipitazioni odierne: **{daily['precipitation_sum'][0]:.1f} mm**  
+Vento: {curr['wind_speed_10m']:.0f} km/h da {curr['wind_direction_10m']}°  
+Pressione: {curr['pressure_msl']:.0f} hPa → **{rules['pressione']}**  
+Zero termico: **{rules['zero_termico']}** → {"possibile neve bassa quota" if rules['neve_bassa_quota'] else "precipitazioni liquide o neve solo in alta quota"}
+{"→ Gelate notturne probabili" if rules['gelate_notturne'] else ""}
+        """)
+
+
+
+
+st.subheader("Satellite + Precipitazioni (Wetterzentrale)")
+
+# Mappa Wetterzentrale con parametri per mostrare satellite + precipitazioni
+wetterzentrale_url = (
+    "https://www.wetterzentrale.de/en/reanalysis.php?"
+    "model=sat&"
+    "var=413&"           # var=413 = satellite IR con overlay precipitazioni
+    "map=1&"             # mappa Europa
+    "run=latest"         # usa il run più recente disponibile
+)
+
+st.components.v1.iframe(
+    wetterzentrale_url,
+    height=300,
+    scrolling=True
+)
+
+st.caption("Fonte: Wetterzentrale.de")

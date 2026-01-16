@@ -8,6 +8,9 @@
 42.448180951543385, 13.551977031637048,RIF.DUCA ABRUZZI,https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
 42.06850534535964, 13.186203514099862,MARSIA 1,https://imgproxy.windy.com/_/full/plain/current/1637697480/original.jpg
 42.07345349796034, 13.182711788831682,MARSIA 2,https://imgproxy.windy.com/_/full/plain/current/1674822493/original.jpg
+42.172728448254176, 13.516464929040307,ROVERE (OVINDOLI),https://www.caputfrigoris.it/rete-meteo/rovere/foscam/FI9900P_00626E6E73F0/snap/webcam2.php 
+42.19392867359079, 13.175999292170024,NESCE,https://imgproxy.windy.com/_/full/plain/current/1295019150/original.jpg
+42.218844839470215, 13.44930476352967,CAMPO FELICE (LAGO CISTERNA),https://imgproxy.windy.com/_/full/plain/current/1607411963/original.jpg
 
 41.7807474997981, 13.829787679561957,OPI,https://imgproxy.windy.com/_/full/plain/current/1576354307/original.jpg
 41.75170140747769, 13.815641102331215,FORCA D'ACERO,https://imgproxy.windy.com/_/full/plain/current/1576777052/original.jpg
