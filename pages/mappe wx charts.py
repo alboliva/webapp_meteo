@@ -3,31 +3,35 @@ from datetime import datetime, timezone
 
 st.set_page_config(page_title="Mappe Meteo WX Charts", layout="wide")
 
-st.title("Mappe Meteo WX Charts")
+st.title("🗺️ Mappe Meteo WX Charts")
 st.markdown("### ECMWF Overview - Italia")
 
-# Genera la data di oggi alle 12:00 UTC
+# Genera data odierna alle 12:00 UTC
 oggi = datetime.now(timezone.utc).replace(hour=12, minute=0, second=0, microsecond=0)
 data_str = oggi.strftime("%Y-%m-%dT12:00:00Z")
+dtg_encoded = data_str.replace(":", "%3A")
 
-# URL per l'iframe dinamico
-dtg_encoded = data_str.replace(":", "%3A")   # : deve diventare %3A nell'URL
+iframe_url = f"https://www.wxcharts.com/?dataset=ecmwf_op&region=italy&element=overview&run=12&dtg={dtg_encoded}"
 
-iframe_url = (
-    f"https://www.wxcharts.com/?dataset=ecmwf_op"
-    f"&region=italy"
-    f"&element=overview"
-    f"&run=12"
-    f"&dtg={dtg_encoded}"
+st.caption(f"**Run:** {oggi.strftime('%d %B %Y alle 12:00 UTC')}")
+
+# Tentativo 1: iframe con sandbox (più permissivo)
+st.components.v1.iframe(
+    iframe_url,
+    height=850,
+    scrolling=True,
+    # sandbox permette più funzionalità
+    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
 )
 
-st.caption(f"**Run ECMWF:** {oggi.strftime('%d %B %Y alle 12:00 UTC')}")
+st.divider()
 
-# Mostra l'iframe
-st.components.v1.iframe(iframe_url, height=850, scrolling=True)
+# Tentativo 2: Link diretto per aprire in nuova scheda (backup)
+st.markdown(f"""
+[**🔗 Apri la mappa WX Charts in una nuova scheda**]({iframe_url})
+""", unsafe_allow_html=True)
 
-# Pulsante di aggiornamento
-if st.button("🔄 Aggiorna con data odierna (12z)"):
+if st.button("🔄 Aggiorna mappa con data odierna"):
     st.rerun()
 
-st.info("Se la mappa non appare subito, aspetta qualche secondo o clicca su 'Aggiorna'.")
+st.info("💡 Se l'iframe resta bianco, usa il link sopra per aprire la mappa in una nuova scheda.")
