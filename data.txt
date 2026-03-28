@@ -1,4 +1,5 @@
 41.830321, 14.023167,ROCCARASO LIVE,https://www.youtube.com/watch?v=RfhxCd0P61g
+42.52285041913696, 13.553473490207756,PIETRACAMELA,https://imgproxy.windy.com/_/full/plain/current/1694696935/original.jpg
 41.7973, 14.0602,ROCCARASO PIANO AREMOGNA,https://www.meteoregioneabruzzo.it/rete-meteo/roccaraso-pianoaremogna/webcam_aremogna.php
 41.836973080974026, 14.045093595396693,ROCCARASO PISTE,https://coppodellorso.com/bob.php?d=20260107065751 
 41.836973080974026, 14.045093595396693,ROCCARASO CAMPO SCUOLA,https://coppodellorso.com/pano.php?d=20260107065705
