@@ -2,7 +2,6 @@ import streamlit as st
 from datetime import datetime, timezone
 
 st.set_page_config(page_title="Mappe Meteo WX Charts", layout="wide")
-
 st.title("🗺️ Mappe Meteo WX Charts")
 st.markdown("### ECMWF Overview - Italia")
 
@@ -15,18 +14,16 @@ iframe_url = f"https://www.wxcharts.com/?dataset=ecmwf_op&region=italy&element=o
 
 st.caption(f"**Run:** {oggi.strftime('%d %B %Y alle 12:00 UTC')}")
 
-# Tentativo 1: iframe con sandbox (più permissivo)
+# Iframe corretto (senza sandbox)
 st.components.v1.iframe(
     iframe_url,
     height=850,
-    scrolling=True,
-    # sandbox permette più funzionalità
-    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+    scrolling=True
 )
 
 st.divider()
 
-# Tentativo 2: Link diretto per aprire in nuova scheda (backup)
+# Link di backup
 st.markdown(f"""
 [**🔗 Apri la mappa WX Charts in una nuova scheda**]({iframe_url})
 """, unsafe_allow_html=True)
@@ -34,4 +31,4 @@ st.markdown(f"""
 if st.button("🔄 Aggiorna mappa con data odierna"):
     st.rerun()
 
-st.info("💡 Se l'iframe resta bianco, usa il link sopra per aprire la mappa in una nuova scheda.")
+st.info("💡 Se l'iframe resta bianco o non carica bene, usa il link sopra per aprire la mappa in una nuova scheda.")
