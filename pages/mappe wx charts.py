@@ -6,36 +6,26 @@ st.set_page_config(page_title="Mappe Meteo WX Charts", layout="wide")
 st.title("🗺️ Mappe Meteo WX Charts")
 st.markdown("### ECMWF Overview - Italia")
 
-# Genera la data di oggi alle 12:00 UTC
 oggi = datetime.now(timezone.utc).replace(hour=12, minute=0, second=0, microsecond=0)
 data_str = oggi.strftime("%Y-%m-%dT12:00:00Z")
 
-# URL diretto alla pagina che vuoi mostrare
 iframe_url = f"https://www.wxcharts.com/api/content/ecmwf_op/italy/overview/{data_str}/{data_str}"
 
 st.caption(f"**Run:** {oggi.strftime('%d %B %Y alle 12:00 UTC')}")
 
-# ====================== IFRAME ======================
-st.components.v1.iframe(
-    src=iframe_url,          # meglio usare 'src=' esplicitamente
-    height=950,              # aumenta se la mappa viene tagliata
-    scrolling=True,
-    width=None               # lascia che si adatti alla larghezza
-)
+st.success("✅ La mappa è pronta!")
 
-st.divider()
-
-# Link di backup (quasi sempre necessario)
 st.markdown(f"""
-**🔗 Se l'iframe non carica, apri qui:**
-[🌐 Apri la mappa WX Charts in una nuova scheda]({iframe_url})
+<div style="text-align: center; padding: 30px 0;">
+    <a href="{iframe_url}" target="_blank" style="background-color: #0066cc; color: white; padding: 18px 36px; 
+    text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold;">
+        🌐 APRI LA MAPPA INTERATTIVA
+    </a>
+</div>
 """, unsafe_allow_html=True)
 
-if st.button("🔄 Aggiorna mappa con run di oggi"):
-    st.rerun()
+st.info("🔗 Clicca sul pulsante sopra per aprire la mappa WX Charts in una nuova scheda.\n\n"
+        "L'embedding diretto non è possibile perché il sito wxcharts blocca gli iframe per motivi di sicurezza.")
 
-st.info("""
-💡 **Nota importante**:  
-Molti siti (incluso wxcharts.com) impediscono l’embedding tramite iframe per motivi di sicurezza (X-Frame-Options o Content-Security-Policy).  
-Se vedi una pagina bianca, purtroppo non c’è molto da fare con l’iframe → usa il link sopra.
-""")
+if st.button("🔄 Aggiorna con run di oggi (12 UTC)"):
+    st.rerun()
