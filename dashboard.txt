@@ -1,0 +1,2 @@
+roma_centro=https://www.skylinewebcams.com/it/webcam/italia/lazio/roma/piazza-navona.html
+roma_pineta_sacchetti=
