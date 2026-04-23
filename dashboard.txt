@@ -22,7 +22,7 @@ monte_cavo=
 pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
 monte_livata=https://ramsat.it/webcam-montelivata
 campo_imperatore=https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
-campo_di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
+campo_ di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
 roccaraso=
 forca_dacero=
 

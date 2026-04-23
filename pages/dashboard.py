@@ -450,79 +450,69 @@ else:
                     st.markdown(f"**{cam['nome']}**{t_str} — [🔗 Apri in nuova scheda]({url})")
                     st.components.v1.iframe(url, height=380, scrolling=True)
 
-# ─── STORICO DA ARCHIVE API ───────────────────────────────────────────────────
+# ─── STORICO TEMPERATURE — sincronizzato con gallery ─────────────────────────
 st.markdown("---")
-st.markdown("### 📈 Storico Temperature (Archive API)")
-st.caption("Dati orari storici da Open-Meteo Archive — fino a ieri, fino a 90 giorni.")
+st.markdown("### 📈 Storico Temperature")
 
 import pandas as pd
 
-col_sel, col_opt = st.columns([2, 1])
-with col_sel:
-    nomi_tutti = [d["nome"] for d in dati if d.get("ok")]
-    default_sel = [n for n in ["Roma Centro", "Campo Imperatore", "Tromsø", "Miami"] if n in nomi_tutti]
-    sel_stazioni = st.multiselect(
-        "Seleziona stazioni (max 6 per leggibilità)",
-        options=nomi_tutti,
-        default=default_sel,
-        max_selections=6,
-    )
+# Ricava le stazioni visibili nella gallery (tab attivo = tutte le zone con cam)
+# Prende le prime 6 in ordine di apparizione nella gallery, stessa sequenza visiva
+stazioni_gallery = []
+for zona in ZONE_ORDER:
+    for d in dati:
+        if d.get("zona") == zona and webcam_links.get(d["chiave"]):
+            stazioni_gallery.append(d)
+stazioni_gallery = stazioni_gallery[:6]   # max 6 come in gallery
+
+if not stazioni_gallery:
+    # Fallback: prime 6 stazioni con dati validi
+    stazioni_gallery = [d for d in dati if d.get("ok") and d.get("temp") is not None][:6]
+
+nomi_gallery = [d["nome"] for d in stazioni_gallery]
+
+col_info, col_opt = st.columns([3, 1])
+with col_info:
+    st.caption(f"Stazioni: **{', '.join(nomi_gallery)}** — le stesse della gallery webcam sopra")
 with col_opt:
     giorni = st.select_slider(
         "Periodo",
         options=[7, 14, 30, 60, 90],
-        value=30,
-        format_func=lambda x: f"{x} giorni"
+        value=14,
+        format_func=lambda x: f"{x}gg",
+        key="giorni_storico"
     )
-    risoluzione = st.radio("Risoluzione", ["Oraria", "Giornaliera"], horizontal=True)
+    risoluzione = st.radio("Risoluzione", ["Oraria", "Giornaliera"], horizontal=True, key="res_storico")
 
-if sel_stazioni:
-    with st.spinner(f"Caricamento dati storici ({giorni}gg) per {len(sel_stazioni)} stazioni…"):
-        frames_h = []   # orario
-        frames_d = []   # giornaliero
+with st.spinner(f"Caricamento storico {giorni}gg…"):
+    frames_h, frames_d = [], []
+    for d in stazioni_gallery:
+        storico = fetch_storico(d["lat"], d["lon"], d["tz"], giorni)
+        if "error" in storico:
+            continue
+        nome = d["nome"]
+        if risoluzione == "Oraria":
+            df_h = pd.DataFrame({"Ora": pd.to_datetime(storico["times"]), nome: storico["temp_h"]}).set_index("Ora")
+            frames_h.append(df_h)
+        else:
+            df_d = pd.DataFrame({
+                "Data":        pd.to_datetime(storico["dates"]),
+                f"{nome} max": storico["tmax_d"],
+                f"{nome} min": storico["tmin_d"],
+            }).set_index("Data")
+            frames_d.append(df_d)
 
-        for nome in sel_stazioni:
-            s_info = next((d for d in dati if d["nome"] == nome), None)
-            if not s_info: continue
-            storico = fetch_storico(s_info["lat"], s_info["lon"], s_info["tz"], giorni)
-            if "error" in storico:
-                st.warning(f"{nome}: {storico['error']}")
-                continue
-
-            if risoluzione == "Oraria":
-                df_h = pd.DataFrame({
-                    "Ora":  pd.to_datetime(storico["times"]),
-                    nome:   storico["temp_h"],
-                })
-                df_h = df_h.set_index("Ora")
-                frames_h.append(df_h)
-            else:
-                df_d = pd.DataFrame({
-                    "Data":           pd.to_datetime(storico["dates"]),
-                    f"{nome} max":    storico["tmax_d"],
-                    f"{nome} min":    storico["tmin_d"],
-                })
-                df_d = df_d.set_index("Data")
-                frames_d.append(df_d)
-
-    if risoluzione == "Oraria" and frames_h:
-        df_all = pd.concat(frames_h, axis=1).sort_index()
-        st.line_chart(df_all)
-        st.caption(f"Temperatura oraria · {giorni} giorni · {len(frames_h)} stazioni · Fonte: Open-Meteo Archive")
-
-    elif risoluzione == "Giornaliera" and frames_d:
-        df_all = pd.concat(frames_d, axis=1).sort_index()
-        tab_max, tab_min = st.tabs(["🔴 Massime giornaliere", "🔵 Minime giornaliere"])
-        with tab_max:
-            cols_max = [c for c in df_all.columns if c.endswith(" max")]
-            st.line_chart(df_all[cols_max].rename(columns=lambda c: c.replace(" max","")))
-        with tab_min:
-            cols_min = [c for c in df_all.columns if c.endswith(" min")]
-            st.line_chart(df_all[cols_min].rename(columns=lambda c: c.replace(" min","")))
-        st.caption(f"Temperature giornaliere · {giorni} giorni · Fonte: Open-Meteo Archive")
-
-elif not sel_stazioni:
-    st.info("Seleziona almeno una stazione per vedere il grafico storico.")
+if risoluzione == "Oraria" and frames_h:
+    st.line_chart(pd.concat(frames_h, axis=1).sort_index())
+    st.caption(f"Temperatura oraria · {giorni} giorni · Open-Meteo Archive")
+elif risoluzione == "Giornaliera" and frames_d:
+    df_all = pd.concat(frames_d, axis=1).sort_index()
+    t1, t2 = st.tabs(["🔴 Massime", "🔵 Minime"])
+    with t1:
+        st.line_chart(df_all[[c for c in df_all.columns if c.endswith(" max")]].rename(columns=lambda c: c.replace(" max","")))
+    with t2:
+        st.line_chart(df_all[[c for c in df_all.columns if c.endswith(" min")]].rename(columns=lambda c: c.replace(" min","")))
+    st.caption(f"Massime/Minime giornaliere · {giorni} giorni · Open-Meteo Archive")
 
 # ─── FOOTER ──────────────────────────────────────────────────────────────────
 st.markdown("""<div class="note-footer">
