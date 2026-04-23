@@ -6,4 +6,4 @@ monte_livata=https://ramsat.it/webcam-montelivata
 pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
 campo_di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
 genova=https://imgproxy.windy.com/_/full/plain/current/1731006477/original.jpg
-cervinia=https://imgproxy.windy.com/_/full/plain/current/1742724160/original.jpg
+breuil-cervinia=https://imgproxy.windy.com/_/full/plain/current/1742724160/original.jpg
