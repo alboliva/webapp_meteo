@@ -1,6 +1,6 @@
 roma_centro=https://www.skylinewebcams.com/it/webcam/italia/lazio/roma/piazza-navona.html
-roma_pineta_sacchetti=
 marina_di_san_nicola=https://vedetta.org/webcam/italia/lazio/roma/marina-di-san-nicola
 trevignano_romano=https://vedetta.org/webcam/italia/lazio/roma/trevignano
 campo_imperatore=https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
 monte_livata=https://ramsat.it/webcam-montelivata
+pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
