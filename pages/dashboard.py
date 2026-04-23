@@ -353,27 +353,20 @@ rows = ""
 for zona in ZONE_ORDER:
     zona_dati = [d for d in dati if d.get("zona") == zona]
     if not zona_dati: continue
-    rows += f'<tr class="sep"><td colspan="11">{ZONE_LABELS[zona]}</td></tr>'
+    rows += f'<tr class="sep"><td colspan="10">{ZONE_LABELS[zona]}</td></tr>'
     for d in zona_dati:
         if not d.get("ok"):
-            rows += f'<tr><td class="nome">{d["nome"]}</td><td colspan="10" style="color:#ef4444;background:white">Errore</td></tr>'
+            rows += f'<tr><td class="nome">{d["nome"]}</td><td colspan="9" style="color:#ef4444;background:white">Errore</td></tr>'
             continue
         t  = d["temp"]; fe = d["feels"]
-        url  = webcam_links.get(d["chiave"])
-        # Icona webcam — solo link, nessun viewer inline
-        if url:
-            icona = "🖼️" if is_img_url(url) else "🌐"
-            wcam_cell = f'<a href="{url}" target="_blank" title="Apri webcam">{icona}</a>'
-            nome_cell = f'<a href="{url}" target="_blank" rel="noopener">{d["nome"]}</a>' if not is_img_url(url) else d["nome"]
-        else:
-            wcam_cell = '<span style="color:#e2e8f0">—</span>'
-            nome_cell = d["nome"]
+        url = webcam_links.get(d["chiave"])
+        nome_cell = (f'<a href="{url}" target="_blank" rel="noopener">{d["nome"]}</a>'
+                     if url else d["nome"])
 
         minmax = f'{d["tmin"]:.1f}° / {d["tmax"]:.1f}°' if d.get("tmin") is not None else "–"
         fz_str = f'{int(d["fz"])} m' if d.get("fz") is not None else "–"
         rows += f"""<tr>
   <td class="nome">{nome_cell} <span class="badge {d['badge']}">{d['zona']}</span></td>
-  <td style="text-align:center;font-size:1.05rem">{wcam_cell}</td>
   <td>{wmo_icon(d['wmo'])}</td>
   <td><span class="{tc(t)}">{t:.1f}°C</span></td>
   <td><span class="{tc(fe)}">{fe:.1f}°C</span></td>
@@ -387,7 +380,7 @@ for zona in ZONE_ORDER:
 
 st.markdown(f"""<div class="meteo-wrap"><table class="meteo-tbl">
 <thead><tr>
-  <th>Stazione</th><th>📷</th><th>Cond.</th><th>Temp</th><th>Percepita</th>
+  <th>Stazione</th><th>Cond.</th><th>Temp</th><th>Percepita</th>
   <th>Umidità</th><th>Vento</th><th>Pressione</th><th>Min / Max</th><th>Pioggia</th><th>Zero Term.</th>
 </tr></thead>
 <tbody>{rows}</tbody>
