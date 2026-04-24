@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bollettino Meteorologico Scientifico — Italia 24 Aprile 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ink: #1a1410;
+    --ink-light: #3d3228;
+    --paper: #f7f2e8;
+    --paper-warm: #ede5d0;
+    --accent: #8b2121;
+    --accent-gold: #b8860b;
+    --accent-blue: #1a3a5c;
+    --rule: #c8b89a;
+    --rule-dark: #8b7355;
+    --sky-blue: #4a7fa5;
+    --snow-white: #e8f0f7;
+    --col-gap: 2.4rem;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 9.5pt;
+    line-height: 1.65;
+  }
+
+  /* MASTHEAD */
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0;
+    border-bottom: 4px solid var(--accent-gold);
+  }
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 2.5rem;
+    border-bottom: 1px solid #3d3228;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    letter-spacing: 0.08em;
+    color: #b8a888;
+  }
+  .masthead-title {
+    text-align: center;
+    padding: 1.8rem 2.5rem 1.4rem;
+  }
+  .masthead-title h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38pt;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    line-height: 1.05;
+    color: #f7f2e8;
+  }
+  .masthead-title h1 em {
+    font-style: italic;
+    color: var(--accent-gold);
+  }
+  .masthead-title .subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #9a8a6a;
+    margin-top: 0.4rem;
+  }
+  .masthead-rule {
+    display: flex;
+    align-items: center;
+    padding: 0 2.5rem 1.2rem;
+    gap: 1rem;
+  }
+  .masthead-rule hr { flex: 1; border: none; border-top: 1px solid #3d3228; }
+  .masthead-rule .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #7a6a4a;
+    border: 1px solid #3d3228;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  /* SYNOPTIC BANNER */
+  .synoptic-banner {
+    background: var(--accent-blue);
+    color: #e8f0f7;
+    padding: 0.7rem 2.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    letter-spacing: 0.06em;
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    border-bottom: 2px solid var(--accent-gold);
+  }
+  .synoptic-banner .ticker-item { display: flex; gap: 0.5rem; align-items: center; }
+  .synoptic-banner .lbl { color: var(--accent-gold); font-weight: 500; }
+
+  /* PAGE LAYOUT */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem;
+  }
+
+  /* SECTION HEADERS */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0 1rem;
+    border-top: 2px solid var(--ink);
+    padding-top: 0.6rem;
+  }
+  .section-head h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16pt;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .section-head .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7pt;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .section-head hr { flex: 1; border: none; border-top: 1px solid var(--rule); }
+
+  /* TWO COLUMN LAYOUT */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--col-gap);
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.6rem;
+  }
+  .col-wide { grid-column: span 2; }
+
+  /* COLUMN RULE */
+  .col-rule {
+    position: relative;
+  }
+  .col-rule::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: calc(50% - 0.5px);
+    width: 1px;
+    background: var(--rule);
+  }
+
+  /* ABSTRACT BOX */
+  .abstract-box {
+    background: var(--ink);
+    color: var(--paper-warm);
+    padding: 1.6rem 2rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid var(--accent-gold);
+  }
+  .abstract-box .abs-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 0.5rem;
+  }
+  .abstract-box p {
+    font-size: 9pt;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* THEORY BLOCK */
+  .theory-block {
+    border-left: 3px solid var(--accent);
+    padding: 0.6rem 1rem;
+    margin: 0.8rem 0;
+    background: rgba(139,33,33,0.04);
+  }
+  .theory-block .theory-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .theory-block p {
+    font-size: 8.5pt;
+    line-height: 1.6;
+  }
+
+  /* REGION CARDS */
+  .region-card {
+    border: 1px solid var(--rule);
+    padding: 1rem 1.1rem;
+    margin-bottom: 1.2rem;
+    background: #faf7f0;
+    position: relative;
+  }
+  .region-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .region-card.nord::before { background: var(--accent-blue); }
+  .region-card.centro::before { background: var(--accent-gold); }
+  .region-card.sud::before { background: var(--accent); }
+  .region-card.isole::before { background: #2a7a4a; }
+
+  .region-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 12pt;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: var(--ink);
+  }
+  .region-card .region-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.12em;
+    color: var(--rule-dark);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+  .region-card .temp-row {
+    display: flex;
+    gap: 1.2rem;
+    margin: 0.5rem 0;
+    align-items: baseline;
+  }
+  .region-card .temp-min {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14pt;
+    font-weight: 400;
+    color: var(--accent-blue);
+  }
+  .region-card .temp-max {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18pt;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .region-card .temp-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    color: var(--rule-dark);
+    text-transform: uppercase;
+  }
+
+  /* DATA PILLS */
+  .data-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.5rem 0;
+  }
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.1em;
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 2px 7px;
+    color: var(--ink-light);
+  }
+  .pill.alert { background: #f7eded; border-color: #c88a8a; color: var(--accent); }
+  .pill.good { background: #edf7ef; border-color: #8ac88a; color: #2a6a2a; }
+  .pill.info { background: #edf0f7; border-color: #8a9ac8; color: var(--accent-blue); }
+
+  /* FORECAST TABLE */
+  .fc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 0.6rem 0;
+  }
+  .fc-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--rule-dark);
+    padding: 3px 6px;
+    text-align: left;
+    color: var(--ink-light);
+  }
+  .fc-table td {
+    padding: 3px 6px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .fc-table tr:last-child td { border-bottom: none; }
+
+  /* CHART CONTAINERS */
+  .chart-wrap {
+    background: #faf7f0;
+    border: 1px solid var(--rule);
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .chart-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .chart-canvas-wrap {
+    position: relative;
+    height: 180px;
+  }
+  .chart-canvas-wrap.tall { height: 240px; }
+  .chart-canvas-wrap.short { height: 140px; }
+
+  /* SNOW CONDITIONS BOX */
+  .snow-box {
+    background: var(--snow-white);
+    border: 1px solid #a0b8d0;
+    border-top: 3px solid var(--accent-blue);
+    padding: 1rem 1.1rem;
+    margin: 0.8rem 0;
+  }
+  .snow-box h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 10pt;
+    margin-bottom: 0.4rem;
+    color: var(--accent-blue);
+  }
+
+  /* ALTITUDE TABLE */
+  .alt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 0.5rem 0;
+  }
+  .alt-table td {
+    padding: 3px 8px;
+    border-bottom: 1px dashed #c0d0e0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+  }
+  .alt-table td:first-child { color: var(--accent-blue); font-weight: 500; }
+
+  /* SEPARATOR */
+  .ornamental-sep {
+    text-align: center;
+    color: var(--rule-dark);
+    margin: 1.2rem 0;
+    font-size: 10pt;
+    letter-spacing: 0.5em;
+  }
+
+  /* FOOTNOTES */
+  .footnotes {
+    border-top: 2px solid var(--ink);
+    margin-top: 2rem;
+    padding-top: 0.8rem;
+    font-size: 7.5pt;
+    color: var(--ink-light);
+    column-count: 2;
+    column-gap: 2rem;
+  }
+  .footnotes p { margin-bottom: 0.3rem; }
+
+  /* INSET BOX */
+  .inset {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule-dark);
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    font-size: 8.5pt;
+  }
+  .inset strong { font-weight: 600; color: var(--accent-blue); }
+
+  /* KICKER TEXT */
+  .kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  /* BODY TEXT */
+  p { margin-bottom: 0.6rem; }
+  p:last-child { margin-bottom: 0; }
+
+  h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 10.5pt;
+    font-weight: 700;
+    margin: 0.7rem 0 0.3rem;
+    color: var(--ink);
+  }
+
+  .drop-cap::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 42pt;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.12em 0.08em 0 0;
+    color: var(--accent);
+  }
+
+  sup { font-size: 0.7em; color: var(--accent-blue); font-family: 'IBM Plex Mono', monospace; }
+
+  /* NAO INDEX BOX */
+  .index-row {
+    display: flex;
+    gap: 1rem;
+    margin: 0.6rem 0;
+  }
+  .index-box {
+    flex: 1;
+    border: 1px solid var(--rule);
+    padding: 0.6rem;
+    text-align: center;
+    background: var(--paper-warm);
+  }
+  .index-box .val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18pt;
+    font-weight: 400;
+    color: var(--accent-blue);
+    display: block;
+  }
+  .index-box .val.warm { color: var(--accent); }
+  .index-box .name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--rule-dark);
+  }
+
+  @media print {
+    body { font-size: 9pt; }
+    .page { max-width: 100%; padding: 1cm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <div class="masthead-top">
+    <span>BOLLETTINO N. 114/2026</span>
+    <span>VALIDITÀ: 24–28 APRILE 2026 · ORE 09:30 CEST</span>
+    <span>EMESSO: 24 APR 2026 · ECMWF IFS HRES + GFS</span>
+  </div>
+  <div class="masthead-title">
+    <h1>Bollettino <em>Meteorologico</em> Scientifico</h1>
+    <div class="subtitle">Previsioni numeriche per le regioni italiane · Analisi sinottica e locale · Aprile 2026</div>
+  </div>
+  <div class="masthead-rule">
+    <hr>
+    <div class="badge">ECMWF IFS HRES ∼9 km · 4D-Var · Meteosat MSG</div>
+    <hr>
+    <div class="badge">Risoluzione orografica esplicita · ENS 51 membri</div>
+    <hr>
+  </div>
+</div>
+
+<!-- SYNOPTIC STATUS BAR -->
+<div class="synoptic-banner">
+  <div class="ticker-item"><span class="lbl">PATTERN:</span> Anticiclone subtropicale — Mediterraneo centrale</div>
+  <div class="ticker-item"><span class="lbl">NAO:</span> +0.4 (debole positivo)</div>
+  <div class="ticker-item"><span class="lbl">ENSO:</span> Neutro → El Niño debole/mod. da mag 2026</div>
+  <div class="ticker-item"><span class="lbl">Z500:</span> Ridge +8 dam anomalia</div>
+  <div class="ticker-item"><span class="lbl">ZERO TERMICO:</span> ∼2700–2800 m</div>
+</div>
+
+<div class="page">
+
+  <!-- ABSTRACT -->
+  <div class="abstract-box">
+    <div class="abs-label">Abstract — Sintesi Sinottica</div>
+    <p>
+      Un robusto anticiclone di matrice subtropicale, con centro di pressione massima ≥ 1025 hPa sul Mediterraneo occidentale-centrale, determina subsidenza adiabatica diffusa sull'intera penisola italiana nel periodo 24–28 aprile 2026. Il profilo verticale dell'atmosfera mostra un'inversione termica stabile a 850–700 hPa (temperatura potenziale θ crescente con la quota), che sopprime efficacemente la convezione profonda su pianure e coste. Gli unici focolai convettivi previsti rimangono confinati ai rilievi alpini e appenninici, dove il forcing orografico (sollevamento forzato su pendii sopravvento) e il riscaldamento diurno del suolo generano instabilità termica locale (CAPE limitato: 500–800 J/kg). Il modello ECMWF IFS ensemble (51 membri) attribuisce probabilità di precipitazione &lt;20% su tutta la penisola fino al 28 aprile; possibile transizione perturbata da martedì 29 per cedimento del bordo settentrionale dell'alta. Temperature sopra la media stagionale di +2/+4°C (anomalia termiche significative rispetto alla climatologia 1991–2020). Zero termico a ∼2700–2800 m.
+    </p>
+  </div>
+
+  <!-- SEZIONE 1: INQUADRAMENTO SINOTTICO -->
+  <div class="section-head">
+    <span class="section-num">§ 1</span>
+    <h2>Inquadramento Sinottico e Basi Teoriche</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <div>
+      <p class="drop-cap">
+        L'attuale configurazione barica è governata da un <strong>anticiclone subtropicale</strong> di blocco, un sistema di alta pressione a carattere quasi-stazionario che affonda le sue radici nella cellula di Hadley nordafricana. A scala sinottica (10<sup>3</sup>–10<sup>4</sup> km), il campo di geopotenziale a 500 hPa mostra un ridge con anomalia positiva di circa +8 dam rispetto alla climatologia aprile 1991–2020, esteso dal Sahara fino al bordo meridionale delle Alpi.
+      </p>
+      <p>
+        La subsidenza adiabatica associata al ramo discendente della cellula di Hadley comprime e scalda l'aria in quota (legge di Poisson: T/T₀ = (p/p₀)<sup>Rd/cp</sup>), creando un'inversione termica ben definita che funge da "coperchio" alla convezione. Il gradiente verticale di temperatura si mantiene stabile (lapse rate &lt;Γd = 9.8 K/km), impedendo lo sviluppo di cumulonembi fuori dai rilievi.
+      </p>
+      <div class="theory-block">
+        <div class="theory-label">Teoria — Inversione Subsidenziale</div>
+        <p>In un'atmosfera stabile, la diseguaglianza di Bjerknes-Brunt-Väisälä (N² &gt; 0) garantisce che una perturbazione verticale generi oscillazioni ammortizzate piuttosto che convezione libera. La frequenza di Brunt-Väisälä N = √(g/θ · ∂θ/∂z) nell'attuale configurazione vale circa 0.012 s⁻¹ in troposfera libera, indicando stabilità robusta.</p>
+      </div>
+      <p>
+        L'<strong>indice NAO</strong> (North Atlantic Oscillation) si attesta su valori debolmente positivi (+0.4 σ), coerentemente con la presenza del ridge mediterraneo e con il flusso zonale attenuato sull'Europa centrale. Un NAO positivo tende a deflettere le perturbazioni atlantiche verso nord, favorendo la persistenza anticiclonica sul Mediterraneo.
+      </p>
+    </div>
+    <div>
+      <div class="index-row">
+        <div class="index-box">
+          <span class="val">1025</span>
+          <span class="name">Pressione max. (hPa)</span>
+        </div>
+        <div class="index-box">
+          <span class="val">+8</span>
+          <span class="name">Anomalia Z500 (dam)</span>
+        </div>
+        <div class="index-box">
+          <span class="val warm">+3°C</span>
+          <span class="name">Anomalia T850</span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-title">Profilo verticale schematico: temperatura e instabilità (sondaggio tipico — Roma, 12 UTC)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartSounding"></canvas>
+        </div>
+      </div>
+      <div class="theory-block">
+        <div class="theory-label">Effetto Orografico — Appennino e Alpi</div>
+        <p>Il sollevamento forzato su versanti sopravvento segue: w = V·(∂h/∂x), dove V è la componente del vento normale alla catena e h è la quota. Con venti deboli (5–15 km/h) e pendii appenninici (∂h/∂x ≈ 0.1), w ≈ 0.1–0.5 m/s — sufficiente per cumuli pomeridiani ma non per convezione profonda organizzata.</p>
+      </div>
+      <div class="chart-wrap" style="margin-top:0.8rem">
+        <div class="chart-title">Indici di stabilità — Media nazionale (24 apr, 12 UTC est.)</div>
+        <div class="chart-canvas-wrap short">
+          <canvas id="chartStability"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEZIONE 2: PREVISIONI REGIONALI -->
+  <div class="section-head">
+    <span class="section-num">§ 2</span>
+    <h2>Previsioni Regionali Dettagliate — 24–28 Aprile 2026</h2>
+    <hr>
+  </div>
+
+  <p style="margin-bottom:1rem; font-style:italic; font-size:9pt;">Le previsioni seguenti sono disaggregate per macroregione e singola regione amministrativa. Affidabilità modellistica: 90–95% a 3–4 giorni (regime anticiclonico stabile). Fonte primaria: ECMWF IFS HRES, risoluzione ∼9 km, assimilazione 4D-Var.</p>
+
+  <!-- NORD ITALIA -->
+  <div class="section-head" style="border-top:1px solid var(--accent-blue); margin-top:0.5rem;">
+    <span class="section-num" style="color:var(--accent-blue)">§ 2.1</span>
+    <h2 style="font-size:13pt; color:var(--accent-blue)">Nord Italia — Arco Alpino e Pianura Padana</h2>
+    <hr>
+  </div>
+
+  <div class="theory-block" style="margin-bottom:1rem">
+    <div class="theory-label">Meccanismi Locali — Nord</div>
+    <p>La Pianura Padana costituisce un bacino chiuso su tre lati (Alpi a N-O, Appennini a S), favorendo l'accumulo di aria stabile con frequenti inversioni termiche notturne. Le <em>brezze di valle</em> (Bjerknes, 1902; Defant, 1951) si attivano dal tardo mattino: l'aria riscaldata sale lungo i versanti creando convergenza sulle creste (w ≈ 0.3–0.8 m/s) e nubolosità cumuliforme pomeridiana. L'effetto <em>foehn</em> è attivo sui versanti sottovento alpini quando flusso da N-NE traversa il crinale, producendo riscaldamento adiabatico secco a valle.</p>
+  </div>
+
+  <div class="three-col">
+    <div class="region-card nord">
+      <div class="region-meta">Valle d'Aosta · Alt. media 2000 m</div>
+      <h3>Valle d'Aosta</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">5°C</div></div>
+        <div><div class="temp-label">Max fondovalle</div><div class="temp-max">22°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill info">Foehn possibile</span>
+        <span class="pill">UV 6</span>
+        <span class="pill alert">Neve &gt;2200 m</span>
+      </div>
+      <p>Anticiclone dominante garantisce sole prevalente. Cumuli pomeridiani sulle creste (Cervino, Monte Bianco) per convezione termica. Foehn attivo sul versante meridionale quando flusso da N. Neve abbondante &gt;2200 m (150–300 cm residui post-tempeste di inizio aprile). CAPE: ~400 J/kg — nessun rischio temporali organizzati.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max</th></tr>
+        <tr><td>24/4</td><td>Sereno, foehn</td><td>5–22°C</td></tr>
+        <tr><td>25/4</td><td>Bello</td><td>6–23°C</td></tr>
+        <tr><td>26/4</td><td>Cumuli crest.</td><td>5–21°C</td></tr>
+        <tr><td>27/4</td><td>Stabile</td><td>4–20°C</td></tr>
+        <tr><td>28/4</td><td>Variabile</td><td>5–19°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card nord">
+      <div class="region-meta">Piemonte · Pianura e Alpi occidentali</div>
+      <h3>Piemonte</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">8°C</div></div>
+        <div><div class="temp-label">Max pianura</div><div class="temp-max">25°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno/PC</span>
+        <span class="pill">Foschia mattina</span>
+        <span class="pill info">Brezze di valle</span>
+      </div>
+      <p>Pianura Padana occidentale con foschia mattutina residua (strato limite stabile notturno, inversione a 800–1000 m). Rapidamente sereno entro le 09–10 LT. Alpi Marittime e Cozie: sole splendente con cumuli pomeridiani isolati (CAPE insufficiente per temporali). Temperature primaverili-calde, 2–3°C sopra la media stagionale.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>9–25°C</td></tr>
+        <tr><td>25/4</td><td>Bello</td><td>10–26°C</td></tr>
+        <tr><td>26/4</td><td>Sereno</td><td>9–24°C</td></tr>
+        <tr><td>27/4</td><td>PC</td><td>8–23°C</td></tr>
+        <tr><td>28/4</td><td>Var. (NS)</td><td>8–20°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card nord">
+      <div class="region-meta">Lombardia · Pianura e Prealpi</div>
+      <h3>Lombardia</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">9°C</div></div>
+        <div><div class="temp-label">Max Milano</div><div class="temp-max">26°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill">Nebbia mattina (Po)</span>
+        <span class="pill info">Isola di calore MXP</span>
+      </div>
+      <p>Milano e pianura: sereno dopo dispersione nebbie/foschie mattutine. L'isola di calore urbana (UHI, +1–2°C rispetto alla campagna circostante) porta massime fino a 27–28°C in città. Laghi prealpini (Garda, Como, Maggiore): brezze lacustri pomeridiane (10–20 km/h). Prealpi: cumuli su Brescia/Bergamo. Zero termico 2750 m.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>10–26°C</td></tr>
+        <tr><td>25/4</td><td>Molto bello</td><td>11–27°C</td></tr>
+        <tr><td>26/4</td><td>Sereno</td><td>10–25°C</td></tr>
+        <tr><td>27/4</td><td>PC laghi</td><td>9–24°C</td></tr>
+        <tr><td>28/4</td><td>Var. (NS)</td><td>9–21°C</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="three-col">
+    <div class="region-card nord">
+      <div class="region-meta">Trentino-Alto Adige · Arco alpino centrale</div>
+      <h3>Trentino-Alto Adige</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">4°C</div></div>
+        <div><div class="temp-label">Max fondov.</div><div class="temp-max">21°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Bello</span>
+        <span class="pill alert">Neve 2000–4000 m</span>
+        <span class="pill info">Brezze di valle</span>
+      </div>
+      <p>Alta pressione assicura tempo magnifico. Brezze di valle tra Bolzano, Merano e Trento ben sviluppate nelle ore centrali. Dolomiti: sole, visibilità eccellente. Neve abbondante &gt;2000 m (manto invernale residuo). Rischio valanghe moderato (liv. 2/5 AINEVA) nelle canaloni esposti. Sci primavera nelle stazioni maggiori.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>4–21°C</td></tr>
+        <tr><td>25/4</td><td>Sole splend.</td><td>5–22°C</td></tr>
+        <tr><td>26/4</td><td>Cum. sera</td><td>4–21°C</td></tr>
+        <tr><td>27/4</td><td>Stabile</td><td>3–19°C</td></tr>
+        <tr><td>28/4</td><td>Variabile</td><td>4–18°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card nord">
+      <div class="region-meta">Veneto · Pianura, Dolomiti, Adriatico</div>
+      <h3>Veneto</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">10°C</div></div>
+        <div><div class="temp-label">Max Venezia</div><div class="temp-max">24°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill">Brezza Adriatica</span>
+        <span class="pill info">Laguna VE calma</span>
+      </div>
+      <p>Venezia e coste: brezza marina da E-SE nelle ore pomeridiane (meccanismo di fronte marino termico: differenziale T suolo–mare ΔT = 8–12°C). Pianura veronese-padovana: sereno e mite. Dolomiti Bellunesi: sole con cumuli pomeridiani sui gruppi maggiori (Marmolada, Civetta). Qualche nube innocua sulla costa veneziana nel tardo pomeriggio.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>10–24°C</td></tr>
+        <tr><td>25/4</td><td>Bello</td><td>11–25°C</td></tr>
+        <tr><td>26/4</td><td>PC costa</td><td>10–23°C</td></tr>
+        <tr><td>27/4</td><td>Stabile</td><td>9–22°C</td></tr>
+        <tr><td>28/4</td><td>Var.</td><td>9–20°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card nord">
+      <div class="region-meta">Friuli-Venezia Giulia · Alpi Giulie, Carso, Adriatico NE</div>
+      <h3>Friuli-Venezia Giulia</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">9°C</div></div>
+        <div><div class="temp-label">Max Trieste</div><div class="temp-max">22°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill alert">Bora residua TS</span>
+        <span class="pill">Carso ventoso</span>
+      </div>
+      <p>Area di transizione tra il regime adriatico e quello continentale danubiano-balcanico. Trieste: possibili raffiche di Bora residua (N-NE, 30–50 km/h) sul Carso nelle prime ore, in graduale attenuazione. La Bora è un vento catabatico caldo secco nella variante "chiara" (foehn istriano). Alpi Giulie: sereno con neve abbondante &gt;1600 m. Laguna di Grado: brezza diurna.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max</th></tr>
+        <tr><td>24/4</td><td>Sereno, Bora</td><td>9–22°C</td></tr>
+        <tr><td>25/4</td><td>Bello</td><td>10–23°C</td></tr>
+        <tr><td>26/4</td><td>Sereno</td><td>9–22°C</td></tr>
+        <tr><td>27/4</td><td>Stabile</td><td>8–21°C</td></tr>
+        <tr><td>28/4</td><td>Var.</td><td>8–18°C</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two-col col-rule">
+    <div class="region-card nord">
+      <div class="region-meta">Liguria · Riviera e Appennino ligure</div>
+      <h3>Liguria</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">13°C</div></div>
+        <div><div class="temp-label">Max Genova</div><div class="temp-max">23°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill info">Brezza marina</span>
+        <span class="pill">T mare: 17°C</span>
+      </div>
+      <p>La Riviera Ligure, protetta dall'Appennino (barriera N-S che intercetta i flussi freddi settentrionali), gode di uno dei microclimi più temperati d'Italia. L'esposizione meridionale massimizza l'irraggiamento solare. Brezza marina diurna (da SO) porta umidità ma anche refrigerio nelle ore centrali. Appennino Ligure: qualche cumulo pomeridiano sui crinali più alti (Antola, Beigua) senza sviluppo temporalesco. Ponente più soleggiato di Levante.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max Riviera</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>14–23°C</td></tr>
+        <tr><td>25/4</td><td>Molto bello</td><td>15–24°C</td></tr>
+        <tr><td>26/4</td><td>Bello</td><td>14–23°C</td></tr>
+        <tr><td>27–28/4</td><td>Stabile</td><td>13–22°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card nord">
+      <div class="region-meta">Emilia-Romagna · Pianura Padana orientale, Riviera, App. emiliano</div>
+      <h3>Emilia-Romagna</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">10°C</div></div>
+        <div><div class="temp-label">Max Bologna</div><div class="temp-max">26°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill">Foschia Po</span>
+        <span class="pill info">Brezza Adriatica</span>
+        <span class="pill alert">Cum. App. pom.</span>
+      </div>
+      <p>Bologna e pianura: sereno dopo foschie mattutine. Caldo primaverile intenso. Rimini e costa: brezza da E-NE pomeridiana (effetto mare Adriatico più freddo della terraferma). Appennino Tosco-Emiliano: convezione orografica pomeridiana (cumuli sui crinali) con debole rischio piovaschi isolati. Nessuna precipitazione significativa in pianura. L'ECMWF ENS mostra un segnale di peggioramento al Nord-Est dal 29 aprile (probabilità precipitazioni 30–40%).</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max Bo</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>11–26°C</td></tr>
+        <tr><td>25/4</td><td>Molto bello</td><td>12–27°C</td></tr>
+        <tr><td>26/4</td><td>Bello</td><td>11–25°C</td></tr>
+        <tr><td>27/4</td><td>PC App.</td><td>10–24°C</td></tr>
+        <tr><td>28/4</td><td>Var. NE</td><td>9–22°C</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title">Temperature massime e minime — Capoluoghi del Nord (previsione 24–28 aprile 2026)</div>
+    <div class="chart-canvas-wrap tall">
+      <canvas id="chartNordTemps"></canvas>
+    </div>
+  </div>
+
+  <!-- CENTRO ITALIA -->
+  <div class="section-head" style="border-top:1px solid var(--accent-gold);">
+    <span class="section-num" style="color:var(--accent-gold)">§ 2.2</span>
+    <h2 style="font-size:13pt; color:var(--ink)">Centro Italia — Toscana, Lazio, Umbria, Marche, Abruzzo</h2>
+    <hr>
+  </div>
+
+  <div class="theory-block">
+    <div class="theory-label">Meccanismi Locali — Centro</div>
+    <p>L'Appennino centrale (catena NW-SE, quota massima ~2912 m, Gran Sasso) svolge funzione di barriera orografica con asimmetria pluviometrica: il versante tirrenico è più piovoso in media (+20–40%) grazie ai flussi umidi da O-SO; il versante adriatico è più nevoso per i flussi freddi da NE (Balcani, meccanismo "Adriatic moisture transport": aria continentale fredda attraversa l'Adriatico, preleva umidità e impatta sul versante est con nevicate intense). In regime anticiclonico, le brezze di mare diurne modulano le temperature costiere (ΔT terra-mare = 8–12°C), mentre nelle conche interne (Conca Aquilana, Valle del Salto) si sviluppano inversioni termiche notturne con foschie locali.</p>
+  </div>
+
+  <div class="three-col">
+    <div class="region-card centro">
+      <div class="region-meta">Toscana · Tirrenico, Appennino, Arno</div>
+      <h3>Toscana</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">11°C</div></div>
+        <div><div class="temp-label">Max Firenze</div><div class="temp-max">25°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Soleggiato</span>
+        <span class="pill info">Libeccio Toscana</span>
+        <span class="pill">T Tirreno: 18°C</span>
+      </div>
+      <p>Alta pressione regala condizioni da "estate anticipata". Firenze nella conca dell'Arno: massime fino a 26–27°C per effetto stagnazione (conca chiusa → accumulo calore). Coste maremma e arcipelago: brezza di libeccio (SO) pomeridiana, mare mosso 0.5–1 m. Chianti e Casentino: sole splendente, vegetazione in piena fioritura primaverile. Alpi Apuane e Appennino pistoiese: cumuli tardo pomeriggio.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max Fi</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>12–25°C</td></tr>
+        <tr><td>25/4</td><td>Molto bello</td><td>13–26°C</td></tr>
+        <tr><td>26–27/4</td><td>Bello</td><td>12–25°C</td></tr>
+        <tr><td>28/4</td><td>Stabile</td><td>11–23°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card centro">
+      <div class="region-meta">Umbria · Conca umbra, Apennino umbro-marchigiano</div>
+      <h3>Umbria</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">10°C</div></div>
+        <div><div class="temp-label">Max Perugia</div><div class="temp-max">24°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Soleggiato</span>
+        <span class="pill">Lago Trasimeno</span>
+        <span class="pill info">Inversione notturna</span>
+      </div>
+      <p>Regione "cuore verde" in condizioni ideali. Perugia, Terni, Spoleto: giornate soleggiate con inversione termica notturna nelle conche (temperature minime 2–3°C inferiori rispetto ai versanti). Lago Trasimeno: brezze lacustri diurne (convergenza termica). Appennino umbro-marchigiano: qualche cumulo pomeridiano sui Sibillini e Monte Cucco. Nessun rischio precipitazioni fino al 28. Ideale per agriturismo e trekking.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max Pg</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>10–24°C</td></tr>
+        <tr><td>25–26/4</td><td>Bello</td><td>11–25°C</td></tr>
+        <tr><td>27–28/4</td><td>Stabile</td><td>10–23°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card centro">
+      <div class="region-meta">Marche · Adriatico, Sibillini, Montefeltro</div>
+      <h3>Marche</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">11°C</div></div>
+        <div><div class="temp-label">Max Ancona</div><div class="temp-max">23°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill info">Brezza Adriatica</span>
+        <span class="pill">Neve Sibillini &gt;2000m</span>
+      </div>
+      <p>Costa adriatica: sereno con brezza da E-NE nelle ore pomeridiane (mare Adriatico più freddo, ~14–16°C, determina brezza di mare fresca). Entroterra maceratese e anconetano: bello e mite. Monti Sibillini (cima massima Vettore 2476 m): neve abbondante &gt;2000 m, eccellenti per sci-alpinismo. Versante adriatico dell'Appennino più nevoso (meccanismo noto da studi AINEVA e Capozzi et al. 2025).</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max AN</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>12–23°C</td></tr>
+        <tr><td>25–26/4</td><td>Bello</td><td>12–24°C</td></tr>
+        <tr><td>27–28/4</td><td>Stabile</td><td>11–22°C</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two-col col-rule">
+    <div>
+      <!-- LAZIO con focus Bracciano e Marina San Nicola -->
+      <div class="region-card centro">
+        <div class="region-meta">Lazio · Tirreno, Colli Albani, Apennino laziale, Roma</div>
+        <h3>Lazio</h3>
+        <div class="temp-row">
+          <div><div class="temp-label">Min Roma</div><div class="temp-min">10°C</div></div>
+          <div><div class="temp-label">Max Roma</div><div class="temp-max">24°C</div></div>
+        </div>
+        <div class="data-pills">
+          <span class="pill good">☀ Splendente</span>
+          <span class="pill good">UV Alto (7)</span>
+          <span class="pill info">Brezza O-SO pom.</span>
+        </div>
+        <p>Roma e pianura: sole splendente per l'intera giornata. Minime fresche (9–11°C all'alba), massime primaverili-calde (22–24°C). Venti deboli da NE al mattino, rotazione O-SO nel pomeriggio (10–25 km/h). UHI romana significativo (+1.5–2°C rispetto alla campagna). Colli Albani: qualche cumulo pomeridiano innocuo. Litorale romano (Ostia, Fiumicino): brezza marina diurna.</p>
+
+        <div class="inset" style="margin:0.6rem 0">
+          <strong>Focus — Bracciano (alt. 280 m, lago vulcanico):</strong> Min 7–9°C, Max 20–21°C. Le brezze lacustri (convergenza termica diurna, divergenza notturna) modulano le temperature con escursioni inferiori rispetto alla campagna circostante. Foschie mattutine sulla superficie del lago nelle giornate di alta pressione intensa (inversione termica stabile). L'effetto lago riduce l'escursione termica di 1–2°C rispetto a Roma.
+        </div>
+        <div class="inset" style="margin:0.6rem 0">
+          <strong>Focus — Marina San Nicola (litorale, vicino Cerveteri):</strong> Min 12–13°C, Max 20–22°C. Mare poco mosso (&lt;0.5 m). Venti deboli settentrionali in rotazione a O-SO nel pomeriggio. Condizioni ideali per attività balneari primaverili. Il differenziale termico terra-mare (ΔT ≈ 8–10°C) garantisce brezza marina sostenuta nel pomeriggio.
+        </div>
+
+        <table class="fc-table">
+          <tr><th>Data</th><th>Cond. Roma</th><th>Min/Max</th></tr>
+          <tr><td>24/4</td><td>Sole splend.</td><td>10–24°C</td></tr>
+          <tr><td>25/4</td><td>Sereno</td><td>11–25°C</td></tr>
+          <tr><td>26/4</td><td>PC Colli Alb.</td><td>10–24°C</td></tr>
+          <tr><td>27/4</td><td>Stabile</td><td>10–23°C</td></tr>
+          <tr><td>28/4</td><td>Bello (poss. var. sera)</td><td>10–22°C</td></tr>
+        </table>
+      </div>
+    </div>
+    <div>
+      <!-- ABRUZZO CON DETTAGLIO NEVE E MONTAGNA -->
+      <div class="region-card centro" style="border-top-color: #2a6a8a;">
+        <div class="region-meta">Abruzzo · Gran Sasso, Majella, Costa Adriatica</div>
+        <h3>Abruzzo</h3>
+        <div class="temp-row">
+          <div><div class="temp-label">Min L'Aquila</div><div class="temp-min">5°C</div></div>
+          <div><div class="temp-label">Max fondovalle</div><div class="temp-max">23°C</div></div>
+        </div>
+        <div class="data-pills">
+          <span class="pill good">☀ Soleggiato</span>
+          <span class="pill alert">Neve record &gt;2200m</span>
+          <span class="pill info">Sci Campo Imp.</span>
+          <span class="pill">CAPE &lt;800 J/kg</span>
+        </div>
+        <p>Abruzzo in condizioni meteo eccellenti, con spettacolare contrasto tra fondovalle soleggiato e montagna ancora invernale. Le nevicate record di inizio aprile ("Deborah" ed "Erminio", 1–4 aprile 2026) hanno lasciato 2–4 m di neve sulle creste del Gran Sasso e della Majella — condizioni eccezionali per la stagione.</p>
+
+        <div class="snow-box">
+          <h4>❄ Condizioni Nivali — Gran Sasso e Majella</h4>
+          <table class="alt-table">
+            <tr><td>&gt;2500 m</td><td>200–400 cm neve compatta. Crosta fusione diurna.</td></tr>
+            <tr><td>2200–2500 m</td><td>150–300 cm. Rischio valanghe AINEVA liv. 2/5.</td></tr>
+            <tr><td>1800–2200 m</td><td>80–200 cm. Neve in fusione progressiva.</td></tr>
+            <tr><td>1200–1800 m</td><td>20–80 cm residui (vers. nord/canaloni).</td></tr>
+            <tr><td>&lt;1200 m</td><td>Neve scomparsa o tracce in ombra.</td></tr>
+          </table>
+        </div>
+
+        <p style="font-size:8.5pt; margin-top:0.5rem">L'asimmetria nivale tra versante adriatico (Abruzzo/Molise, più nevoso) e tirrenico (Lazio ovest, meno nevoso) è ben documentata dalla letteratura: Rapetti &amp; Vittorini (1989), AINEVA (2000–2020) e Capozzi et al. (2025) confermano che i flussi freddi da NE-E (Balcani) con "Adriatic moisture transport" producono nevicate più intense e persistenti sul versante orientale.</p>
+
+        <table class="fc-table" style="margin-top:0.5rem">
+          <tr><th>Data</th><th>Cond.</th><th>Min/Max fondov.</th></tr>
+          <tr><td>24/4</td><td>Sereno, sole</td><td>6–23°C</td></tr>
+          <tr><td>25/4</td><td>Bello</td><td>7–23°C</td></tr>
+          <tr><td>26/4</td><td>PC App. pom.</td><td>6–22°C</td></tr>
+          <tr><td>27/4</td><td>Stabile</td><td>5–21°C</td></tr>
+          <tr><td>28/4</td><td>Var. (10% pioggia)</td><td>6–20°C</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART CENTRO -->
+  <div class="chart-wrap">
+    <div class="chart-title">Confronto temperature e neve — Abruzzo: fondovalle, 1500 m, 2000 m, crinale (24–28 aprile 2026)</div>
+    <div class="chart-canvas-wrap">
+      <canvas id="chartAbruzzo"></canvas>
+    </div>
+  </div>
+
+  <!-- SUD ITALIA -->
+  <div class="section-head" style="border-top:1px solid var(--accent);">
+    <span class="section-num" style="color:var(--accent)">§ 2.3</span>
+    <h2 style="font-size:13pt; color:var(--ink)">Sud Italia — Campania, Basilicata, Puglia, Calabria, Molise</h2>
+    <hr>
+  </div>
+
+  <div class="theory-block">
+    <div class="theory-label">Meccanismi Locali — Sud</div>
+    <p>Il Mezzogiorno è soggetto a influenze più marcatamente mediterranee: il Mar Ionio (temperatura superficiale ~18–20°C in aprile) e il Tirreno meridionale amplificano le brezze marine, mentre l'Appennino lucano-calabrese (Pollino, Sila, Aspromonte) introduce la consueta asimmetria tirrenico-ionica nei regimi pluviometrici. Il sirocco (vento da SE-S di derivazione sahariana) può trasportare sabbia in sospensione (polveri del Sahara, AOD elevato) durante i regimi di alta pressione africana, riducendo la visibilità e tingendo i cieli di sfumature arancio. In aprile la probabilità di intrusioni sahariane è circa 20–30% in assenza di circolazione atlantica.</p>
+  </div>
+
+  <div class="three-col">
+    <div class="region-card sud">
+      <div class="region-meta">Campania · Tirrenico, Vesuvio, Appennino sannita</div>
+      <h3>Campania</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">13°C</div></div>
+        <div><div class="temp-label">Max Napoli</div><div class="temp-max">22°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Bello</span>
+        <span class="pill info">Brezza Tirreno</span>
+        <span class="pill">Vesuvio: sereno</span>
+      </div>
+      <p>Napoli e golfo: giornate miti e soleggiate, temperatura del mare ~17°C. Brezza marina diurna da SO. Vesuvio: visibilità ottima, assenza totale di attività eruttiva. Appennino sannita e campano: qualche cumulo pomeridiano a quote &gt;1200 m. Campania settentrionale (Caserta, Benevento): più caldo e meno ventilato.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond. NA</th><th>Min/Max</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>13–22°C</td></tr>
+        <tr><td>25–26/4</td><td>Bello</td><td>14–23°C</td></tr>
+        <tr><td>27–28/4</td><td>Stabile</td><td>13–21°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card sud">
+      <div class="region-meta">Puglia · Salento, Murge, Gargano, Adriatico</div>
+      <h3>Puglia</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">12°C</div></div>
+        <div><div class="temp-label">Max Bari</div><div class="temp-max">22°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill info">Tramontana Garg.</span>
+        <span class="pill">Mar Adriatico calmo</span>
+      </div>
+      <p>Regione piatta (Tavoliere, Murge) con massima esposizione solare. Gargano: tramontana residua (N-NE, 20–35 km/h) sulle scogliere nel mattino, in attenuazione. Salento: calmo e soleggiato, mare piatto, condizioni ideali per prime immersioni primaverili. L'Adriatico meridionale è più caldo del settentrionale (16–18°C). Alta pressione garantisce assenza totale di precipitazioni.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max BA</th></tr>
+        <tr><td>24/4</td><td>Sole, Tram.</td><td>12–22°C</td></tr>
+        <tr><td>25–26/4</td><td>Sereno</td><td>13–23°C</td></tr>
+        <tr><td>27–28/4</td><td>Stabile</td><td>12–21°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card sud">
+      <div class="region-meta">Basilicata · Lucano, Pollino, Ionio, Tirreno</div>
+      <h3>Basilicata</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">9°C</div></div>
+        <div><div class="temp-label">Max Potenza</div><div class="temp-max">20°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill">Neve Pollino &gt;1800m</span>
+        <span class="pill info">Brezza Ionio</span>
+      </div>
+      <p>Regione cerniera tra adriatico e ionico con morfologia complessa. Potenza (alt. 819 m): più fresca dell'entroterra meridionale. Matera e pianura: sereno e mite. Costa ionica (Metaponto): soleggiate e marine. Pollino: neve residua &gt;1800 m (manto ridotto rispetto al Gran Sasso). Asimmetria tirrenica/ionica meno marcata che in Calabria grazie alla minore altitudine della catena lucana.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max PZ</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>9–20°C</td></tr>
+        <tr><td>25–27/4</td><td>Bello</td><td>10–21°C</td></tr>
+        <tr><td>28/4</td><td>Stabile</td><td>9–19°C</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two-col col-rule">
+    <div class="region-card sud">
+      <div class="region-meta">Calabria · Sila, Aspromonte, Tirreno, Ionio</div>
+      <h3>Calabria</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">13°C</div></div>
+        <div><div class="temp-label">Max Reggio C.</div><div class="temp-max">23°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Soleggiato</span>
+        <span class="pill info">Stretto di Messina</span>
+        <span class="pill">T Ionio: 18°C</span>
+        <span class="pill alert">Rotor Aspromonte</span>
+      </div>
+      <p>La Calabria presenta il contrasto più marcato di tutta la penisola tra versante tirrenico (umido, flussi O-SO) e ionico (più secco, flussi continentali). Reggio Calabria: tra le città più calde d'Italia in aprile (microclima mediterraneo estremo). Sila: qualche cumulo &gt;1400 m, neve scomparsa. Aspromonte: vento di rotore sottovento a flussi settentrionali. Stretto di Messina: correnti marine tifali e brezze canalistiche peculiari (accelerazione del vento per effetto Venturi).</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max RC</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>14–23°C</td></tr>
+        <tr><td>25–26/4</td><td>Molto bello</td><td>15–24°C</td></tr>
+        <tr><td>27–28/4</td><td>Stabile</td><td>14–23°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card sud">
+      <div class="region-meta">Molise · Appennino centrale, Adriatico, conche interne</div>
+      <h3>Molise</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">8°C</div></div>
+        <div><div class="temp-label">Max Campobasso</div><div class="temp-max">21°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill info">Neve Matese &gt;1800m</span>
+        <span class="pill">Costa CB: brezza</span>
+      </div>
+      <p>Piccola regione con caratteri di transizione adriatico-appenninici. Campobasso (alt. 701 m) più fresca. Conca di Isernia: inversione notturna con minimi locali. Massiccio del Matese: neve residua significativa &gt;1800 m (versante adriatico-esposto). Costa molisana (Termoli): sereno, brezza da E. La nevicata record di inizio aprile 2026 ha colpito prevalentemente questo settore dell'Appennino centrale, confermando il pattern climatologico adriatico (Capozzi et al. 2025).</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max CB</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>8–21°C</td></tr>
+        <tr><td>25–27/4</td><td>Bello</td><td>9–22°C</td></tr>
+        <tr><td>28/4</td><td>Stabile</td><td>8–20°C</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ISOLE -->
+  <div class="section-head" style="border-top:1px solid #2a7a4a;">
+    <span class="section-num" style="color:#2a7a4a">§ 2.4</span>
+    <h2 style="font-size:13pt; color:var(--ink)">Isole — Sicilia e Sardegna</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <div class="region-card isole">
+      <div class="region-meta">Sicilia · Mediterraneo centrale, Etna, Isole minori</div>
+      <h3>Sicilia</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">14°C</div></div>
+        <div><div class="temp-label">Max Palermo</div><div class="temp-max">24°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Soleggiato</span>
+        <span class="pill info">Residui Sic. orient.</span>
+        <span class="pill">Etna: sereno</span>
+        <span class="pill">T Medit: 19°C</span>
+      </div>
+      <p>Sicilia settentrionale e occidentale: tempo stabile e soleggiato, condizioni quasi estive. Palermo: tra le temperature più elevate d'Italia. Etna (3357 m): neve abbondante sul cono sommitale, visibilità eccellente. Sicilia orientale (Catania, Messina, Siracusa): residui fenomeni isolati in attenuazione rapida nella mattinata del 24; poi sereno dal pomeriggio. Isole Eolie, Pantelleria, Lampedusa: condizioni eccellenti, mare calmo-poco mosso.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max PA</th></tr>
+        <tr><td>24/4</td><td>Res. est (PA); ser.</td><td>15–24°C</td></tr>
+        <tr><td>25/4</td><td>Molto bello</td><td>16–25°C</td></tr>
+        <tr><td>26–27/4</td><td>Soleggiato</td><td>15–24°C</td></tr>
+        <tr><td>28/4</td><td>Stabile</td><td>15–23°C</td></tr>
+      </table>
+    </div>
+    <div class="region-card isole">
+      <div class="region-meta">Sardegna · Mediterraneo occidentale, Gennargentu, Nuoro</div>
+      <h3>Sardegna</h3>
+      <div class="temp-row">
+        <div><div class="temp-label">Min</div><div class="temp-min">13°C</div></div>
+        <div><div class="temp-label">Max Cagliari</div><div class="temp-max">23°C</div></div>
+      </div>
+      <div class="data-pills">
+        <span class="pill good">☀ Sereno</span>
+        <span class="pill info">Maestrale poss.</span>
+        <span class="pill">T Tirreno: 18°C</span>
+        <span class="pill">Gennargentu sole</span>
+      </div>
+      <p>Sardegna in condizioni splendide. La grande isola è situata al centro dell'alta pressione: nessuna precipitazione prevista per tutto il periodo. Cagliari e sud: caldo e soleggiato (massime fino a 25°C nel weekend). Nuoro e interno: mite, Barbagia aperta alla primavera. Gennargentu (Punta La Marmora 1834 m): neve residua limitata (esposizione tirrenica penalizza l'innevamento primaverile). Rischio Maestrale (N-NO) in canalizzazione tra Corsica e Sardegna nel pomeriggio: raffiche 30–50 km/h in alcune zone.</p>
+      <table class="fc-table">
+        <tr><th>Data</th><th>Cond.</th><th>Min/Max CA</th></tr>
+        <tr><td>24/4</td><td>Sereno</td><td>14–23°C</td></tr>
+        <tr><td>25/4</td><td>Molto bello</td><td>15–25°C</td></tr>
+        <tr><td>26/4</td><td>Bello</td><td>14–24°C</td></tr>
+        <tr><td>27–28/4</td><td>Stabile, Maestr. poss.</td><td>13–22°C</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- CHART TEMPERATURE NAZIONALI -->
+  <div class="chart-wrap">
+    <div class="chart-title">Anomalia termica rispetto alla climatologia 1991–2020 — Capoluoghi regionali italiani (24 aprile 2026)</div>
+    <div class="chart-canvas-wrap tall">
+      <canvas id="chartAnomalia"></canvas>
+    </div>
+  </div>
+
+  <!-- SEZIONE 3: NEVE E QUOTE -->
+  <div class="section-head">
+    <span class="section-num">§ 3</span>
+    <h2>Condizioni Nivologiche — Appennino Centrale (24 Aprile 2026)</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <div>
+      <p>Le nevicate straordinarie delle perturbazioni "Deborah" ed "Erminio" (1–4 aprile 2026) hanno depositato accumuli record per il periodo primaverile: fino a 2–4 m in quota sui principali massicci dell'Appennino centrale. L'anticiclone subtropicale stabile da metà aprile favorisce la fusione diurna, ma gli spessori iniziali eccezionali garantiscono la persistenza del manto nevoso ben al di sopra dei 2000 m.</p>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Spessore manto nevoso stimato per altitudine — 24 aprile 2026 (Appennino centrale)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartSnow"></canvas>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <div class="theory-label">Asimmetria Tirrenico vs. Adriatico — Analisi Accademica</div>
+        <p><strong>Versante Adriatico</strong> (Abruzzo, Molise, Marche meridionali): più nevoso per i flussi freddi da NE-E provenienti dai Balcani. L'aria continentale fredda attraversa l'Adriatico prelevando umidità ("Adriatic moisture transport") e impatta sul versante est dell'Appennino con nevicate intense e persistenti. Snow Cover Duration (SCD): 50–100+ giorni/anno sui rilievi principali (Capozzi et al., 2025).</p>
+        <p style="margin-top:0.4rem"><strong>Versante Tirrenico</strong> (Lazio, Umbria occidentale): più piovoso in media (+20–40% precipitazioni annue) per i flussi umidi da O-SO, ma con temperatue più miti (influenza marittima). Neve meno persistente a quote inferiori. Fusione più rapida in aprile.</p>
+      </div>
+    </div>
+    <div>
+      <div class="chart-wrap">
+        <div class="chart-title">Confronto nivometrico — Versante Adriatico vs. Tirrenico · Aprile 2026</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartNivoCompare"></canvas>
+        </div>
+      </div>
+
+      <div class="snow-box">
+        <h4>Rischio Valanghe — AINEVA (24 aprile 2026)</h4>
+        <table class="alt-table">
+          <tr><td>Livello 2/5</td><td>Rischio limitato. Cornici e lastre residue instabili nelle canaloni esposti &gt;2200 m.</td></tr>
+          <tr><td>Valanghe spontanee</td><td>Possibili valanghe da fusione su ripidi versanti esposti a S durante le ore più calde (12–17 LT).</td></tr>
+          <tr><td>Sci-alpinismo</td><td>Uscite consigliabili nelle prime ore del mattino (neve portante). Evitare pendii ripidi &gt;35° nel pomeriggio.</td></tr>
+        </table>
+      </div>
+
+      <div class="snow-box" style="margin-top:0.8rem">
+        <h4>Praticabilità Sentieri — Appennino Centrale</h4>
+        <table class="alt-table">
+          <tr><td>&lt;1400 m</td><td>✅ Sentieri liberi, terreno asciutto. Trekking senza attrezzatura speciale.</td></tr>
+          <tr><td>1400–2000 m</td><td>⚠️ Neve a macchia sui versanti nord. Bastoncini consigliati.</td></tr>
+          <tr><td>&gt;2000 m</td><td>❄️ Neve compatta. Microspikes obbligatori; ramponi su percorsi alpinistici.</td></tr>
+          <tr><td>Crinali Gran Sasso</td><td>🏔️ Attrezzatura alpinistica. Solo escursionisti esperti.</td></tr>
+        </table>
+      </div>
+
+      <div class="inset">
+        <strong>Campo Imperatore (Gran Sasso, 2130 m):</strong> Sci su neve vera ancora possibile. Impianti parzialmente operativi fino alle 14:30. Neve eccellente: strato compatto, crosta di fusione mattutina (neve "primaverile"). Dopo le 12 LT: ammorbidimento superficiale. Visibilità eccellente.
+      </div>
+    </div>
+  </div>
+
+  <!-- SEZIONE 4: PREVISIONE ENSEMBLE -->
+  <div class="section-head">
+    <span class="section-num">§ 4</span>
+    <h2>Previsione Probabilistica — ECMWF ENS 51 Membri</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <div>
+      <p>L'ECMWF Ensemble (51 perturbazioni del modello deterministico) fornisce una stima probabilistica dell'evoluzione meteorologica. Nelle situazioni di blocco anticiclonico come quella attuale, la convergenza dei membri è elevata: lo spread è contenuto nei primi 5 giorni, confermando l'alta affidabilità della previsione deterministica.</p>
+      <div class="chart-wrap">
+        <div class="chart-title">Probabilità precipitazione (%) — Italia centro-nord · ECMWF ENS (24–30 apr)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartEnsemble"></canvas>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="inset">
+        <strong>Scenario Principale (70% probabilità):</strong> Alta pressione stabile fino al 28 aprile. Nessuna precipitazione significativa sulla penisola. Temperature sopra la media di +2/+4°C. Peggioramento graduale da martedì 29 per cedimento bordo settentrionale del blocco.
+      </div>
+      <div class="inset" style="margin-top:0.6rem; border-left-color: var(--accent-gold)">
+        <strong>Scenario Alternativo A (20% probabilità):</strong> Anticiclone più resiliente, stabilità prolungata fino al 30 aprile–1 maggio. Prima perturbazione atlantica solo da fine mese.
+      </div>
+      <div class="inset" style="margin-top:0.6rem; border-left-color: var(--accent)">
+        <strong>Scenario Alternativo B (10% probabilità):</strong> Goccia fredda atlantica più rapida, possibile peggioramento al Nord-Est già dal 27–28 aprile con rovesci e temporali.
+      </div>
+      <div class="theory-block" style="margin-top:0.8rem">
+        <div class="theory-label">Note ENSO — Contesto Stagionale</div>
+        <p>ENSO neutro in transizione verso El Niño debole-moderato da maggio 2026 (NOAA CPC). El Niño tende a favorire anomalie termiche positive sull'Europa mediterranea nella stagione tardo-primaverile e aumenta la variabilità del pattern sinottico estivo. L'anomalia globale 2026 è stimata a +1.35–1.53°C rispetto al pre-industriale.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEZIONE 5: INDICAZIONI PRATICHE -->
+  <div class="section-head">
+    <span class="section-num">§ 5</span>
+    <h2>Indicazioni Pratiche — Outdoor, Escursionismo, Sicurezza</h2>
+    <hr>
+  </div>
+
+  <div class="three-col">
+    <div class="inset">
+      <strong>Protezione Solare</strong><br>
+      Indice UV 6–7 (Alto) su tutta la penisola. Crema solare SPF50+ obbligatoria. Ore di massima irradiazione: 11–15 LT. Cappello e occhiali da sole indispensabili in quota (neve riflette ~80% UV).
+    </div>
+    <div class="inset">
+      <strong>Escursionismo Appennino</strong><br>
+      Abbigliamento a strati (escursione termica notevole: ΔT = 12–18°C tra alba e pomeriggio). Partenza mattutina per evitare convezione pomeridiana. Bastoncini e microspikes per quote &gt;1800 m. Acqua: ≥2L.
+    </div>
+    <div class="inset">
+      <strong>Sicurezza in Montagna</strong><br>
+      Comunicare itinerario. Seguire segnaletica CAI (rosso/bianco-rosso). Valanghe: liv. 2/5, attenzione a canaloni e cornici. Orsi marsicani in Abruzzo: mantenere distanza, non disturbare. App: AllTrails, Komoot, MeteoRadar Abruzzo.
+    </div>
+  </div>
+
+  <div class="ornamental-sep">— · — · —</div>
+
+  <!-- FOOTNOTES / REFERENCES -->
+  <div class="footnotes">
+    <p><sup>1</sup> ECMWF (2024). <em>IFS Documentation CY48R1</em>. European Centre for Medium-Range Weather Forecasts, Reading, UK.</p>
+    <p><sup>2</sup> Rapetti, F. &amp; Vittorini, S. (1989). Aspetti del clima nei versanti tirrenico ed adriatico dell'Appennino centro-settentrionale. <em>Rivista Geografica Italiana</em>.</p>
+    <p><sup>3</sup> Capozzi, V. et al. (2025). Historical snowfall analysis 1951–2001 on Apennine eastern vs. western slopes. <em>International Journal of Climatology</em>.</p>
+    <p><sup>4</sup> AINEVA (2020). Bollettino Valanghe e climatologia nivologica Appennino. Associazione Interregionale di Coordinamento e documentazione per i problemi inerenti alla Neve e alle Valanghe.</p>
+    <p><sup>5</sup> Horvath, K. et al. (2008). Cyclones affecting the Adriatic and their influence on precipitation. <em>Meteorology and Atmospheric Physics</em>.</p>
+    <p><sup>6</sup> NOAA/CPC (2026, aprile). ENSO Advisory: Neutral conditions, El Niño watch issued for May–July 2026.</p>
+    <p><sup>7</sup> Defant, F. (1951). Local winds. <em>Compendium of Meteorology</em>, American Meteorological Society.</p>
+    <p><sup>8</sup> Brunt, D. (1927). The period of simple vertical oscillations in the atmosphere. <em>Quarterly Journal of the Royal Meteorological Society</em>, 53(221).</p>
+    <p><em>Dati in tempo reale</em>: ECMWF ecCharts, Protezione Civile (radar), Sat24.com (Meteosat MSG), 3B Meteo, IlMeteo.it, MeteoAbruzzo, ARPA.</p>
+    <p><em>Affidabilità</em>: 90–95% a 3–4 giorni (regime anticiclonico stabile); 70–80% a 5–7 giorni.</p>
+  </div>
+
+</div>
+
+<script>
+// CHART DEFAULTS
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 9;
+Chart.defaults.color = '#3d3228';
+const gridColor = 'rgba(200,184,154,0.3)';
+const ink = '#1a1410';
+const accent = '#8b2121';
+const blue = '#1a3a5c';
+const gold = '#b8860b';
+const green = '#2a6a2a';
+
+// CHART 1: SOUNDING SCHEMATICO
+const ctxSounding = document.getElementById('chartSounding').getContext('2d');
+new Chart(ctxSounding, {
+  type: 'line',
+  data: {
+    labels: ['Sfc', '925', '850', '700', '500', '300', '200'],
+    datasets: [
+      {
+        label: 'Temp. (°C)',
+        data: [22, 15, 9, 2, -12, -38, -55],
+        borderColor: accent,
+        backgroundColor: 'rgba(139,33,33,0.1)',
+        tension: 0.4,
+        pointRadius: 3,
+        fill: false,
+      },
+      {
+        label: 'Punto di rugiada (°C)',
+        data: [8, 5, 0, -8, -25, -50, -65],
+        borderColor: blue,
+        backgroundColor: 'rgba(26,58,92,0.1)',
+        tension: 0.4,
+        pointRadius: 3,
+        borderDash: [4,3],
+        fill: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+    scales: {
+      x: { title: { display: true, text: 'Livello (hPa)' }, grid: { color: gridColor } },
+      y: { title: { display: true, text: '°C' }, grid: { color: gridColor } }
+    }
+  }
+});
+
+// CHART 2: STABILITY INDICES
+const ctxStab = document.getElementById('chartStability').getContext('2d');
+new Chart(ctxStab, {
+  type: 'bar',
+  data: {
+    labels: ['CAPE\n(J/kg)', 'LI\n(K)', 'K-Index', 'TT-Index', 'Showalter'],
+    datasets: [{
+      label: 'Valore attuale',
+      data: [350, 2.1, 18, 44, 3.2],
+      backgroundColor: [
+        'rgba(26,58,92,0.6)',
+        'rgba(139,33,33,0.6)',
+        'rgba(26,58,92,0.6)',
+        'rgba(184,134,11,0.6)',
+        'rgba(42,106,42,0.6)',
+      ],
+      borderColor: [blue, accent, blue, gold, green],
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, title: { display: true, text: 'Valore' } }
+    }
+  }
+});
+
+// CHART 3: NORD TEMPS
+const ctxNord = document.getElementById('chartNordTemps').getContext('2d');
+const nordCities = ['Aosta', 'Torino', 'Milano', 'Trento', 'Venezia', 'Trieste', 'Genova', 'Bologna'];
+const nordMax = [22, 25, 26, 21, 24, 22, 23, 26];
+const nordMin = [5, 9, 10, 4, 10, 9, 14, 11];
+const nordMedia = [17, 20, 21, 16, 19, 17, 18, 21];
+new Chart(ctxNord, {
+  type: 'bar',
+  data: {
+    labels: nordCities,
+    datasets: [
+      { label: 'Max (°C)', data: nordMax, backgroundColor: 'rgba(139,33,33,0.75)', borderColor: accent, borderWidth: 1 },
+      { label: 'Min (°C)', data: nordMin, backgroundColor: 'rgba(26,58,92,0.65)', borderColor: blue, borderWidth: 1 },
+      { label: 'Media storica apr.', data: nordMedia, type: 'line', borderColor: gold, backgroundColor: 'transparent', borderDash: [5,3], pointRadius: 3, tension: 0.3 }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, title: { display: true, text: '°C' }, min: 0, max: 30 }
+    }
+  }
+});
+
+// CHART 4: ABRUZZO ALTITUDE
+const ctxAbr = document.getElementById('chartAbruzzo').getContext('2d');
+new Chart(ctxAbr, {
+  type: 'line',
+  data: {
+    labels: ['24/4', '25/4', '26/4', '27/4', '28/4'],
+    datasets: [
+      { label: 'Max fondovalle (250m)', data: [23,23,22,21,20], borderColor: accent, tension: 0.3, pointRadius: 3 },
+      { label: 'Max 1500m', data: [15,16,15,14,13], borderColor: gold, tension: 0.3, pointRadius: 3 },
+      { label: 'Max 2000m', data: [8,9,8,7,6], borderColor: blue, tension: 0.3, pointRadius: 3 },
+      { label: 'T crinale (2600m)', data: [1,2,1,0,-1], borderColor: '#6a8aaa', borderDash:[3,2], tension: 0.3, pointRadius: 3 },
+      { label: 'Spessore neve (cm/10) 2500m', data: [32,30,28,27,26], borderColor: '#a0b8d0', borderDash:[5,3], tension: 0.3, pointRadius: 2 }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, title: { display: true, text: '°C / cm÷10' } }
+    }
+  }
+});
+
+// CHART 5: ANOMALIA TERMICA NAZIONALE
+const ctxAnom = document.getElementById('chartAnomalia').getContext('2d');
+const regions = ['AO','TO','MI','BZ','VE','TS','GE','BO','FI','PG','AN','RM','AQ','NA','BA','PZ','RC','CB','PA','CA'];
+const anomalies = [2.1,2.8,3.0,2.4,2.6,2.0,1.9,3.1,2.9,2.5,2.3,3.2,2.7,2.4,2.1,2.3,2.5,2.2,2.8,2.6];
+new Chart(ctxAnom, {
+  type: 'bar',
+  data: {
+    labels: regions,
+    datasets: [{
+      label: 'Anomalia T max (°C vs. 1991-2020)',
+      data: anomalies,
+      backgroundColor: anomalies.map(v => v > 3 ? 'rgba(139,33,33,0.8)' : v > 2.5 ? 'rgba(184,134,11,0.75)' : 'rgba(26,58,92,0.65)'),
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      annotation: {}
+    },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, title: { display: true, text: '°C anomalia' }, min: 0, max: 4 }
+    }
+  }
+});
+
+// CHART 6: SNOW PROFILE
+const ctxSnow = document.getElementById('chartSnow').getContext('2d');
+new Chart(ctxSnow, {
+  type: 'bar',
+  data: {
+    labels: ['< 1200m', '1200–1500m', '1500–1800m', '1800–2000m', '2000–2200m', '2200–2500m', '> 2500m'],
+    datasets: [
+      {
+        label: 'Spessore neve (cm) — Gran Sasso',
+        data: [0, 15, 40, 100, 180, 280, 380],
+        backgroundColor: 'rgba(26,58,92,0.6)',
+        borderColor: blue,
+        borderWidth: 1,
+      },
+      {
+        label: 'Spessore neve (cm) — Majella',
+        data: [0, 10, 35, 90, 160, 250, 340],
+        backgroundColor: 'rgba(26,58,92,0.3)',
+        borderColor: blue,
+        borderWidth: 1,
+        borderDash: [4,3],
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: gridColor }, title: { display: true, text: 'cm' } },
+      y: { grid: { color: gridColor } }
+    }
+  }
+});
+
+// CHART 7: NIVOMETRICO VERSANTI
+const ctxNivo = document.getElementById('chartNivoCompare').getContext('2d');
+new Chart(ctxNivo, {
+  type: 'radar',
+  data: {
+    labels: ['Precipitaz.\nannua', 'Nevosità\nquota', 'SCD\n(giorni)', 'Intensità\nneve apr.', 'Fusione\naprile', 'Temp.\ninvernale'],
+    datasets: [
+      {
+        label: 'Versante Adriatico (Abruzzo)',
+        data: [70, 95, 90, 100, 45, 60],
+        borderColor: blue,
+        backgroundColor: 'rgba(26,58,92,0.15)',
+        pointBackgroundColor: blue,
+      },
+      {
+        label: 'Versante Tirrenico (Lazio)',
+        data: [90, 60, 50, 40, 75, 40],
+        borderColor: accent,
+        backgroundColor: 'rgba(139,33,33,0.12)',
+        pointBackgroundColor: accent,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        grid: { color: gridColor },
+        ticks: { display: false }
+      }
+    }
+  }
+});
+
+// CHART 8: ENSEMBLE PROBABILITA PRECIP
+const ctxEns = document.getElementById('chartEnsemble').getContext('2d');
+new Chart(ctxEns, {
+  type: 'line',
+  data: {
+    labels: ['24 apr', '25 apr', '26 apr', '27 apr', '28 apr', '29 apr', '30 apr'],
+    datasets: [
+      {
+        label: 'Nord-Est (BO, VE)',
+        data: [3, 4, 5, 8, 15, 35, 42],
+        borderColor: blue,
+        backgroundColor: 'rgba(26,58,92,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+      },
+      {
+        label: 'Centro (RM, FI)',
+        data: [2, 2, 3, 5, 10, 18, 25],
+        borderColor: gold,
+        backgroundColor: 'rgba(184,134,11,0.07)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+      },
+      {
+        label: 'Sud (NA, PA)',
+        data: [2, 2, 2, 3, 6, 10, 15],
+        borderColor: accent,
+        backgroundColor: 'rgba(139,33,33,0.07)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: {
+        grid: { color: gridColor },
+        title: { display: true, text: 'Probabilità (%)' },
+        min: 0, max: 50,
+        ticks: { callback: v => v + '%' }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
