@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bollettino Meteorologico — Italia 25 Aprile 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ink: #1a1410;
+    --ink-light: #3d3228;
+    --paper: #f7f2e8;
+    --paper-warm: #ede5d0;
+    --accent: #8b2121;
+    --accent-gold: #b8860b;
+    --accent-blue: #1a3a5c;
+    --rule: #c8b89a;
+    --rule-dark: #8b7355;
+    --sky-blue: #4a7fa5;
+    --snow-white: #e8f0f7;
+    --col-gap: 2.4rem;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 9.5pt;
+    line-height: 1.65;
+  }
+
+  /* MASTHEAD */
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0;
+    border-bottom: 4px solid var(--accent-gold);
+  }
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 2.5rem;
+    border-bottom: 1px solid #3d3228;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    letter-spacing: 0.08em;
+    color: #b8a888;
+  }
+  .masthead-title {
+    text-align: center;
+    padding: 1.8rem 2.5rem 1.4rem;
+  }
+  .masthead-title h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38pt;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    line-height: 1.05;
+    color: #f7f2e8;
+  }
+  .masthead-title h1 em {
+    font-style: italic;
+    color: var(--accent-gold);
+  }
+  .masthead-title .subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #9a8a6a;
+    margin-top: 0.4rem;
+  }
+  .masthead-rule {
+    display: flex;
+    align-items: center;
+    padding: 0 2.5rem 1.2rem;
+    gap: 1rem;
+  }
+  .masthead-rule hr { flex: 1; border: none; border-top: 1px solid #3d3228; }
+  .masthead-rule .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #7a6a4a;
+    border: 1px solid #3d3228;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  /* SYNOPTIC BANNER */
+  .synoptic-banner {
+    background: var(--accent-blue);
+    color: #e8f0f7;
+    padding: 0.7rem 2.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    letter-spacing: 0.06em;
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    border-bottom: 2px solid var(--accent-gold);
+    flex-wrap: wrap;
+  }
+  .synoptic-banner .ticker-item { display: flex; gap: 0.5rem; align-items: center; }
+  .synoptic-banner .lbl { color: var(--accent-gold); font-weight: 500; }
+
+  /* PAGE LAYOUT */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem;
+  }
+
+  /* SECTION HEADERS */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0 1rem;
+    border-top: 2px solid var(--ink);
+    padding-top: 0.6rem;
+  }
+  .section-head h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 16pt;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .section-head .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7pt;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .section-head hr { flex: 1; border: none; border-top: 1px solid var(--rule); }
+
+  /* TWO COLUMN LAYOUT */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--col-gap);
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.6rem;
+  }
+  .col-wide { grid-column: span 2; }
+
+  /* COLUMN RULE */
+  .col-rule {
+    position: relative;
+  }
+  .col-rule::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: calc(50% - 0.5px);
+    width: 1px;
+    background: var(--rule);
+  }
+
+  /* ABSTRACT BOX */
+  .abstract-box {
+    background: var(--ink);
+    color: var(--paper-warm);
+    padding: 1.6rem 2rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid var(--accent-gold);
+  }
+  .abstract-box .abs-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 0.5rem;
+  }
+  .abstract-box p {
+    font-size: 9pt;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* THEORY BLOCK */
+  .theory-block {
+    border-left: 3px solid var(--accent);
+    padding: 0.6rem 1rem;
+    margin: 0.8rem 0;
+    background: rgba(139,33,33,0.04);
+  }
+  .theory-block .theory-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+  }
+  .theory-block p {
+    font-size: 8.5pt;
+    line-height: 1.6;
+  }
+
+  /* REGION CARDS */
+  .region-card {
+    border: 1px solid var(--rule);
+    padding: 1rem 1.1rem;
+    margin-bottom: 1.2rem;
+    background: #faf7f0;
+    position: relative;
+  }
+  .region-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .region-card.nord::before { background: var(--accent-blue); }
+  .region-card.centro::before { background: var(--accent-gold); }
+  .region-card.sud::before { background: var(--accent); }
+  .region-card.isole::before { background: #2a7a4a; }
+  .region-card.appennino::before { background: #5a7a3a; }
+
+  .region-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 12pt;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: var(--ink);
+  }
+  .region-card .region-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.12em;
+    color: var(--rule-dark);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+  .region-card .temp-row {
+    display: flex;
+    gap: 1.2rem;
+    margin: 0.5rem 0;
+    align-items: baseline;
+  }
+  .region-card .temp-min {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14pt;
+    font-weight: 400;
+    color: var(--accent-blue);
+  }
+  .region-card .temp-max {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18pt;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .region-card .temp-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    color: var(--rule-dark);
+    text-transform: uppercase;
+  }
+
+  /* DATA PILLS */
+  .data-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.5rem 0;
+  }
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.1em;
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 2px 7px;
+    color: var(--ink-light);
+  }
+  .pill.alert { background: #f7eded; border-color: #c88a8a; color: var(--accent); }
+  .pill.good { background: #edf7ef; border-color: #8ac88a; color: #2a6a2a; }
+  .pill.info { background: #edf0f7; border-color: #8a9ac8; color: var(--accent-blue); }
+  .pill.warn { background: #f7f5ed; border-color: #c8b88a; color: #7a6010; }
+
+  /* FORECAST TABLE */
+  .fc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 0.6rem 0;
+  }
+  .fc-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--rule-dark);
+    padding: 3px 6px;
+    text-align: left;
+    color: var(--ink-light);
+  }
+  .fc-table td {
+    padding: 3px 6px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .fc-table tr:last-child td { border-bottom: none; }
+
+  /* CHART CONTAINERS */
+  .chart-wrap {
+    background: #faf7f0;
+    border: 1px solid var(--rule);
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .chart-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .chart-canvas-wrap {
+    position: relative;
+    height: 180px;
+  }
+  .chart-canvas-wrap.tall { height: 240px; }
+  .chart-canvas-wrap.short { height: 140px; }
+
+  /* SNOW CONDITIONS BOX */
+  .snow-box {
+    background: var(--snow-white);
+    border: 1px solid #a0b8d0;
+    border-top: 3px solid var(--accent-blue);
+    padding: 1rem 1.1rem;
+    margin: 0.8rem 0;
+  }
+  .snow-box h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 10pt;
+    margin-bottom: 0.4rem;
+    color: var(--accent-blue);
+  }
+
+  /* ALTITUDE TABLE */
+  .alt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 0.5rem 0;
+  }
+  .alt-table td {
+    padding: 3px 8px;
+    border-bottom: 1px dashed #c0d0e0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+  }
+  .alt-table td:first-child { color: var(--accent-blue); font-weight: 500; }
+
+  /* SEPARATOR */
+  .ornamental-sep {
+    text-align: center;
+    color: var(--rule-dark);
+    margin: 1.2rem 0;
+    font-size: 10pt;
+    letter-spacing: 0.5em;
+  }
+
+  /* FOOTNOTES */
+  .footnotes {
+    border-top: 2px solid var(--ink);
+    margin-top: 2rem;
+    padding-top: 0.8rem;
+    font-size: 7.5pt;
+    color: var(--ink-light);
+    column-count: 2;
+    column-gap: 2rem;
+  }
+  .footnotes p { margin-bottom: 0.3rem; }
+
+  /* INSET BOX */
+  .inset {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule-dark);
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    font-size: 8.5pt;
+  }
+  .inset strong { font-weight: 600; color: var(--accent-blue); }
+
+  /* KICKER TEXT */
+  .kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7pt;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  p { margin-bottom: 0.65rem; }
+  p:last-child { margin-bottom: 0; }
+  h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 10.5pt;
+    font-weight: 700;
+    margin: 0.8rem 0 0.3rem;
+    color: var(--ink);
+  }
+  ul { padding-left: 1.2rem; margin-bottom: 0.6rem; }
+  li { margin-bottom: 0.2rem; font-size: 9pt; }
+  strong { font-weight: 600; }
+
+  /* HORA STAMP BOXES */
+  .hora-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin: 0.8rem 0;
+  }
+  .hora-box {
+    border: 1px solid var(--rule);
+    padding: 0.5rem 0.3rem;
+    text-align: center;
+    background: #faf7f0;
+  }
+  .hora-box .h-time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.5pt;
+    letter-spacing: 0.1em;
+    color: var(--rule-dark);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .hora-box .h-icon { font-size: 14pt; display: block; margin-bottom: 0.1rem; }
+  .hora-box .h-temp {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9pt;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  /* LOCALITY GRID */
+  .loc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 0.8rem 0;
+  }
+  .loc-item {
+    border: 1px solid var(--rule);
+    padding: 0.5rem 0.7rem;
+    background: #faf7f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .loc-item .loc-name {
+    font-family: 'Source Serif 4', serif;
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+  .loc-item .loc-alt {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6pt;
+    color: var(--rule-dark);
+    display: block;
+  }
+  .loc-item .loc-temps {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8pt;
+    text-align: right;
+  }
+  .loc-item .loc-temps .t-min { color: var(--accent-blue); }
+  .loc-item .loc-temps .t-max { color: var(--accent); font-size: 10pt; }
+
+  /* MARE SECTION */
+  .mare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin: 0.6rem 0;
+  }
+  .mare-item {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--sky-blue);
+    padding: 0.5rem 0.7rem;
+    background: #f0f5fa;
+  }
+  .mare-item h5 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 0.3rem;
+  }
+  .mare-item p {
+    font-size: 8pt;
+    margin-bottom: 0;
+  }
+
+  /* EQUATION BLOCK */
+  .eq-block {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule-dark);
+    border-left: 3px solid var(--accent-blue);
+    padding: 0.5rem 0.8rem;
+    margin: 0.6rem 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8pt;
+    color: var(--accent-blue);
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* GAUGE ROW */
+  .gauge-row {
+    display: flex;
+    gap: 1rem;
+    margin: 0.6rem 0;
+    flex-wrap: wrap;
+  }
+  .gauge {
+    flex: 1;
+    min-width: 100px;
+  }
+  .gauge-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rule-dark);
+    margin-bottom: 3px;
+  }
+  .gauge-bar {
+    height: 6px;
+    background: var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 3px;
+  }
+  .gauge-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .gauge-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    color: var(--ink-light);
+  }
+
+  /* IMPIANTI STATUS */
+  .impianti-list { list-style: none; padding: 0; }
+  .impianti-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--rule);
+    font-size: 8pt;
+  }
+  .impianti-list li:last-child { border-bottom: none; }
+  .status-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6pt;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    text-transform: uppercase;
+  }
+  .status-badge.closed { background: #f7eded; color: var(--accent); border: 1px solid #c88a8a; }
+  .status-badge.open { background: #edf7ef; color: #2a6a2a; border: 1px solid #8ac88a; }
+  .status-badge.limited { background: #f7f5ed; color: #7a6010; border: 1px solid #c8b88a; }
+
+  @media print {
+    body { font-size: 8.5pt; }
+    .page { padding: 0 1rem 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ MASTHEAD ═══════════════════════════════ -->
+<header class="masthead">
+  <div class="masthead-top">
+    <span>ANALISI NUMERICA · ECMWF / GFS · MODELLO SINOTTICO</span>
+    <span>VOL. MMXXVI · N. 115</span>
+    <span>SABATO, 25 APRILE 2026 · H. 08:00 UTC+2</span>
+  </div>
+  <div class="masthead-title">
+    <h1>Bollettino <em>Meteorologico</em> </h1>
+    <div class="subtitle">Repubblica Italiana — Analisi sinottica, previsione oraria &amp; condizioni dei mari · 25 Aprile 2026</div>
+  </div>
+  <div class="masthead-rule">
+    <hr>
+    <span class="badge">Anticiclone Subtropicale · Alta Pressione Dominante</span>
+    <hr>
+    <span class="badge">Assenza Precipitazioni · UV Alto</span>
+    <hr>
+    <span class="badge">T +3/+6 °C Anomalia Positiva</span>
+    <hr>
+  </div>
+</header>
+
+<!-- SYNOPTIC BANNER -->
+<div class="synoptic-banner">
+  <div class="ticker-item"><span class="lbl">PRESSIONE ROMA:</span><span>~1018 hPa</span></div>
+  <div class="ticker-item"><span class="lbl">ZERO TERMICO:</span><span>2.700–3.100 m</span></div>
+  <div class="ticker-item"><span class="lbl">CAPE:</span><span>≈ 0 J/kg</span></div>
+  <div class="ticker-item"><span class="lbl">VENTO 500 hPa:</span><span>Debole, NE</span></div>
+  <div class="ticker-item"><span class="lbl">UV MAX:</span><span>7–8 (ALTO)</span></div>
+  <div class="ticker-item"><span class="lbl">ANOMALIA T:</span><span>+3 / +6 °C</span></div>
+  <div class="ticker-item"><span class="lbl">IMPIANTI SCI:</span><span>0 APERTI</span></div>
+</div>
+
+<!-- ═══════════════════════════════ PAGE ═══════════════════════════════ -->
+<main class="page">
+
+  <!-- ABSTRACT -->
+  <div class="abstract-box">
+    <div class="abs-label">Sintesi Sinottica · Abstract</div>
+    <p>Un robusto <strong>anticiclone subtropicale</strong> — estensione dell'Alta delle Azzorre con apporti nordafricani — domina sull'intero bacino del Mediterraneo centrale con massimi al suolo di 1018–1022 hPa. Il fronte freddo transitato nei giorni precedenti si è allontanato verso i Balcani, lasciando aria subsidente di origine subtropicale su tutta la colonna troposferica italiana. Ne risulta una giornata di <strong>sole pieno e temperature ben sopra la media stagionale</strong> (+3/+6 °C) su tutte le macro-aree, con escursione termica diurna notevole (12–18 °C) e indice UV elevato (7–8). Il <strong>CAPE è prossimo allo zero</strong>, l'atmosfera è stabile, nessun fenomeno convettivo significativo atteso fatta eccezione per innocui cumuliformi orografici pomeridiani sulle Alpi occidentali e Appennino. Zero termico a 2.700–3.100 m. Impianti sciistici dell'Appennino Centrale: tutti chiusi, stagione 2025/2026 conclusa.</p>
+  </div>
+
+  <!-- ═══ SEZIONE I: ROMA ═══ -->
+  <div class="section-head">
+    <span class="section-num">§ I</span>
+    <h2>Roma — Previsione Dettagliata</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <!-- COLONNA SX: DATI ORARI + CHART -->
+    <div>
+      <span class="kicker">Condizioni attuali · Mattina presto</span>
+      <div class="inset">
+        <strong>Ore 07:00 — 10–12 °C · Sereno · Pressione ~1018 hPa</strong><br>
+        Umidità 84–86 % · Vento NNE 2–5 km/h · Visibilità ottima. Nessuna precipitazione in atto né prevista sull'intera giornata.
+      </div>
+
+      <h4>Sintesi Oraria</h4>
+      <div class="hora-grid">
+        <div class="hora-box">
+          <span class="h-time">09:00</span>
+          <span class="h-icon">☀️</span>
+          <span class="h-temp">15 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">12:00</span>
+          <span class="h-icon">☀️</span>
+          <span class="h-temp">22–23 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">15:00</span>
+          <span class="h-icon">🌤️</span>
+          <span class="h-temp">24–25 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">18:00</span>
+          <span class="h-icon">☀️</span>
+          <span class="h-temp">22–23 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">21:00</span>
+          <span class="h-icon">🌙</span>
+          <span class="h-temp">17 °C</span>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Profilo Termico Giornaliero — Roma (°C)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartRomaTemp"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Umidità Relativa Giornaliera — Roma (%)</div>
+        <div class="chart-canvas-wrap short">
+          <canvas id="chartRomaHum"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLONNA DX: PARAMETRI + VENTO -->
+    <div>
+      <h4>Parametri Chiave</h4>
+      <table class="fc-table">
+        <thead>
+          <tr>
+            <th>Parametro</th>
+            <th>Mattina</th>
+            <th>Pomeriggio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Temperatura</td><td>10–12 °C</td><td>24–25 °C</td></tr>
+          <tr><td>Umidità relativa</td><td>84–86 %</td><td>32–40 %</td></tr>
+          <tr><td>Pressione al suolo</td><td>~1018 hPa</td><td>~1016 hPa</td></tr>
+          <tr><td>Vento (dir/velocità)</td><td>NNE 2–5 km/h</td><td>W 12–31 km/h</td></tr>
+          <tr><td>Copertura nuvolosa</td><td>0–5 %</td><td>5–15 %</td></tr>
+          <tr><td>Precipitazioni</td><td>0 mm (0 %)</td><td>0 mm (0 %)</td></tr>
+          <tr><td>Indice UV</td><td>3–5</td><td>7–8 (ALTO)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="data-pills">
+        <span class="pill good">☀️ Sereno prevalente</span>
+        <span class="pill alert">🌡️ UV 7–8 ALTO</span>
+        <span class="pill info">💨 Brezza di mare pomeridiana</span>
+        <span class="pill good">✅ Qualità aria discreta</span>
+        <span class="pill warn">⚠️ Sbalzo termico 15 °C</span>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Escursione Termica — Roma · Profilo Min/Max (°C)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartRomaRange"></canvas>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <div class="theory-label">Analisi Fisica · Subsidenza Anticiclonica</div>
+        <p>L'anticiclone impone aria discendente (ω &lt; 0, ~−0,02 Pa/s) con compressione adiabatica secca: l'aria si scalda di circa Γ<sub>d</sub> ≈ 9,8 °C/km, si secca progressivamente (RH pomeridiana 32–40 %) e inibisce la convezione. La forte inversione termica subsidente è responsabile del cielo sereno persistente e dell'assenza totale di precipitazioni.</p>
+      </div>
+      <div class="eq-block">Γ_d = −dT/dz ≈ 9.8 °C/km &nbsp;|&nbsp; CAPE ≈ 0 J/kg &nbsp;|&nbsp; LI &gt; 0</div>
+
+      <p style="font-size:8.5pt; margin-top:0.5rem;"><strong>Confronto climatologico:</strong> Media aprile Roma: max ~18–20 °C / min ~9 °C. Oggi siamo 4–5 °C sopra la norma per anomalia positiva di geopotenziale a 500 hPa.</p>
+    </div>
+  </div>
+
+  <!-- ═══ SEZIONE II: ITALIA ═══ -->
+  <div class="section-head">
+    <span class="section-num">§ II</span>
+    <h2>Situazione Generale — Nord, Centro, Sud</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <!-- SX: LE TRE MACRO-AREE -->
+    <div>
+      <div class="region-card nord">
+        <div class="region-meta">Nord Italia · Pianura Padana, Alpi, Prealpi</div>
+        <h3>Nord Italia</h3>
+        <div class="temp-row">
+          <div>
+            <div class="temp-label">Min</div>
+            <div class="temp-min">8–12 °C</div>
+          </div>
+          <div>
+            <div class="temp-label">Max</div>
+            <div class="temp-max">22–27 °C</div>
+          </div>
+        </div>
+        <p style="font-size:8.5pt;">Sereno o poco nuvoloso. Possibili cumuliformi su Alpi e Prealpi nel pomeriggio; locali rovesci/temporali isolati sulle <strong>Alpi occidentali</strong>. Pianura Padana soleggiatissima, punte 26–28 °C per compressione adiabatica.</p>
+        <div class="data-pills">
+          <span class="pill info">Vento: debole variabile → brezze vallive pm</span>
+          <span class="pill warn">⚡ Alpi occ.: conv. isolata possibile</span>
+        </div>
+      </div>
+
+      <div class="region-card centro">
+        <div class="region-meta">Centro Italia &amp; Sardegna</div>
+        <h3>Centro &amp; Sardegna</h3>
+        <div class="temp-row">
+          <div>
+            <div class="temp-label">Min</div>
+            <div class="temp-min">7–11 °C</div>
+          </div>
+          <div>
+            <div class="temp-label">Max</div>
+            <div class="temp-max">22–26 °C</div>
+          </div>
+        </div>
+        <p style="font-size:8.5pt;">Sereno prevalente. Possibili addensamenti pomeridiani su Appennino (orografici, senza fenomeni). Versante tirrenico favorito da brezza di mare nel pomeriggio. Sardegna soleggiata.</p>
+        <div class="data-pills">
+          <span class="pill good">☀️ Stabilità sinottica elevata</span>
+          <span class="pill info">🌊 Brezza di mare pomeridiana</span>
+        </div>
+      </div>
+
+      <div class="region-card sud">
+        <div class="region-meta">Sud Italia &amp; Sicilia</div>
+        <h3>Sud &amp; Sicilia</h3>
+        <div class="temp-row">
+          <div>
+            <div class="temp-label">Min</div>
+            <div class="temp-min">10–14 °C</div>
+          </div>
+          <div>
+            <div class="temp-label">Max</div>
+            <div class="temp-max">21–25 °C</div>
+          </div>
+        </div>
+        <p style="font-size:8.5pt;">Soleggiato, più stabile al Sud peninsulare. Qualche nube in più su Sicilia e rilievi calabresi. Temperature leggermente inferiori al Nord per ventilazione residua settentrionale. Ionio mosso/poco mosso.</p>
+        <div class="data-pills">
+          <span class="pill info">💨 Vento NNW mattina → rot. W pm</span>
+          <span class="pill good">Precipitazioni: 0 %</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DX: CHART CONFRONTO + ANALISI -->
+    <div>
+      <div class="chart-wrap">
+        <div class="chart-title">Confronto Temperature Max per Macro-Area (°C)</div>
+        <div class="chart-canvas-wrap tall">
+          <canvas id="chartMacroAree"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Anomalia Termica Rispetto alla Media Aprile (°C)</div>
+        <div class="chart-canvas-wrap short">
+          <canvas id="chartAnomalia"></canvas>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <div class="theory-label">Gradiente Nord–Sud · Effetto Foehn Padano</div>
+        <p>Il Nord risulta localmente più caldo (punte 26–28 °C) per l'effetto di "compressione" in Pianura Padana: l'aria subsidente è intrappolata tra la barriera alpina e l'Appennino. L'aria discende e si riscalda adiabaticamente senza poter "sfuggire" lateralmente — classico effetto foehn da anticiclone.</p>
+      </div>
+
+      <div class="inset">
+        <strong>UV Alert — Indice 7–8 (ALTO)</strong><br>
+        A 42–45°N con cielo sereno e angolo zenitale solare basso, la dose eritematica giornaliera supera i 200 J/m². Protezione SPF ≥ 30 indispensabile dalle 10:00 alle 16:00. Evitare esposizione prolungata non protetta.
+      </div>
+
+      <table class="fc-table">
+        <thead>
+          <tr><th>Area</th><th>Min °C</th><th>Max °C</th><th>Cielo</th><th>Prec.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Nord</td><td>8–12</td><td>22–27</td><td>Ser./p.nub.</td><td>0 %</td></tr>
+          <tr><td>Centro</td><td>7–11</td><td>22–26</td><td>Sereno</td><td>0 %</td></tr>
+          <tr><td>Sud</td><td>10–14</td><td>21–25</td><td>Soleggiato</td><td>0 %</td></tr>
+          <tr><td>Sicilia</td><td>11–14</td><td>20–24</td><td>P.nuvoloso</td><td>0 %</td></tr>
+          <tr><td>Sardegna</td><td>9–12</td><td>22–25</td><td>Sereno</td><td>0 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SEZIONE III: APPENNINO CENTRALE ═══ -->
+  <div class="section-head">
+    <span class="section-num">§ III</span>
+    <h2>Appennino Centrale — Previsioni per Quota</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <!-- SX: QUOTE + LOCALITA' -->
+    <div>
+      <h4>Temperature per Fascia Altitudinale</h4>
+      <div class="snow-box">
+        <h4>Profilo Termico Verticale</h4>
+        <table class="alt-table">
+          <tbody>
+            <tr>
+              <td>600–900 m</td>
+              <td>Pescasseroli, Scanno, Lago Barrea, L'Aquila</td>
+              <td>Min 3–6 °C · Max 16–19 °C</td>
+            </tr>
+            <tr>
+              <td>1.200–1.500 m</td>
+              <td>Ovindoli, Roccaraso, Monte Livata, Forca d'Acero</td>
+              <td>Min 1–4 °C · Max 13–16 °C</td>
+            </tr>
+            <tr>
+              <td>1.800–2.200 m</td>
+              <td>Campo Imperatore, Majella, Monte Meta</td>
+              <td>Min −2/+2 °C · Max 9–13 °C</td>
+            </tr>
+            <tr>
+              <td>&gt; 2.300 m</td>
+              <td>Creste Gran Sasso, Cima Majella</td>
+              <td>Min −4/−1 °C · Neve residua</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="data-pills" style="margin-top:0.4rem;">
+          <span class="pill info">Zero termico: 2.700–3.100 m</span>
+          <span class="pill info">Neve residua: solo &gt; 2.400 m</span>
+          <span class="pill good">Sentieri: asciutti e percorribili</span>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Profilo Termico Verticale Appennino (°C per Quota)</div>
+        <div class="chart-canvas-wrap tall">
+          <canvas id="chartQuota"></canvas>
+        </div>
+      </div>
+
+      <div class="ornamental-sep">· · · ·</div>
+
+      <h4>Sintesi Oraria Tipo (Roccaraso / Ovindoli, 1.300–1.500 m)</h4>
+      <div class="hora-grid">
+        <div class="hora-box">
+          <span class="h-time">07:00</span>
+          <span class="h-icon">🌅</span>
+          <span class="h-temp">3–5 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">10:00</span>
+          <span class="h-icon">☀️</span>
+          <span class="h-temp">9–11 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">12:00</span>
+          <span class="h-icon">☀️</span>
+          <span class="h-temp">12–14 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">15:00</span>
+          <span class="h-icon">🌤️</span>
+          <span class="h-temp">14–16 °C</span>
+        </div>
+        <div class="hora-box">
+          <span class="h-time">20:00</span>
+          <span class="h-icon">🌙</span>
+          <span class="h-temp">6–8 °C</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DX: LOCALITA' + CHART COMPARATIVO -->
+    <div>
+      <h4>Previsione per Località Principali</h4>
+      <div class="loc-grid">
+        <div class="loc-item">
+          <div><span class="loc-name">Pescasseroli</span><span class="loc-alt">1.167 m · Parco Naz. Abruzzo</span></div>
+          <div class="loc-temps"><span class="t-min">4–5 °C</span> / <span class="t-max">17 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Ovindoli</span><span class="loc-alt">1.375 m · Monte Magnola</span></div>
+          <div class="loc-temps"><span class="t-min">2–4 °C</span> / <span class="t-max">14–16 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Roccaraso</span><span class="loc-alt">1.236 m</span></div>
+          <div class="loc-temps"><span class="t-min">1–3 °C</span> / <span class="t-max">13–15 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Campo Imperatore</span><span class="loc-alt">2.130 m · Gran Sasso</span></div>
+          <div class="loc-temps"><span class="t-min">−1/+1 °C</span> / <span class="t-max">11–13 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Majella</span><span class="loc-alt">~2.000 m · Monte Amaro</span></div>
+          <div class="loc-temps"><span class="t-min">0/+2 °C</span> / <span class="t-max">9–12 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Campo Felice</span><span class="loc-alt">1.535 m</span></div>
+          <div class="loc-temps"><span class="t-min">1–3 °C</span> / <span class="t-max">13–15 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Lago Barrea</span><span class="loc-alt">1.000 m</span></div>
+          <div class="loc-temps"><span class="t-min">4–6 °C</span> / <span class="t-max">17–18 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Scanno</span><span class="loc-alt">1.050 m</span></div>
+          <div class="loc-temps"><span class="t-min">4–5 °C</span> / <span class="t-max">16–17 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Forca d'Acero</span><span class="loc-alt">1.540 m</span></div>
+          <div class="loc-temps"><span class="t-min">0 °C</span> / <span class="t-max">10–12 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Monte Meta</span><span class="loc-alt">1.955 m</span></div>
+          <div class="loc-temps"><span class="t-min">−1/+1 °C</span> / <span class="t-max">10–11 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">Monte Livata</span><span class="loc-alt">1.400 m</span></div>
+          <div class="loc-temps"><span class="t-min">1–3 °C</span> / <span class="t-max">13–16 °C</span></div>
+        </div>
+        <div class="loc-item">
+          <div><span class="loc-name">L'Aquila</span><span class="loc-alt">720 m</span></div>
+          <div class="loc-temps"><span class="t-min">5–7 °C</span> / <span class="t-max">17–18 °C</span></div>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Max/Min per Località Appennino (°C) — Ordinato per Quota</div>
+        <div class="chart-canvas-wrap tall">
+          <canvas id="chartLocalita"></canvas>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <div class="theory-label">Orografia &amp; Brezze Anabatiche</div>
+        <p>Il riscaldamento diurno del suolo nelle vallate genera brezze <em>anabatiche</em> (di monte) nel pomeriggio, con velocità 10–25 km/h in quota. Possibili innocui cumuli orografici sulle creste di Gran Sasso e Majella, ma senza sviluppo verticale significativo data la stabilità della massa d'aria (subsidenza sinottica persistente).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SEZIONE IV: IMPIANTI SCIISTICI ═══ -->
+  <div class="section-head">
+    <span class="section-num">§ IV</span>
+    <h2>Impianti Sciistici — Stato Attuale</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <div>
+      <div class="abstract-box">
+        <div class="abs-label">Verdetto Stagione 2025/2026</div>
+        <p><strong>Tutti gli impianti dell'Appennino Centrale risultano CHIUSI.</strong> La stagione si è conclusa tra fine marzo e metà aprile 2026. Campo Imperatore aveva registrato aperture prolungate fino a inizio aprile grazie a nevicate eccezionali (piloni sommersi), ma la stagione è ora definitivamente terminata.</p>
+      </div>
+
+      <ul class="impianti-list">
+        <li><span>Campo Imperatore (Gran Sasso)</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Roccaraso / Aremogna-Pizzalto</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Rivisondoli / Monte Pratello</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Ovindoli / Monte Magnola</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Campo Felice</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Passo Lanciano / Majella</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Monte Livata</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Terminillo</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Pescasseroli</span><span class="status-badge closed">Chiuso</span></li>
+        <li><span>Scanno</span><span class="status-badge closed">Chiuso</span></li>
+      </ul>
+
+      <div class="data-pills" style="margin-top:0.6rem;">
+        <span class="pill alert">0 impianti aperti</span>
+        <span class="pill info">Stagione 2026/2027: dic. 2026</span>
+        <span class="pill good">Sci esc. possibile &gt; 2.300 m</span>
+      </div>
+    </div>
+
+    <div>
+      <h4>Analisi Manto Nevoso Residuo</h4>
+      <p>Il ciclo di ablazione primaverile <em>(melt-freeze)</em> ha quasi completato la fusione del manto a quote inferiori ai 2.300–2.400 m. Con zero termico a 2.700–3.100 m e giornate soleggiate come quella odierna, l'ablazione diurna supera il 15–25 % dello spessore residuo.</p>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Neve Residua Stimata per Quota — Trend Apr. 2026 (cm equiv. idr.)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartNeve"></canvas>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <div class="theory-label">Ciclo Melt-Freeze · Ablazione Radiativa</div>
+        <p>In aprile domina il ciclo <strong>melt-freeze</strong>: fusione diurna per radiazione solare (fino a 950 W/m² a 42°N) + regelazione notturna. Con cielo sereno e zero termico a 2.800+ m, la neve si trasforma in "neve primaverile dura" (firn). Senza nuove precipitazioni e con T massime diurne ampiamente positive, la stagione sciistica non è recuperabile. La stagione 2025/2026 ha registrato <strong>record di presenze</strong> a Roccaraso (oltre 250.000 visitatori).</p>
+      </div>
+
+      <div class="inset">
+        <strong>Attività alternative consigliate:</strong> Sci escursionismo e splitboard su Gran Sasso, Majella, Monti della Laga (con ramponi e ARTVA). Trekking estivo su sentieri del PNALM. Prossima stagione: aperture previste dicembre 2026.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SEZIONE V: CONDIZIONI DEL MARE ═══ -->
+  <div class="section-head">
+    <span class="section-num">§ V</span>
+    <h2>Condizioni dei Mari Italiani</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <div>
+      <div class="mare-grid">
+        <div class="mare-item">
+          <h5>Tirreno (Alto)</h5>
+          <p>Quasi calmo o poco mosso. Vento W debole, localmente moderato nel pomeriggio. Onde &lt; 0,5–0,8 m.</p>
+        </div>
+        <div class="mare-item">
+          <h5>Tirreno (Medio-Basso)</h5>
+          <p>Poco mosso. Vento W debole-moderato. Onde &lt; 1 m. Ideale navigazione costiera.</p>
+        </div>
+        <div class="mare-item">
+          <h5>Adriatico (Alto-Medio)</h5>
+          <p>Calmo. Vento debole variabile o meridionale. Onde &lt; 0,5 m. Visibilità ottima.</p>
+        </div>
+        <div class="mare-item">
+          <h5>Adriatico (Basso)</h5>
+          <p>Calmo o quasi calmo. Vento debole o assente. Ottimo per diporto.</p>
+        </div>
+        <div class="mare-item">
+          <h5>Ionio</h5>
+          <p>Poco mosso o mosso (sett. settentr.). Vento NW/W moderato in rotazione. Onde 0,5–1,5 m.</p>
+        </div>
+        <div class="mare-item">
+          <h5>Canale di Sicilia</h5>
+          <p>Poco mosso. Vento debole. Onde &lt; 0,8 m. Temperature mare 17–18 °C.</p>
+        </div>
+      </div>
+
+      <div class="data-pills">
+        <span class="pill good">🚢 Mari tranquilli: navigazione sicura</span>
+        <span class="pill info">🌊 Onde max 1,5 m (Ionio)</span>
+        <span class="pill good">🌡️ Mare 16–18 °C</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="chart-wrap">
+        <div class="chart-title">Altezza Media Onde per Bacino (m)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartMare"></canvas>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <div class="theory-label">Dinamica Costiera · Brezza di Mare</div>
+        <p>Con anticiclone e cielo sereno, nel pomeriggio il gradiente termico terra-mare (terra +8/+10 °C rispetto al mare) innesca la <strong>brezza di mare</strong> (vento da W/SW 10–20 km/h sulle coste tirreniche). Questo fenomeno mesoscalare può generare un leggero rinforzo del moto ondoso costiero, portando localmente le onde fino a 0,8–1,0 m sul Tirreno nel tardo pomeriggio.</p>
+      </div>
+
+      <table class="fc-table">
+        <thead>
+          <tr><th>Bacino</th><th>Stato del Mare</th><th>Onda Max</th><th>Vento</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tirreno</td><td>Poco mosso</td><td>&lt; 1 m</td><td>W debole-mod.</td></tr>
+          <tr><td>Adriatico</td><td>Calmo</td><td>&lt; 0,5 m</td><td>Variabile</td></tr>
+          <tr><td>Ionio</td><td>P. mosso / Mosso</td><td>0,5–1,5 m</td><td>NW/W mod.</td></tr>
+          <tr><td>Canale di Sic.</td><td>Poco mosso</td><td>&lt; 0,8 m</td><td>Debole</td></tr>
+          <tr><td>Mar di Sard.</td><td>Poco mosso</td><td>&lt; 1 m</td><td>W debole</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ SEZIONE VI: ANALISI SINOTTICA AVANZATA ═══ -->
+  <div class="section-head">
+    <span class="section-num">§ VI</span>
+    <h2>Analisi Sinottica &amp; Teoria Fisico-Matematica</h2>
+    <hr>
+  </div>
+
+  <div class="two-col col-rule">
+    <div>
+      <h4>Configurazione Barica Odierna</h4>
+      <p>La giornata è dominata da un <strong>ponte di alta pressione</strong> con massimi al suolo di 1018–1022 hPa sul Mediterraneo centro-occidentale, estensione diretta dell'Alta delle Azzorre con apporti subtropicali nordafricani. Il geopotenziale a 500 hPa mostra un'anomalia positiva di +80/+120 dam rispetto alla climatologia 1991–2020 su tutto il Paese.</p>
+
+      <div class="theory-block">
+        <div class="theory-label">1. Subsidenza Anticiclonica</div>
+        <p>Moto verticale discendente ω ≈ −0,02/−0,05 Pa/s dall'alta troposfera. La compressione adiabatica scalda e asciuga la massa d'aria. L'inversione termica subsidente a ~700–750 hPa "tappa" la colonna: CAPE ≈ 0, LI &gt; 0. Zero convezione profonda.</p>
+      </div>
+
+      <div class="eq-block">ω = dp/dt ≈ −0.02 Pa/s &nbsp;|&nbsp; dT/dz|_ad = −Γ_d = −9.8 °C/km<br>ΔT_compressione ≈ Γ_d × Δz &nbsp;→&nbsp; aria più calda e secca</div>
+
+      <div class="theory-block">
+        <div class="theory-label">2. Bilancio Radiativo</div>
+        <p>Cielo sereno → radiazione solare in entrata massima: R↓ ≈ 850–950 W/m² a mezzogiorno a 42°N (25 aprile, h_sol ~ 65°). Radiazione IR uscente notturna elevata → forte raffreddamento e bassa mattutina. Escursione termica: 12–18 °C.</p>
+      </div>
+
+      <div class="theory-block">
+        <div class="theory-label">3. Brezza di Mare Pomeridiana (Roma, Coste)</div>
+        <p>ΔT_terra-mare ≈ +8/+10 °C nel pomeriggio → gradiente di pressione orizzontale costa → entroterra → brezza da W/SW 10–20 km/h. Formula del vento geostrofico modificato per la scala mesoscalare: v_brezza ∝ (ΔT × g × h) / (f × T₀ × L). Vento pomeridiano W 12–31 km/h su Roma.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="theory-block">
+        <div class="theory-label">4. Forzanti Orografiche — Appennino &amp; Alpi</div>
+        <p>Le catene montuose generano <strong>sollevamento orografico</strong> forzato (w = U · ∇h, dove U è il vento ambientale e ∇h il gradiente topografico). Con aria stabile (N² &gt; 0 — frequenza Brunt-Väisälä positiva), il flusso non riesce a superare l'ostacolo in modo convettivo: si forma una scia sottovento e possibili onde stazionarie. Solo in alta quota sulle Alpi occidentali la CAPE locale può raggiungere valori positivi (50–100 J/kg) per riscaldamento del suolo, con locali rovesci pomeridiani.</p>
+      </div>
+
+      <div class="eq-block">N² = (g/θ)(dθ/dz) &gt; 0 → atmosfera stabile<br>Froude number Fr = U / (N·h) &lt; 1 → blocco orografico</div>
+
+      <div class="theory-block">
+        <div class="theory-label">5. Confronto Climatologico</div>
+        <p>La media climatologica 1991–2020 per il 25 aprile a Roma prevede max ~19 °C / min ~9 °C. Oggi il massimo atteso (24–25 °C) supera la media di +5/+6 °C. L'anomalia di geopotenziale a 500 hPa (+80/+120 dam) è coerente con un evento di <em>blocco anticiclonico primaverile</em> di bassa frequenza (~5–10 casi/anno).</p>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Confronto Oggi vs Media Climatologica · Roma (°C)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartClima"></canvas>
+        </div>
+      </div>
+
+      <div class="inset">
+        <strong>Stabilità atmosferica:</strong> CAPE ≈ 0 J/kg · LI &gt; +2 · K-Index &lt; 20 · Showalter Index &gt; 0 → nessuna convezione profonda possibile su tutta Italia, fatta eccezione per i rilievi alpini occidentali dove il riscaldamento superficiale localizzato potrebbe produrre CAPE locale di 50–100 J/kg nel tardo pomeriggio.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FOOTNOTES ═══ -->
+  <div class="footnotes">
+    <p><strong>Fonti:</strong> ilMeteo.it · 3BMeteo · Centro Meteo Italiano · Aeronautica Militare Italiana · AccuWeather · modelli ECMWF e GFS (run 00Z 25/04/2026).</p>
+    <p><strong>Convergenza modelli:</strong> ECMWF e GFS mostrano piena convergenza sulla configurazione anticiclonica. Affidabilità previsionale: ALTA per le prossime 24h.</p>
+    <p><strong>Impianti sciistici:</strong> Dati da skiresort.it, skiinfo.it (Abruzzo/Appennini), siti ufficiali Roccaraso, Campo Felice, ilgransasso.it.</p>
+    <p><strong>Dati climatologici:</strong> Periodo di riferimento WMO 1991–2020 (ISPRA / Aeronautica Militare).</p>
+    <p><strong>Disclaimer:</strong> Le previsioni meteorologiche hanno valenza indicativa. Per decisioni critiche (navigazione, alpinismo, protezione civile) fare riferimento ai bollettini ufficiali di Aeronautica Militare, ARPA regionali e Protezione Civile.</p>
+    <p><strong>UV:</strong> Dati EUMETSAT/Copernicus Atmosphere Monitoring Service (CAMS). Protezione raccomandata dalle 10:00 alle 16:00.</p>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════ CHARTS ═══════════════════════════════ -->
+<script>
+// Chart defaults
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 9;
+Chart.defaults.color = '#3d3228';
+Chart.defaults.plugins.legend.display = false;
+
+const ACCENT = '#8b2121';
+const BLUE = '#1a3a5c';
+const GOLD = '#b8860b';
+const SKY = '#4a7fa5';
+const GREEN = '#2a7a4a';
+const PAPER = '#ede5d0';
+const RULE = '#c8b89a';
+
+// 1. Roma Temperatura Oraria
+new Chart(document.getElementById('chartRomaTemp'), {
+  type: 'line',
+  data: {
+    labels: ['00', '03', '06', '09', '12', '15', '18', '21', '24'],
+    datasets: [{
+      label: 'Temperatura Roma (°C)',
+      data: [13, 11, 10, 15, 22, 25, 22, 17, 14],
+      borderColor: ACCENT,
+      backgroundColor: 'rgba(139,33,33,0.07)',
+      borderWidth: 2,
+      pointBackgroundColor: ACCENT,
+      pointRadius: 3,
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        min: 8, max: 28,
+        ticks: { stepSize: 4 },
+        grid: { color: RULE }
+      },
+      x: { grid: { color: RULE } }
+    },
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } },
+      tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' °C' } }
+    }
+  }
+});
+
+// 2. Roma Umidità
+new Chart(document.getElementById('chartRomaHum'), {
+  type: 'bar',
+  data: {
+    labels: ['06', '09', '12', '15', '18', '21'],
+    datasets: [{
+      label: 'Umidità % Roma',
+      data: [85, 70, 45, 34, 40, 60],
+      backgroundColor: [
+        'rgba(26,58,92,0.7)','rgba(26,58,92,0.6)','rgba(26,58,92,0.4)',
+        'rgba(26,58,92,0.3)','rgba(26,58,92,0.4)','rgba(26,58,92,0.55)'
+      ],
+      borderColor: BLUE,
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { min: 0, max: 100, ticks: { stepSize: 20, callback: v => v + '%' }, grid: { color: RULE } },
+      x: { grid: { display: false } }
+    },
+    plugins: { tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' %' } } }
+  }
+});
+
+// 3. Roma Min/Max Range
+new Chart(document.getElementById('chartRomaRange'), {
+  type: 'bar',
+  data: {
+    labels: ['Roma\nOggi', 'Media\nAprile'],
+    datasets: [
+      {
+        label: 'Min °C',
+        data: [10, 9],
+        backgroundColor: 'rgba(26,58,92,0.7)',
+        borderColor: BLUE,
+        borderWidth: 1
+      },
+      {
+        label: 'Max °C',
+        data: [25, 19],
+        backgroundColor: 'rgba(139,33,33,0.7)',
+        borderColor: ACCENT,
+        borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + ' °C' } }
+    },
+    scales: {
+      y: { min: 0, max: 30, ticks: { stepSize: 5, callback: v => v + '°' }, grid: { color: RULE } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 4. Macro-Aree Temperature
+new Chart(document.getElementById('chartMacroAree'), {
+  type: 'bar',
+  data: {
+    labels: ['Nord\n(pianura)', 'Centro\n(Tirrenico)', 'Sud\npenins.', 'Sicilia', 'Sardegna'],
+    datasets: [
+      {
+        label: 'Min °C',
+        data: [10, 9, 12, 12, 10],
+        backgroundColor: 'rgba(26,58,92,0.65)',
+        borderColor: BLUE, borderWidth: 1
+      },
+      {
+        label: 'Max °C',
+        data: [27, 26, 24, 23, 25],
+        backgroundColor: 'rgba(139,33,33,0.65)',
+        borderColor: ACCENT, borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } }
+    },
+    scales: {
+      y: { min: 0, max: 32, ticks: { stepSize: 4, callback: v => v + '°' }, grid: { color: RULE } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 5. Anomalia Termica
+new Chart(document.getElementById('chartAnomalia'), {
+  type: 'bar',
+  data: {
+    labels: ['Nord', 'Centro', 'Sud', 'Sicilia', 'Sardegna'],
+    datasets: [{
+      label: 'Anomalia Max rispetto alla media (°C)',
+      data: [7, 6, 4, 3, 5],
+      backgroundColor: [
+        'rgba(184,134,11,0.8)', 'rgba(184,134,11,0.7)', 'rgba(184,134,11,0.55)',
+        'rgba(184,134,11,0.45)', 'rgba(184,134,11,0.65)'
+      ],
+      borderColor: GOLD, borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { min: 0, max: 10, ticks: { stepSize: 2, callback: v => '+' + v + '°' }, grid: { color: RULE } },
+      x: { grid: { display: false } }
+    },
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } },
+      tooltip: { callbacks: { label: ctx => '+' + ctx.parsed.y + ' °C sopra media' } }
+    }
+  }
+});
+
+// 6. Profilo Termico Verticale Appennino
+new Chart(document.getElementById('chartQuota'), {
+  type: 'line',
+  data: {
+    labels: ['600 m', '900 m', '1.200 m', '1.500 m', '1.800 m', '2.100 m', '2.400 m', '2.700 m\n(zero termico)'],
+    datasets: [
+      {
+        label: 'T min (°C)',
+        data: [5, 4, 3, 1, 0, -1, -3, 0],
+        borderColor: BLUE,
+        backgroundColor: 'rgba(26,58,92,0.05)',
+        borderWidth: 2,
+        pointBackgroundColor: BLUE,
+        pointRadius: 3,
+        tension: 0.4
+      },
+      {
+        label: 'T max (°C)',
+        data: [18, 17, 16, 14, 12, 10, 7, 0],
+        borderColor: ACCENT,
+        backgroundColor: 'rgba(139,33,33,0.05)',
+        borderWidth: 2,
+        pointBackgroundColor: ACCENT,
+        pointRadius: 3,
+        tension: 0.4
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } }
+    },
+    scales: {
+      y: {
+        ticks: { callback: v => v + '°C' },
+        grid: { color: RULE },
+        title: { display: true, text: '°C', font: { size: 8 } }
+      },
+      x: { grid: { color: RULE }, ticks: { font: { size: 7 } } }
+    }
+  }
+});
+
+// 7. Temperatura per Località Appennino
+new Chart(document.getElementById('chartLocalita'), {
+  type: 'bar',
+  data: {
+    labels: ['L\'Aquila\n720m', 'Lago\nBarrea\n900m', 'Scanno\n1050m', 'Pescas.\n1167m', 'Roccar.\n1236m', 'Ovindoli\n1375m', 'M. Livata\n1400m', 'C. Felice\n1535m', 'F. Acero\n1540m', 'M. Meta\n1955m', 'Majella\n2000m', 'C. Imper.\n2130m'],
+    datasets: [
+      {
+        label: 'Min °C',
+        data: [6, 5, 4, 4, 2, 3, 2, 2, 0, 0, 1, -1],
+        backgroundColor: 'rgba(26,58,92,0.6)',
+        borderColor: BLUE, borderWidth: 1
+      },
+      {
+        label: 'Max °C',
+        data: [18, 18, 17, 17, 14, 15, 15, 14, 11, 11, 11, 12],
+        backgroundColor: 'rgba(139,33,33,0.6)',
+        borderColor: ACCENT, borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } }
+    },
+    scales: {
+      x: { min: -2, max: 22, ticks: { callback: v => v + '°' }, grid: { color: RULE } },
+      y: { grid: { display: false }, ticks: { font: { size: 7 } } }
+    }
+  }
+});
+
+// 8. Neve Residua per Quota
+new Chart(document.getElementById('chartNeve'), {
+  type: 'bar',
+  data: {
+    labels: ['< 1.500 m', '1.500–1.800 m', '1.800–2.100 m', '2.100–2.400 m', '> 2.400 m'],
+    datasets: [{
+      label: 'Neve residua stimata (cm)',
+      data: [0, 2, 15, 45, 90],
+      backgroundColor: [
+        'rgba(26,58,92,0.15)', 'rgba(26,58,92,0.3)', 'rgba(26,58,92,0.45)',
+        'rgba(26,58,92,0.6)', 'rgba(26,58,92,0.8)'
+      ],
+      borderColor: BLUE, borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { min: 0, ticks: { callback: v => v + ' cm' }, grid: { color: RULE } },
+      x: { grid: { display: false } }
+    },
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } },
+      tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' cm equiv. idr.' } }
+    }
+  }
+});
+
+// 9. Condizioni del Mare
+new Chart(document.getElementById('chartMare'), {
+  type: 'radar',
+  data: {
+    labels: ['Tirreno\nAlto', 'Tirreno\nMedio', 'Adriatico\nAlto', 'Adriatico\nBasso', 'Ionio', 'Canale\nSicilia'],
+    datasets: [{
+      label: 'Altezza onda media (m)',
+      data: [0.6, 0.8, 0.3, 0.3, 1.2, 0.6],
+      borderColor: SKY,
+      backgroundColor: 'rgba(74,127,165,0.2)',
+      pointBackgroundColor: SKY,
+      borderWidth: 2,
+      pointRadius: 3
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } }
+    },
+    scales: {
+      r: {
+        min: 0, max: 1.5,
+        ticks: { stepSize: 0.5, callback: v => v + 'm', font: { size: 7 } },
+        grid: { color: RULE },
+        pointLabels: { font: { size: 7 } }
+      }
+    }
+  }
+});
+
+// 10. Confronto Oggi vs Clima Roma
+new Chart(document.getElementById('chartClima'), {
+  type: 'bar',
+  data: {
+    labels: ['T min\n(°C)', 'T max\n(°C)', 'UV\nmax', 'Prec.\n(mm)', 'Umid. min\n(%)'],
+    datasets: [
+      {
+        label: 'Oggi 25/04/2026',
+        data: [10, 25, 8, 0, 32],
+        backgroundColor: 'rgba(139,33,33,0.7)',
+        borderColor: ACCENT, borderWidth: 1
+      },
+      {
+        label: 'Media Climatologica Aprile',
+        data: [9, 19, 6, 1.8, 45],
+        backgroundColor: 'rgba(184,134,11,0.55)',
+        borderColor: GOLD, borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, labels: { font: { size: 8 }, color: '#3d3228' } }
+    },
+    scales: {
+      y: { min: 0, grid: { color: RULE } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
