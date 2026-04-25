@@ -24,59 +24,10 @@ BOLLETTINI_DIR = os.path.join(os.getcwd(), "bollettini")
 IFRAME_HEIGHT   = 920
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CSS — iniettato una volta sola
+# CSS GLOBALE
 # ─────────────────────────────────────────────────────────────────────────────
 NAV_CSS = """
 <style>
-/* ── Navigator ── */
-.bnav {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    background: #f4f2ed;
-    border: 1px solid #ccc8be;
-    border-radius: 10px;
-    overflow: hidden;
-    height: 48px;
-    font-family: monospace;
-}
-.bnav-btn {
-    width: 40px; height: 48px;
-    border: none; background: transparent;
-    color: #444; font-size: 16px;
-    cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .15s;
-}
-.bnav-btn:hover { background: #e8e4da; }
-.bnav-btn:disabled { color: #bbb; cursor: default; }
-.bnav-divider {
-    width: 1px; height: 30px;
-    background: #ccc8be; flex-shrink: 0;
-}
-.bnav-date-pill {
-    padding: 0 14px; flex-shrink: 0;
-    font-size: 0.8rem; font-weight: 600;
-    color: #185FA5; white-space: nowrap;
-    display: flex; align-items: center; gap: 6px;
-}
-.bnav-title {
-    flex: 1; min-width: 0;
-    padding: 0 12px;
-    font-size: 0.75rem; color: #444;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    font-family: monospace;
-}
-.bnav-counter {
-    padding: 0 12px; flex-shrink: 0;
-    font-size: 0.68rem; color: #999;
-    white-space: nowrap;
-}
-.bnav-size {
-    padding: 0 10px 0 0; flex-shrink: 0;
-    font-size: 0.65rem; color: #bbb; white-space: nowrap;
-}
-
 /* ── Category tabs ── */
 .bcat-wrap { display:flex; gap:4px; margin-bottom:8px; flex-wrap:wrap; }
 .bcat {
@@ -87,17 +38,6 @@ NAV_CSS = """
 }
 .bcat:hover  { border-color: #999; color: #333; background: #ede9e2; }
 .bcat.active { background: #185FA5; border-color: #185FA5; color: #fff; }
-
-/* ── Mini calendar popup ── */
-.bcal-btn {
-    padding: 4px 12px; border-radius: 20px;
-    border: 1px solid #ccc8be; background: #f4f2ed;
-    font-family: monospace; font-size: 0.7rem; font-weight: 600;
-    letter-spacing: 0.06em; color: #666; cursor: pointer;
-    display: flex; align-items: center; gap: 5px;
-    transition: all .15s;
-}
-.bcal-btn:hover { border-color: #999; color: #333; }
 
 /* ── Edition selector ── */
 .bedition-wrap { display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
@@ -110,20 +50,135 @@ NAV_CSS = """
 .bedition:hover  { border-color: #888; color: #1a1a1a; }
 .bedition.active { background: #E6F1FB; border-color: #185FA5; color: #0C447C; font-weight:600; }
 
-/* ── Tag pills ── */
-.btag { display:inline-block; font-family:monospace; font-size:0.6rem;
-        font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
-        padding:1px 7px; border-radius:10px; }
-.btag-meteo { background:#E6F1FB; color:#0C447C; }
-.btag-neve  { background:#E1F5EE; color:#085041; }
-.btag-eu    { background:#FAEEDA; color:#633806; }
-.btag-best  { background:#EAF3DE; color:#27500A; }
+/* ── Info strip ── */
+.binfo-strip {
+    background: #f4f2ed;
+    border: 1px solid #ccc8be;
+    border-radius: 8px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 38px;
+    font-family: monospace;
+    overflow: hidden;
+}
+.binfo-date  { font-weight:700; color:#185FA5; white-space:nowrap; font-size:0.82rem; }
+.binfo-sep   { color:#ccc; }
+.binfo-title { color:#555; font-size:0.72rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+.binfo-size  { color:#bbb; font-size:0.62rem; white-space:nowrap; }
+.binfo-count { color:#aaa; font-size:0.62rem; white-space:nowrap; }
 
-/* ── Date indicator dots in calendar ── */
-.bdot { width:6px; height:6px; border-radius:50%; background:#185FA5;
-        display:inline-block; margin:1px; }
+/* ── Calendario ── */
+.bcal-container {
+    background: #fff;
+    border: 1px solid #e0ddd5;
+    border-radius: 12px;
+    padding: 16px 20px 12px;
+    max-width: 520px;
+    margin-bottom: 4px;
+}
+.bcal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.bcal-month-label {
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    letter-spacing: 0.03em;
+}
+.bcal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 6px;
+    gap: 3px;
+}
+.bcal-weekdays span {
+    text-align: center;
+    font-family: monospace;
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: #aaa;
+    letter-spacing: 0.08em;
+    padding: 4px 0;
+}
+.bcal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+.bcal-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.72rem;
+    position: relative;
+    cursor: default;
+    color: #ccc;
+}
+.bcal-cell.has-doc {
+    background: #f4f2ed;
+    border: 1px solid #ddd9ce;
+    color: #1a1a1a;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .12s, border-color .12s, color .12s;
+}
+.bcal-cell.has-doc:hover {
+    background: #E6F1FB;
+    border-color: #85B7EB;
+    color: #0C447C;
+}
+.bcal-cell.active {
+    background: #185FA5 !important;
+    border-color: #185FA5 !important;
+    color: #fff !important;
+}
+.bcal-cell .bcal-dot {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #185FA5;
+}
+.bcal-cell.active .bcal-dot {
+    background: rgba(255,255,255,0.6);
+}
+.bcal-legend {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #ede9e2;
+    font-family: monospace;
+    font-size: 0.62rem;
+    color: #aaa;
+}
+.bcal-legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #185FA5;
+    flex-shrink: 0;
+}
 </style>
 """
+
+MONTHS_IT = ["", "Gen", "Feb", "Mar", "Apr", "Mag", "Giu",
+             "Lug", "Ago", "Set", "Ott", "Nov", "Dic"]
+MONTHS_IT_FULL = ["", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+                  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
+WEEKDAYS = ["L", "M", "M", "G", "V", "S", "D"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -167,36 +222,24 @@ def _tag_for_category(cat: str) -> str:
 
 
 def scan_bollettini(root: str) -> dict:
-    """
-    Returns:
-      {
-        "METEO": [ {fname, full_path, pdf_path, date, date_label, title, size_html, size_pdf}, ... ],
-        "NEVE":  [ ... ],
-        ...
-      }
-    Sorted by date DESC within each category.
-    Order of categories: METEO first, NEVE second, then alphabetical.
-    """
     result: dict[str, list] = {}
 
     if not os.path.isdir(root):
         return result
 
-    # Subcategory folders
     subdirs = sorted(
-        [d for d in os.listdir(root)
-         if os.path.isdir(os.path.join(root, d))],
+        [d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d))],
     )
-    # Put METEO first, NEVE second
+
     def cat_order(d):
         dl = d.lower()
-        if dl.startswith("meteo"):   return (0, d)
+        if dl.startswith("meteo"):                    return (0, d)
         if dl.startswith("neve") or dl.startswith("ski"): return (1, d)
         return (2, d)
     subdirs = sorted(subdirs, key=cat_order)
 
     for subdir in subdirs:
-        cat_label = subdir.upper()
+        cat_label  = subdir.upper()
         subdir_path = os.path.join(root, subdir)
         files = sorted(
             [f for f in os.listdir(subdir_path) if f.lower().endswith(".html")],
@@ -223,7 +266,6 @@ def scan_bollettini(root: str) -> dict:
         if docs:
             result[cat_label] = docs
 
-    # Also pick up HTML files directly in root (no subdir)
     root_files = sorted(
         [f for f in os.listdir(root) if f.lower().endswith(".html")],
         reverse=True,
@@ -248,9 +290,7 @@ def scan_bollettini(root: str) -> dict:
             ))
         existing = result.get("METEO", [])
         combined = sorted(existing + docs, key=lambda x: x["fname"], reverse=True)
-        # Deduplicate by full_path
-        seen = set()
-        deduped = []
+        seen, deduped = set(), []
         for doc in combined:
             if doc["full_path"] not in seen:
                 seen.add(doc["full_path"])
@@ -261,7 +301,6 @@ def scan_bollettini(root: str) -> dict:
 
 
 def inject_viewer_css(html: str, is_dark: bool = False) -> str:
-    """Inject responsive CSS for iframe viewing. Force light bg for dark docs."""
     overrides = """
 <style>
 body  { max-width:100%!important; padding:16px 24px!important;
@@ -278,12 +317,130 @@ table { width:100%!important; font-size:0.83rem; }
     if is_dark:
         overrides += """
 <style>
-/* Force light background for dark-theme bollettini */
 body { background:#f7f6f2!important; color:#1a1a1a!important; }
 .hero, [class*="hero"] { background:linear-gradient(135deg,#ddeef5,#e4eff8)!important; }
 </style>"""
     tag = "</head>" if "</head>" in html else "<body>"
     return html.replace(tag, overrides + "\n" + tag, 1)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CALENDARIO REDESIGNATO
+# ─────────────────────────────────────────────────────────────────────────────
+
+def render_calendar(docs: list, current_doc: dict, cal_year: int, cal_month: int) -> tuple[int | None, int | None]:
+    """
+    Renders the redesigned calendar.
+    Returns (new_idx, None) if a date button was clicked, else (None, None).
+    Also returns (None, 'prev') or (None, 'next') for month navigation.
+    """
+    doc_dates_set = {doc2["date"] for doc2 in docs if doc2["date"]}
+
+    # ── Month navigation header ──────────────────────────────────────────────
+    col_prev, col_title, col_today, col_next = st.columns([1, 5, 2, 1])
+
+    with col_prev:
+        prev_clicked = st.button("←", key="bcal_prev_m", use_container_width=True)
+    with col_title:
+        st.markdown(
+            f"<div style='text-align:center;font-family:monospace;font-weight:600;"
+            f"font-size:0.88rem;padding:6px 0;color:#1a1a1a;letter-spacing:0.03em;'>"
+            f"{MONTHS_IT_FULL[cal_month]} {cal_year}</div>",
+            unsafe_allow_html=True,
+        )
+    with col_today:
+        today_clicked = st.button("oggi", key="bcal_today", use_container_width=True)
+    with col_next:
+        next_clicked = st.button("→", key="bcal_next_m", use_container_width=True)
+
+    if prev_clicked:
+        return None, "prev"
+    if next_clicked:
+        return None, "next"
+    if today_clicked:
+        return None, "today"
+
+    # ── Weekday headers ──────────────────────────────────────────────────────
+    wd_cols = st.columns(7)
+    for i, wd in enumerate(WEEKDAYS):
+        wd_cols[i].markdown(
+            f"<div style='text-align:center;font-family:monospace;font-size:0.62rem;"
+            f"font-weight:600;color:#bbb;letter-spacing:0.08em;padding:2px 0;'>{wd}</div>",
+            unsafe_allow_html=True,
+        )
+
+    # ── Calendar grid ────────────────────────────────────────────────────────
+    first_weekday = date(cal_year, cal_month, 1).weekday()  # 0=Mon
+    days_in_month = calendar.monthrange(cal_year, cal_month)[1]
+
+    # Build full 6-row grid (42 cells)
+    cells: list[date | None] = [None] * first_weekday
+    for d in range(1, days_in_month + 1):
+        cells.append(date(cal_year, cal_month, d))
+    while len(cells) % 7 != 0:
+        cells.append(None)
+
+    today = date.today()
+    clicked_idx = None
+
+    for row_start in range(0, len(cells), 7):
+        week = cells[row_start:row_start + 7]
+        cols = st.columns(7)
+        for ci, day_date in enumerate(week):
+            with cols[ci]:
+                if day_date is None:
+                    st.markdown(
+                        "<div style='aspect-ratio:1;display:flex;align-items:center;"
+                        "justify-content:center;'></div>",
+                        unsafe_allow_html=True,
+                    )
+                    continue
+
+                has_doc  = day_date in doc_dates_set
+                is_active = (current_doc.get("date") == day_date)
+                is_today  = (day_date == today)
+
+                if has_doc:
+                    # Styled clickable button
+                    btn_style = "primary" if is_active else "secondary"
+                    label = f"**{day_date.day}**"
+                    if st.button(
+                        label,
+                        key=f"bcal_day_{day_date}",
+                        type=btn_style,
+                        use_container_width=True,
+                        help=day_date.strftime("%-d %b %Y"),
+                    ):
+                        # Find first doc matching this date
+                        for j, doc2 in enumerate(docs):
+                            if doc2["date"] == day_date:
+                                clicked_idx = j
+                                break
+                else:
+                    # Non-clickable ghost cell
+                    color = "#bbb" if is_today else "#d5d2ca"
+                    weight = "600" if is_today else "400"
+                    border = "1px solid #ccc" if is_today else "none"
+                    st.markdown(
+                        f"<div style='text-align:center;font-family:monospace;"
+                        f"font-size:0.72rem;font-weight:{weight};color:{color};"
+                        f"padding:6px 0;border-radius:8px;border:{border};'>"
+                        f"{day_date.day}</div>",
+                        unsafe_allow_html=True,
+                    )
+
+    # ── Legend ───────────────────────────────────────────────────────────────
+    st.markdown(
+        "<div style='display:flex;align-items:center;gap:7px;margin-top:8px;"
+        "padding-top:8px;border-top:1px solid #ede9e2;font-family:monospace;"
+        "font-size:0.62rem;color:#aaa;'>"
+        "<span style='width:8px;height:8px;border-radius:50%;background:#185FA5;"
+        "flex-shrink:0;display:inline-block;'></span>"
+        "Bollettino disponibile</div>",
+        unsafe_allow_html=True,
+    )
+
+    return clicked_idx, None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -311,7 +468,7 @@ def main():
         )
         return
 
-    categories = list(catalog.keys())   # already ordered: METEO, NEVE, ...
+    categories = list(catalog.keys())
 
     # ── Session state ─────────────────────────────────────────────────────────
     ss = st.session_state
@@ -323,6 +480,10 @@ def main():
         ss.bnav_idx = 0
     if "show_cal" not in ss:
         ss.show_cal = False
+    if "cal_year" not in ss or "cal_month" not in ss:
+        today = date.today()
+        ss.cal_year  = today.year
+        ss.cal_month = today.month
 
     cat   = ss.bnav_cat
     docs  = catalog[cat]
@@ -330,10 +491,17 @@ def main():
     total = len(docs)
     doc   = docs[idx]
 
+    # Sync calendar to current doc's date on first open
+    if doc.get("date"):
+        ref = doc["date"]
+        if "cal_year" not in ss:
+            ss.cal_year  = ref.year
+            ss.cal_month = ref.month
+
     # ── Header ────────────────────────────────────────────────────────────────
     st.subheader("📄 Bollettino Meteo")
 
-    # ── Category tabs (one line) ───────────────────────────────────────────────
+    # ── Category tabs ─────────────────────────────────────────────────────────
     cat_cols = st.columns(len(categories) + 2)
     for i, c in enumerate(categories):
         is_active = (c == cat)
@@ -349,75 +517,56 @@ def main():
             ss.show_cal = False
             st.rerun()
 
-    # Calendar toggle in same row
     cal_label = "📅 Data" if not ss.show_cal else "✕ Chiudi"
     if cat_cols[len(categories)].button(cal_label, key="bcal_toggle", use_container_width=True):
         ss.show_cal = not ss.show_cal
+        # Sync calendar to current doc date when opening
+        if ss.show_cal and doc.get("date"):
+            ss.cal_year  = doc["date"].year
+            ss.cal_month = doc["date"].month
         st.rerun()
 
     st.divider()
 
-    # ── Mini calendar popup ────────────────────────────────────────────────────
+    # ── Calendario redesignato ─────────────────────────────────────────────────
     if ss.show_cal:
-        all_dates = sorted(
-            {doc2["date"] for doc2 in docs if doc2["date"]},
-            reverse=True,
-        )
+        all_dates = sorted({d2["date"] for d2 in docs if d2["date"]}, reverse=True)
+
         if all_dates:
-            # Month to show: current doc's date or latest
-            ref_date = doc["date"] or all_dates[0]
-            cal_year, cal_month = ref_date.year, ref_date.month
-
-            prev_m_col, title_col, next_m_col = st.columns([1, 4, 1])
-            prev_m = date(cal_year - (cal_month == 1), 12 if cal_month == 1 else cal_month - 1, 1)
-            next_m = date(cal_year + (cal_month == 12), 1 if cal_month == 12 else cal_month + 1, 1)
-
-            MONTHS_IT = ["","Gen","Feb","Mar","Apr","Mag","Giu",
-                         "Lug","Ago","Set","Ott","Nov","Dic"]
-            title_col.markdown(
-                f"<div style='text-align:center;font-family:monospace;font-weight:600;"
-                f"font-size:0.8rem;padding:4px 0;'>"
-                f"{MONTHS_IT[cal_month]} {cal_year}</div>",
-                unsafe_allow_html=True,
+            new_idx, nav_action = render_calendar(
+                docs       = docs,
+                current_doc = doc,
+                cal_year   = ss.cal_year,
+                cal_month  = ss.cal_month,
             )
-            if prev_m_col.button("←", key="bcal_prev_m"):
-                pass   # month navigation would need more state; simplified here
 
-            # Date buttons — only dates that have docs
-            doc_dates_set = set(all_dates)
-            cal_matrix = calendar.monthcalendar(cal_year, cal_month)
-            for week in cal_matrix:
-                day_cols = st.columns(7)
-                for wi, day_num in enumerate(week):
-                    if day_num == 0:
-                        continue
-                    d_obj = date(cal_year, cal_month, day_num)
-                    has_doc = d_obj in doc_dates_set
-                    label = f"**{day_num}**" if has_doc else str(day_num)
-                    is_cur = (d_obj == doc.get("date"))
-                    btn_type = "primary" if is_cur else "secondary"
-                    if has_doc:
-                        if day_cols[wi].button(
-                            str(day_num), key=f"bcal_{d_obj}",
-                            type=btn_type,
-                            help=d_obj.strftime("%-d %b %Y"),
-                        ):
-                            # Jump to first doc of that date in current category
-                            for j, doc2 in enumerate(docs):
-                                if doc2["date"] == d_obj:
-                                    ss.bnav_idx = j
-                                    ss.show_cal = False
-                                    st.rerun()
-                    else:
-                        day_cols[wi].markdown(
-                            f"<div style='text-align:center;color:#ccc;"
-                            f"font-size:0.75rem;padding:4px 0;'>{day_num}</div>",
-                            unsafe_allow_html=True,
-                        )
+            if nav_action == "prev":
+                if ss.cal_month == 1:
+                    ss.cal_year  -= 1
+                    ss.cal_month  = 12
+                else:
+                    ss.cal_month -= 1
+                st.rerun()
+            elif nav_action == "next":
+                if ss.cal_month == 12:
+                    ss.cal_year  += 1
+                    ss.cal_month  = 1
+                else:
+                    ss.cal_month += 1
+                st.rerun()
+            elif nav_action == "today":
+                t = date.today()
+                ss.cal_year  = t.year
+                ss.cal_month = t.month
+                st.rerun()
+            elif new_idx is not None:
+                ss.bnav_idx = new_idx
+                ss.show_cal = False
+                st.rerun()
 
         st.divider()
 
-    # ── Single-row navigator ───────────────────────────────────────────────────
+    # ── Navigator row ─────────────────────────────────────────────────────────
     nc1, nc2, nc3, nc4, nc5 = st.columns([1, 1, 6, 1, 1])
 
     with nc1:
@@ -437,24 +586,16 @@ def main():
             st.rerun()
 
     with nc3:
-        # Central info strip
-        tag_cls = _tag_for_category(cat)
-        same_day_docs = [d2 for d2 in docs if d2["date"] == doc["date"]] if doc["date"] else [doc]
-        edition_info = f" · edizione {same_day_docs.index(doc)+1}/{len(same_day_docs)}" if len(same_day_docs) > 1 else ""
+        same_day_docs  = [d2 for d2 in docs if d2["date"] == doc["date"]] if doc["date"] else [doc]
+        edition_info   = f" · edizione {same_day_docs.index(doc)+1}/{len(same_day_docs)}" if len(same_day_docs) > 1 else ""
         st.markdown(
-            f"<div style='background:#f4f2ed;border:1px solid #ccc8be;border-radius:8px;"
-            f"padding:8px 14px;display:flex;align-items:center;gap:10px;height:38px;"
-            f"font-family:monospace;overflow:hidden;'>"
-            f"<span style='font-weight:700;color:#185FA5;white-space:nowrap;font-size:0.82rem;'>"
-            f"{doc['date_label']}</span>"
-            f"<span style='color:#ccc;'>|</span>"
-            f"<span style='color:#555;font-size:0.72rem;white-space:nowrap;overflow:hidden;"
-            f"text-overflow:ellipsis;flex:1;'>{doc['title']}{edition_info}</span>"
-            f"<span style='color:#bbb;font-size:0.62rem;white-space:nowrap;'>"
-            f"HTML {doc['size_html']}"
-            f"{(' · PDF ' + doc['size_pdf']) if doc['pdf_path'] else ''}"
-            f"</span>"
-            f"<span style='color:#aaa;font-size:0.62rem;white-space:nowrap;'>{idx+1}/{total}</span>"
+            f"<div class='binfo-strip'>"
+            f"<span class='binfo-date'>{doc['date_label']}</span>"
+            f"<span class='binfo-sep'>|</span>"
+            f"<span class='binfo-title'>{doc['title']}{edition_info}</span>"
+            f"<span class='binfo-size'>HTML {doc['size_html']}"
+            f"{(' · PDF ' + doc['size_pdf']) if doc['pdf_path'] else ''}</span>"
+            f"<span class='binfo-count'>{idx+1}/{total}</span>"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -480,9 +621,9 @@ def main():
     if len(same_day) > 1:
         ed_cols = st.columns(min(len(same_day), 6))
         for ei, ed in enumerate(same_day):
-            is_active = (ed["fname"] == doc["fname"])
-            label = ed["title"] or ed["fname"]
-            btn_style = "primary" if is_active else "secondary"
+            is_active  = (ed["fname"] == doc["fname"])
+            label      = ed["title"] or ed["fname"]
+            btn_style  = "primary" if is_active else "secondary"
             if ed_cols[ei % 6].button(
                 label[:30],
                 key=f"bedition_{ei}",
