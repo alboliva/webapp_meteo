@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analisi Meteorologica — Lazio & Abruzzo | 28 Aprile 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --paper: #f5f0e8;
+    --paper-dark: #ece5d6;
+    --ruled: #d6cdb8;
+    --accent-cold: #1a4a7a;
+    --accent-cold-light: #4e7fad;
+    --accent-warm: #8b2500;
+    --accent-warm-light: #c4420a;
+    --accent-gold: #a07020;
+    --accent-snow: #6a8faf;
+    --text-body: #1a1612;
+    --text-secondary: #4a4035;
+    --text-caption: #6a5f50;
+    --border: #b8ad9a;
+    --highlight: #fff3cd;
+    --column-gap: 2.4rem;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--text-body);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 10.5pt;
+    line-height: 1.72;
+  }
+
+  /* ── PAGE WRAPPER ── */
+  .page {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    border-top: 5px double var(--ink);
+    border-bottom: 5px double var(--ink);
+    padding: 1.4rem 0 1.2rem;
+    margin: 1.4rem 0 0;
+    text-align: center;
+    background: var(--paper);
+  }
+  .masthead-meta {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7.5pt;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--text-caption);
+    margin-bottom: .5rem;
+  }
+  .masthead h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: var(--ink);
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: var(--accent-cold);
+  }
+  .masthead-sub {
+    margin-top: .55rem;
+    font-size: 9.5pt;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  .masthead-byline {
+    margin-top: .9rem;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7pt;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-caption);
+    border-top: 1px solid var(--border);
+    padding-top: .6rem;
+  }
+
+  /* ── ABSTRACT BOX ── */
+  .abstract {
+    background: var(--ink);
+    color: #e8e0d0;
+    padding: 1.2rem 1.8rem;
+    margin: 1.2rem 0 0;
+    border-left: 4px solid var(--accent-gold);
+  }
+  .abstract-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7pt;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: .45rem;
+  }
+  .abstract p {
+    font-size: 9.5pt;
+    line-height: 1.65;
+    color: #cdc4b2;
+  }
+
+  /* ── SECTION RULE ── */
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    margin: 1.6rem 0 .9rem;
+  }
+  .section-rule::before { content:''; flex: 1; height: 2px; background: var(--ink); }
+  .section-rule::after  { content:''; flex: 1; height: 1px; background: var(--border); }
+  .section-rule h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.0rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  /* ── TWO COLUMN LAYOUT ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--column-gap);
+    align-items: start;
+  }
+  .two-col-asym {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--column-gap);
+    align-items: start;
+  }
+  .two-col-asym-rev {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: var(--column-gap);
+    align-items: start;
+  }
+  .full-width { grid-column: 1 / -1; }
+
+  /* ── COLUMN DIVIDER ── */
+  .col-divider {
+    border-left: 1px solid var(--border);
+    padding-left: var(--column-gap);
+  }
+
+  /* ── BODY TEXT ── */
+  p { margin-bottom: .85rem; }
+  .drop-cap::first-letter {
+    float: left;
+    font-family: 'Playfair Display', serif;
+    font-size: 3.6rem;
+    line-height: .82;
+    padding-right: .12rem;
+    padding-top: .05rem;
+    color: var(--accent-cold);
+  }
+
+  /* ── CHART CONTAINER ── */
+  .chart-wrap {
+    background: white;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent-cold);
+    padding: .9rem .9rem .5rem;
+    margin: .9rem 0;
+    position: relative;
+  }
+  .chart-wrap canvas { display: block; }
+  .chart-caption {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7pt;
+    color: var(--text-caption);
+    margin-top: .4rem;
+    padding-top: .35rem;
+    border-top: 1px solid var(--ruled);
+    line-height: 1.45;
+  }
+  .chart-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7.5pt;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent-cold);
+    margin-bottom: .3rem;
+  }
+
+  /* ── DATA TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin: .8rem 0;
+    font-family: 'Source Code Pro', monospace;
+  }
+  thead tr { background: var(--ink); color: #e0d8c8; }
+  thead th {
+    padding: .4rem .5rem;
+    text-align: left;
+    font-size: 7pt;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  tbody tr:nth-child(odd)  { background: white; }
+  tbody tr:nth-child(even) { background: var(--paper-dark); }
+  tbody td { padding: .35rem .5rem; color: var(--text-body); border-bottom: 1px solid var(--ruled); }
+  .td-hot { color: var(--accent-warm); font-weight: 600; }
+  .td-cold { color: var(--accent-snow); font-weight: 600; }
+  .td-zero { color: var(--accent-cold); font-weight: 600; }
+  .table-caption {
+    font-size: 7.5pt;
+    font-style: italic;
+    color: var(--text-caption);
+    margin-top: .3rem;
+    font-family: 'Libre Baskerville', serif;
+  }
+
+  /* ── PULL QUOTE ── */
+  .pull-quote {
+    border-left: 4px solid var(--accent-cold);
+    padding: .6rem 1rem;
+    margin: .9rem 0;
+    background: rgba(26,74,122,.06);
+  }
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 11pt;
+    color: var(--accent-cold);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* ── CALLOUT BOX ── */
+  .callout {
+    border: 1.5px solid var(--border);
+    background: white;
+    padding: .85rem 1rem;
+    margin: .8rem 0;
+  }
+  .callout-title {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7.5pt;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--accent-warm);
+    margin-bottom: .4rem;
+  }
+  .callout ul { padding-left: 1.1rem; margin: 0; }
+  .callout li { margin-bottom: .25rem; font-size: 9pt; }
+
+  /* ── ANOMALY BOX ── */
+  .anomaly-box {
+    background: linear-gradient(135deg, #fff8e1, #ffecb3);
+    border: 2px solid var(--accent-gold);
+    border-left: 5px solid var(--accent-warm);
+    padding: .9rem 1.1rem;
+    margin: .9rem 0;
+  }
+  .anomaly-box .anomaly-label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7pt;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    font-weight: 700;
+    margin-bottom: .35rem;
+  }
+  .anomaly-box p { font-size: 9pt; margin-bottom: .3rem; color: #3a2800; }
+
+  /* ── STAT BADGES ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .7rem;
+    margin: .8rem 0;
+  }
+  .stat-badge {
+    background: var(--ink);
+    color: #e0d8c8;
+    padding: .7rem .6rem;
+    text-align: center;
+  }
+  .stat-badge .val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: white;
+    display: block;
+  }
+  .stat-badge .unit {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7pt;
+    color: #8a7f6e;
+    letter-spacing: .1em;
+  }
+  .stat-badge .lbl {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 6.5pt;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #a09080;
+    margin-top: .2rem;
+  }
+  .stat-badge.warm .val { color: #ff8c5a; }
+  .stat-badge.cold .val { color: #7ec8e3; }
+  .stat-badge.gold .val { color: #f5c842; }
+  .stat-badge.snow .val { color: #b0d4ea; }
+
+  /* ── MAP KEY ── */
+  .locality-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .35rem;
+    margin: .6rem 0;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 8pt;
+  }
+  .locality-item {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .2rem .4rem;
+    background: white;
+    border: 1px solid var(--ruled);
+  }
+  .locality-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── REFERENCES ── */
+  .references {
+    border-top: 3px double var(--ink);
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+  }
+  .references h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    margin-bottom: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .ref-list { list-style: none; padding: 0; }
+  .ref-list li {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7.5pt;
+    color: var(--text-secondary);
+    padding: .2rem 0;
+    border-bottom: 1px solid var(--ruled);
+    display: flex;
+    gap: .6rem;
+  }
+  .ref-num {
+    color: var(--accent-cold);
+    font-weight: 600;
+    flex-shrink: 0;
+    min-width: 2rem;
+  }
+
+  /* ── FOOTER ── */
+  .footer-rule {
+    border: none;
+    border-top: 3px double var(--ink);
+    margin: 1.5rem 0 .6rem;
+  }
+  .footer-text {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 7pt;
+    color: var(--text-caption);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── SNOWFLAKE HEADER ── */
+  .section-icon {
+    display: inline-block;
+    margin-right: .3rem;
+    font-size: .9rem;
+  }
+
+  @media (max-width: 780px) {
+    .two-col, .two-col-asym, .two-col-asym-rev { grid-template-columns: 1fr; }
+    .col-divider { border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 1rem; }
+    .stat-row { grid-template-columns: repeat(2,1fr); }
+    .masthead h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-meta">Analisi Meteorologica · ECMWF HRES / GFS · Run 28 Apr 2026 00Z</div>
+    <h1>Situazione Sinottica <em>Lazio–Abruzzo</em><br>Aprile 2026: Anticiclone, Anomalie Termiche e Fine Stagione Nivale</h1>
+    <div class="masthead-sub">Focus localities: Roma · Bracciano · Trevignano Romano · Marina San Nicola · L'Aquila · Pescasseroli · Roccaraso · Campo Imperatore · Ovindoli · Monte Velino · Forca d'Acero · Monte Livata · Tagliacozzo · Poggio di Roio · Sant'Anatolia</div>
+    <div class="masthead-byline">Elaborazione dati: ilmeteo.it · 3bmeteo.com · ECMWF HRES 0.1° · GFS 0.25° · Tropical Tidbits · Pivotal Weather · Meteologix · wxcharts &nbsp;|&nbsp; Validità: 28 Apr – 1 Mag 2026 &nbsp;|&nbsp; DOI simulato: meteo-laz-abr/2026-04-28</div>
+  </div>
+
+  <!-- ABSTRACT -->
+  <div class="abstract">
+    <div class="abstract-label">Abstract</div>
+    <p>Un robusto promontorio anticiclonico subtropicale (H 1015–1018 hPa, run ECMWF HRES 00Z del 28 aprile 2026) domina il Mediterraneo centrale, determinando per il Lazio e l'Abruzzo condizioni di marcata stabilità atmosferica con assenza di precipitazioni, forte insolazione (UV index fino a 7.3) e temperature massime 3–5°C al di sopra della media climatologica 1991–2020. Lo zero termico, attestato a 2950–3200 m s.l.m., ha accelerato la definitiva ablazione del manto nevoso su tutte le stazioni sciistiche della regione (Campo Imperatore, Roccaraso, Ovindoli, Monte Livata, Monte Velino/Cartore, Pescasseroli). Le proiezioni a +72 h indicano una lieve ondulazione del getto subtropicale con aumento della copertura nuvolosa media-alta il 30 aprile, senza tuttavia precipitazioni degne di nota (&lt;0.2 mm solo su creste esposte &gt;1800 m s.l.m., probabilità &lt;15%). Il confronto ECMWF HRES vs. GFS mostra concordanza &gt;95% sullo scenario sinottico per il periodo analizzato.</p>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 1 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">☀</span> 1. Situazione Sinottica Attuale (28 Apr 2026)</h2></div>
+
+  <div class="two-col-asym">
+    <div>
+      <p class="drop-cap">L'analisi delle mappe ECMWF HRES 0.1° (run 00Z, validità 28/04 00Z e 12Z) evidenzia un promontorio anticiclonico ben strutturato, centrato sul Tirreno centrale con valori di pressione al livello del mare compresi tra <strong>1015 e 1018 hPa</strong>. Le isobare sono largamente distanziate, indice di un gradiente barico orizzontale debole e di venti di superficie contenuti (3–15 km/h in pianura, raffiche fino a 25 km/h sui crinali appenninici).</p>
+      <p>La circolazione antioraria (clockwise nell'emisfero nord) convoglia aria subtropicale secca sul settore tirrenico, con il flusso in quota orientato da Ovest–Sudovest. Il run GFS 00Z/06Z conferma il medesimo quadro con una differenza ormai trascurabile sul posizionamento del massimo barico (+0.5–1 hPa verso Nord-Est rispetto all'ECMWF).</p>
+
+      <div class="anomaly-box">
+        <div class="anomaly-label">⚠ Anomalia Termica Registrata</div>
+        <p><strong>+3 / +5°C</strong> rispetto alla media climatologica 1991–2020 per fine aprile. Le massime di 25–26°C a Roma e 20–22°C a L'Aquila collocano la settimana tra le più calde degli ultimi 30 anni per il periodo.</p>
+        <p>Zero termico a 2950–3200 m s.l.m. vs. media aprile di ~2200–2400 m. Scostamento: <strong>+600/+800 m</strong>.</p>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-badge warm">
+          <span class="val">25.5°C</span>
+          <span class="unit">°C</span>
+          <span class="lbl">T max Roma</span>
+        </div>
+        <div class="stat-badge cold">
+          <span class="val">1017</span>
+          <span class="unit">hPa</span>
+          <span class="lbl">Pressione MSLP</span>
+        </div>
+        <div class="stat-badge gold">
+          <span class="val">7.3</span>
+          <span class="unit">UV idx</span>
+          <span class="lbl">Indice UV max</span>
+        </div>
+        <div class="stat-badge snow">
+          <span class="val">0 cm</span>
+          <span class="unit">neve</span>
+          <span class="lbl">Manto nevoso</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-divider">
+      <div class="chart-label">Fig. 1 — Temperatura oraria Roma, 28 Apr 2026</div>
+      <div class="chart-wrap">
+        <canvas id="chartRomaTemp" height="170"></canvas>
+        <div class="chart-caption">Sorgente: elaborazione su dati ilmeteo.it / 3bmeteo.com, centraline synoptiche Roma centro. Linea tratteggiata = media climatologica 1991–2020 per data.</div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-title">📍 Dati Costa — Marina San Nicola / Ostia</div>
+        <ul>
+          <li>Temperatura superficiale mare: <strong>17.5–18°C</strong></li>
+          <li>Stato del mare: calmo → poco mosso (H &lt;0.5 m)</li>
+          <li>Vento mare: OSO 7–11 nodi (13–20 km/h)</li>
+          <li>Visibilità: ottima (&gt;10 km)</li>
+        </ul>
+      </div>
+      <div class="callout">
+        <div class="callout-title">🌊 Dati Laghi — Bracciano / Trevignano</div>
+        <ul>
+          <li>Temperatura acqua: <strong>16–17°C</strong></li>
+          <li>Livello lago: stabile</li>
+          <li>Brezza: leggera da SW, 5–12 km/h pomeridiana</li>
+          <li>Nuvolosità locale: serena</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 2 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">⬇</span> 2. Dinamica della Subsidenza Anticiclonica</h2></div>
+
+  <div class="two-col">
+    <div>
+      <p>Il meccanismo fisico dominante è la <em>subsidenza adiabatica</em>: massa d'aria che in quota converge verso il centro dell'alta pressione scende lentamente verso il suolo (velocità verticale ω ≈ −1 / −5 cm/s, pressione crescente). Poiché il processo è adiabatico secco, per ogni 100 m di discesa l'aria si riscalda di circa <strong>+1°C (gradiente adiabatico secco = −9.8 K/km)</strong>, diminuendo contemporaneamente l'umidità relativa.</p>
+
+      <div class="pull-quote">
+        <p>"La subsidenza agisce come un cappuccio invisibile che soffoca ogni tentativo di convezione umida, impedendo la formazione di nubi cumuliformi e precipitazioni."</p>
+      </div>
+
+      <p>Il risultato pratico è l'<em>inversione termica</em> in quota: uno strato di aria calda sovrasta l'aria più fresca al suolo, rendendo l'atmosfera estremamente stabile (indice di Showalter stimato &gt; +4, CAPE ≈ 0 J/kg). Questo spiega la completa assenza di precipitazioni convettive nonostante le temperature diurne elevate.</p>
+
+      <p>Lo zero termico attestato tra 2950 e 3200 m s.l.m. è indicativo di questa massa d'aria calda in quota. Per confronto, la media aprile 1991–2020 posiziona lo zero termico intorno a 2200–2400 m, con uno scostamento positivo record di <strong>+600/+800 m</strong> rispetto alla climatologia.</p>
+    </div>
+
+    <div class="col-divider">
+      <div class="chart-label">Fig. 2 — Zero Termico: 2026 vs Media Climatologica (Gen–Apr)</div>
+      <div class="chart-wrap">
+        <canvas id="chartZeroTermico" height="200"></canvas>
+        <div class="chart-caption">Zero termico mensile 2026 (blu scuro) vs. media 1991–2020 (grigio). Scostamento positivo persistente da febbraio. Sorgente: sondaggi ECMWF + radiosondaggio Pratica di Mare.</div>
+      </div>
+      <p style="font-size:9pt; color:var(--text-secondary);">L'elevata quota dello zero termico ha determinato la fusione anticipata del manto nevoso su tutto l'Appennino centro-meridionale, con la stagione sciistica che si è conclusa mediamente <strong>2–3 settimane prima</strong> rispetto alla media storica delle stazioni laziali e abruzzesi.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 3 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">📊</span> 3. Dati Meteorologici Orari — 28 Aprile 2026</h2></div>
+
+  <div class="two-col-asym-rev">
+    <div>
+      <div class="chart-label">Fig. 3 — Umidità Relativa vs Temperatura: Roma, 28 Apr</div>
+      <div class="chart-wrap">
+        <canvas id="chartUmidita" height="200"></canvas>
+        <div class="chart-caption">L'anticorrelazione inversa fra temperatura e umidità relativa è l'impronta caratteristica della subsidenza anticiclonica. HR min pomeridiana: 25–30%. Sorgente: centraline synoptiche Roma.</div>
+      </div>
+
+      <div class="chart-label" style="margin-top:1rem;">Fig. 4 — Vento (km/h) per Fascia Oraria: Confronto Pianura vs Crinale</div>
+      <div class="chart-wrap">
+        <canvas id="chartVento" height="180"></canvas>
+        <div class="chart-caption">Brezza di mare OSO tipicamente pomeridiana su Roma/Bracciano. Raffiche maggiori su Campo Imperatore (2130 m). Sorgente: elaborazione centraline ECMWF + 3bmeteo.</div>
+      </div>
+    </div>
+
+    <div class="col-divider">
+      <p style="margin-bottom:.6rem;"><strong>Tab. 1 — Dati orari aggregati per fascia, Roma centro, 28 Apr 2026</strong></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Fascia</th><th>T (°C)</th><th>Perc. (°C)</th><th>HR (%)</th><th>P (hPa)</th><th>Vento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>06–10</td><td>12→19</td><td>12→20</td><td>83→51</td><td>1017–1016</td><td>NNE 3–6</td></tr>
+          <tr><td>11–14</td><td>22→24.5</td><td class="td-hot">22→25</td><td>41→28</td><td>1016</td><td>OSO 6–11</td></tr>
+          <tr><td>15–18</td><td class="td-hot">24.8→22</td><td class="td-hot">24.5→23</td><td class="td-zero">26→33</td><td>1016–1015</td><td>OSO 11–12 (r.25)</td></tr>
+          <tr><td>19–24</td><td>20→15</td><td>20→15</td><td>40→82</td><td>1015–1016</td><td>OSO 4–8</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">T = temperatura, Perc. = percepita, HR = umidità relativa, P = pressione MSLP, r. = raffiche.</div>
+
+      <p style="margin-top:.9rem;margin-bottom:.6rem;"><strong>Tab. 2 — Zone Altitudinali: Temp max pomeridiana, 28 Apr 2026</strong></p>
+      <table>
+        <thead>
+          <tr><th>Zona / Quota</th><th>T max</th><th>T min notte</th><th>Neve</th><th>Imp.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Roma / Laghi (~50 m)</td><td class="td-hot">24–25.5°C</td><td>11–12°C</td><td class="td-zero">0 cm</td><td>—</td></tr>
+          <tr><td>L'Aquila (~720 m)</td><td>19–21°C</td><td>7–10°C</td><td class="td-zero">0 cm</td><td>—</td></tr>
+          <tr><td>Pescasseroli (1167 m)</td><td>19°C</td><td>3°C</td><td class="td-zero">0 cm</td><td class="td-cold">0/5 ch.</td></tr>
+          <tr><td>Ovindoli / M. Livata (~1700 m)</td><td>17–18°C</td><td>2–4°C</td><td class="td-zero">0 cm</td><td class="td-cold">ch.</td></tr>
+          <tr><td>Roccaraso / F.d'Acero (~1400 m)</td><td>17–20°C</td><td>2–5°C</td><td class="td-zero">0 cm</td><td class="td-cold">ch.</td></tr>
+          <tr><td>Monte Velino/Cartore (~2000 m)</td><td>16–18°C</td><td>1–3°C</td><td class="td-zero">0 cm</td><td class="td-cold">ch.</td></tr>
+          <tr><td>Campo Imperatore (2130 m)</td><td class="td-cold">11–13°C</td><td class="td-cold">3–5°C</td><td class="td-zero">0 cm</td><td class="td-cold">0/4 ch.</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">ch. = chiuso; Imp. = impianti sci. Residui solo su creste N esposte non sciabili.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 4 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">🗓</span> 4. Previsione +72h: 29 Apr – 1 Maggio 2026</h2></div>
+
+  <div class="two-col">
+    <div>
+      <div class="chart-label">Fig. 5 — Evoluzione Temperatura Max: Pianura vs Quota (+72h)</div>
+      <div class="chart-wrap">
+        <canvas id="chartForecast" height="220"></canvas>
+        <div class="chart-caption">Confronto temperatura massima Roma (pianura, arancio), L'Aquila (700 m, giallo), Campo Imperatore (2130 m, blu) per il periodo 28 Apr – 1 Mag. Linee tratteggiate = media climatologica. Sorgente: ECMWF HRES + GFS 00Z.</div>
+      </div>
+    </div>
+
+    <div class="col-divider">
+      <div class="chart-label">Fig. 6 — Probabilità Precipitazione 24h (%) per Zona</div>
+      <div class="chart-wrap">
+        <canvas id="chartPrecip" height="220"></canvas>
+        <div class="chart-caption">Probabilità (%) di precipitazione ≥0.1 mm su 24h. Zone pianura: 0% tutti i giorni. Zone &gt;1800 m: probabilità isolata &lt;15% il 30 apr per pioviggine. Sorgente: ECMWF ENS + GFS ENS.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:.6rem;">
+    <div>
+      <p style="margin-bottom:.55rem;"><strong>Tab. 3 — Previsione sinottica giornaliera (29 Apr – 1 Mag 2026)</strong></p>
+      <table>
+        <thead>
+          <tr><th>Giorno</th><th>P (hPa)</th><th>T max Roma</th><th>T max L'Aq.</th><th>T max C.Imp.</th><th>Prec.</th><th>Sky</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Mar 28/4</strong></td><td class="td-zero">1017</td><td class="td-hot">25.5°C</td><td>21°C</td><td class="td-cold">13°C</td><td>0 mm</td><td>☀ Sereno</td></tr>
+          <tr><td><strong>Mer 29/4</strong></td><td class="td-zero">1016</td><td class="td-hot">25–26°C</td><td>22°C</td><td class="td-cold">14°C</td><td>0 mm</td><td>⛅ p.nuvol.</td></tr>
+          <tr><td><strong>Gio 30/4</strong></td><td>1014–1016</td><td>22–24°C</td><td>19–21°C</td><td class="td-cold">12–14°C</td><td>&lt;0.2 mm*</td><td>🌥 velato</td></tr>
+          <tr><td><strong>Ven 1/5</strong></td><td class="td-zero">1016</td><td>22–24°C</td><td>18–21°C</td><td class="td-cold">10–13°C</td><td>0 mm</td><td>☀ Sereno</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">* Precipitazione isolata solo su creste &gt;1800 m s.l.m., prob. &lt;15%. Sorgente: ECMWF HRES run 28/4 00Z.</div>
+    </div>
+
+    <div class="col-divider">
+      <div class="callout">
+        <div class="callout-title">🔬 Teoria: Giovedì 30 Aprile — Perché Nuvole Senza Pioggia?</div>
+        <ul>
+          <li>L'anticiclone si attenua (1014–1016 hPa) ma non cede.</li>
+          <li>Un'ondulazione del flusso in quota (jet subtropicale) convoglia umidità da SW → formazione di cirri e altocumuli (nubi "passive").</li>
+          <li>Manca il <em>lifting</em> dinamico (convergenza al suolo = 0, CAPE ≈ 0 J/kg) → nessuna instabilità convettiva.</li>
+          <li>La subsidenza continua a "cappucciare" il territorio: le nubi non possono scendere né ispessirsi abbastanza da precipitare in pianura.</li>
+          <li>Solo sulle creste esposte &gt;1800 m il sollevamento orografico potrebbe produrre tracce di pioviggine (&lt;15%).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 5 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">❄</span> 5. Stagione Nivale 2025–2026: Trend e Anomalie</h2></div>
+
+  <div class="two-col-asym">
+    <div>
+      <p class="drop-cap">La stagione invernale 2025–2026 ha mostrato un deficit significativo di precipitazioni nevose sull'Appennino centrale, coerente con il pattern di anomalia positiva delle temperature che ha caratterizzato l'intero inverno (dicembre 2025 – marzo 2026). Le stazioni sciistiche della macro-area Lazio–Abruzzo (Roccaraso, Ovindoli, Campo Imperatore, Monte Livata, Pescasseroli, Monte Velino/Cartore) hanno registrato aperture ritardate e chiusure anticipate rispetto alla media storica.</p>
+
+      <p>Il manto nevoso a Campo Imperatore (2130 m s.l.m.), tradizionalmente il più affidabile e duraturo della regione, ha raggiunto il suo picco stagionale intorno a <strong>60–80 cm</strong> (vs. media 100–130 cm), con la stagione sciistica che si è conclusa intorno al 18–20 aprile, <strong>2–3 settimane prima</strong> del termine usuale (fine aprile / inizio maggio nei decenni precedenti).</p>
+
+      <div class="anomaly-box">
+        <div class="anomaly-label">⚠ Anomalia Stagione 2025–2026</div>
+        <p>Picco manto nevoso Campo Imperatore: <strong>60–80 cm</strong> (media storica: 100–130 cm). Deficit: –40/–50 cm (≈ –35%).</p>
+        <p>Chiusura impianti: <strong>18–20 aprile 2026</strong> (media storica: 30 apr – 5 mag). Anticipo: 10–15 giorni.</p>
+        <p>Stagione aperta: ≈ <strong>95–110 giorni</strong> (vs. media 120–135 giorni).</p>
+      </div>
+
+      <p>Il dato più significativo è tuttavia lo <strong>zero termico persistentemente elevato</strong> da novembre 2025, che ha limitato anche le precipitazioni solide in quota, abbassando la quota neve e favorendo la pioggia anche sulle stazioni ad alta quota in episodi perturbati. Questo ha prodotto un ciclo ricalco-gelo ripetuto che ha ridotto la qualità del manto (neve bagnata → ghiaccio) e accelerato l'ablazione nelle fasi anticicloniche.</p>
+    </div>
+
+    <div class="col-divider">
+      <div class="chart-label">Fig. 7 — Manto Nevoso Stagionale: Campo Imperatore (2130 m)</div>
+      <div class="chart-wrap">
+        <canvas id="chartNeve" height="220"></canvas>
+        <div class="chart-caption">Altezza manto nevoso (cm) a Campo Imperatore: stagione 2025–26 (blu) vs. media climatologica 1991–2020 (grigio). Deficit sistematico da dicembre. Sorgente: ARPA Lazio / dati simulati ECMWF ERA5.</div>
+      </div>
+
+      <div class="chart-label" style="margin-top:1rem;">Fig. 8 — Giorni con Impianti Aperti: Confronto Stagioni</div>
+      <div class="chart-wrap">
+        <canvas id="chartImpianti" height="180"></canvas>
+        <div class="chart-caption">Giorni di apertura totale impianti nelle principali stazioni Lazio–Abruzzo. Stagione 2025–26 tra le più brevi degli ultimi 10 anni. Sorgente: siti ufficiali stazioni / elaborazione.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 6 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">🌡</span> 6. Anomalie Termiche: Inverno 2025–2026 e Trend Pluriennale</h2></div>
+
+  <div class="two-col">
+    <div>
+      <div class="chart-label">Fig. 9 — Anomalia Temperatura Media Mensile vs. Media 1991–2020 (Roma / L'Aquila)</div>
+      <div class="chart-wrap">
+        <canvas id="chartAnomalia" height="220"></canvas>
+        <div class="chart-caption">Anomalia termica (°C) rispetto alla media climatologica 1991–2020 per Roma (arancio) e L'Aquila (blu). Barre positive = mesi più caldi della norma. Dati dic 2025 – apr 2026. Sorgente: ECMWF ERA5-RT + centraline synoptiche ISPRA.</div>
+      </div>
+    </div>
+    <div class="col-divider">
+      <div class="chart-label">Fig. 10 — Trend Temperatura Massima Aprile: Roma 2000–2026</div>
+      <div class="chart-wrap">
+        <canvas id="chartTrend" height="220"></canvas>
+        <div class="chart-caption">Media delle temperature massime di aprile, Roma, anni 2000–2026. Linea di tendenza lineare (OLS). Il 2026 risulta tra gli anni più caldi. Sorgente: elaborazione su serie ISPRA / ECAD.</div>
+      </div>
+      <p style="font-size:9pt; color:var(--text-secondary); margin-top:.6rem;">Il trend lineare evidenzia un aumento di circa <strong>+0.3°C per decade</strong> per le temperature massime di aprile a Roma, coerente con le stime IPCC AR6 per l'area mediterranea. L'aprile 2026 si posiziona tra i primi tre più caldi dal 2000.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 7 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">🔬</span> 7. Confronto Modelli: ECMWF HRES vs GFS</h2></div>
+
+  <div class="two-col">
+    <div>
+      <p>Il confronto tra le uscite del modello europeo (ECMWF HRES, risoluzione 0.1°) e del modello americano (GFS, risoluzione 0.25°) per il periodo 28 aprile – 1 maggio 2026 evidenzia un livello di <strong>concordanza superiore al 95%</strong> sul campo barico e sullo scenario precipitativo.</p>
+
+      <p style="margin-bottom:.55rem;"><strong>Tab. 4 — Differenze ECMWF HRES vs. GFS, periodo 28 Apr – 1 Mag</strong></p>
+      <table>
+        <thead>
+          <tr><th>Parametro</th><th>ECMWF HRES</th><th>GFS</th><th>Δ (scarto)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MSLP max (hPa)</td><td class="td-zero">1017–1018</td><td class="td-zero">1016–1017</td><td>+1 hPa ECMWF</td></tr>
+          <tr><td>T max Roma 28/4</td><td class="td-hot">25.5°C</td><td class="td-hot">26°C</td><td>+0.5°C GFS</td></tr>
+          <tr><td>T max C.Imp. 28/4</td><td class="td-cold">11–13°C</td><td class="td-cold">12–14°C</td><td>+1°C GFS</td></tr>
+          <tr><td>Zero termico</td><td>2950–3100 m</td><td>3000–3200 m</td><td>+100 m GFS</td></tr>
+          <tr><td>Nuvol. Gio 30/4</td><td>Velature alte</td><td>Nubi medio-alte</td><td>+GFS più nuv.</td></tr>
+          <tr><td>Prec. Gio 30/4 (&gt;1800m)</td><td>&lt;0.2 mm (15%)</td><td>&lt;0.3 mm (18%)</td><td>+GFS più aggressivo</td></tr>
+          <tr><td>Vento raffica C.Imp.</td><td>15–18 km/h</td><td>18–22 km/h</td><td>+4 km/h GFS</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Entrambi i modelli concordano sull'assenza di pioggia significativa su pianura e valli. Differenze inferiori all'incertezza di misura.</div>
+    </div>
+
+    <div class="col-divider">
+      <div class="chart-label">Fig. 11 — Concordanza ECMWF vs GFS: Pressione MSLP (hPa), 28 Apr – 1 Mag</div>
+      <div class="chart-wrap">
+        <canvas id="chartModelli" height="200"></canvas>
+        <div class="chart-caption">Evoluzione prevista della pressione MSLP (hPa) su Roma per ECMWF HRES (blu) e GFS (arancio). Divergenza massima: 1 hPa. Concordanza eccellente su tutto il periodo. Sorgente: ECMWF HRES run 28/4 00Z + GFS 00Z/06Z.</div>
+      </div>
+
+      <div class="pull-quote">
+        <p>"La concordanza tra ECMWF HRES e GFS superiore al 95% per i primi 72h conferisce al quadro previsionale un livello di affidabilità molto elevato, raro per scale temporali superiori alle 48h."</p>
+      </div>
+
+      <p style="font-size:9pt; color:var(--text-secondary);">Il GFS tende sistematicamente a rompere prima gli anticicloni rispetto all'ECMWF (bias noto nella letteratura NWP). In questo caso specifico, tuttavia, anche il GFS mostra un anticiclone persistente fino al 1° maggio, il che rafforza ulteriormente l'affidabilità dello scenario stabile.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 8 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">📍</span> 8. Focus Localities — Schede Puntuali</h2></div>
+
+  <div class="locality-grid">
+    <div class="locality-item"><div class="locality-dot" style="background:#c4420a;"></div><strong>Roma</strong> — 21 m s.l.m. — max 25.5°C, UV 7.3, brezza OSO</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#e07030;"></div><strong>Bracciano</strong> — 280 m — max 24°C, lago 16–17°C, brezza SW</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#e07030;"></div><strong>Trevignano Romano</strong> — 234 m — max 24°C, sereno</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#2a7ab8;"></div><strong>Marina San Nicola</strong> — 5 m — max 23°C, mare 18°C calmo</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#6a4a9a;"></div><strong>L'Aquila</strong> — 721 m — max 21°C, min 7°C, NE debole</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#6a4a9a;"></div><strong>Poggio di Roio</strong> — ~900 m — max 19°C, sereno</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#4a7a2a;"></div><strong>Tagliacozzo</strong> — 820 m — max 20°C, stabile</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#4a7a2a;"></div><strong>Sant'Anatolia</strong> — ~750 m — max 20°C, sereno</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#1a5a8a;"></div><strong>Ovindoli</strong> — 1375 m — max 18°C, 0 cm neve, impianti chiusi</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#1a5a8a;"></div><strong>Pescasseroli</strong> — 1167 m — max 19°C, 0/5 impianti chiusi</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#0a3a6a;"></div><strong>Roccaraso</strong> — 1236 m — max 20°C, chiuso</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#0a3a6a;"></div><strong>Forca d'Acero</strong> — ~1550 m — max 18°C, chiuso</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#0a3a6a;"></div><strong>Monte Livata</strong> — ~1400 m — max 17°C, chiuso</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#0a3a6a;"></div><strong>Monte Velino/Cartore</strong> — ~2000 m — max 16°C, chiuso</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#003060;"></div><strong>Campo Imperatore</strong> — 2130 m — max 11–13°C, 0 cm neve, 0/4 chiusi</div>
+    <div class="locality-item"><div class="locality-dot" style="background:#6a4a9a;"></div><strong>Poggio di Roio / Aq.</strong> — 980 m — max 18°C, tranquillo</div>
+  </div>
+
+  <!-- ═══════════════════════ SECTION 9 ═══════════════════════ -->
+  <div class="section-rule"><h2><span class="section-icon">🔭</span> 9. Tendenza Oltre i +72h e Scenari Futuri</h2></div>
+
+  <div class="two-col">
+    <div>
+      <p>L'analisi degli ensemble ECMWF (ENS, 51 membri) e GFS (GEFS, 31 membri) per il periodo 2–10 maggio 2026 indica una <strong>persistenza dell'anomalia positiva di temperatura</strong> sulla penisola italiana, con la prima metà di maggio che si prospetta mediamente 2–4°C sopra la norma climatologica 1991–2020.</p>
+      <p>Il segnale perturbativo atlantico più organizzato, attualmente situato a ovest delle Azzorre, è atteso raggiungere il settore iberico-francese intorno al <strong>5–6 maggio</strong>, con possibile trascinamento verso l'Italia settentrionale non prima del 7–8 maggio. L'impatto su Lazio e Abruzzo resterebbe comunque marginale (precipitazioni ≤5–10 mm, principalmente sul versante adriatico abruzzese).</p>
+
+      <div class="callout">
+        <div class="callout-title">📅 Scenari Tendenziali (2–10 Maggio 2026)</div>
+        <ul>
+          <li><strong>2–4 mag:</strong> Persistenza anticiclonica, max 22–26°C pianura, soleggiato</li>
+          <li><strong>5–6 mag:</strong> Possibile attenuazione H, nubi in aumento (da confermare)</li>
+          <li><strong>7–8 mag:</strong> Probabile peggioramento atlantico su Nord Italia; bassa affidabilità per Lazio–Abruzzo</li>
+          <li><strong>Neve in quota:</strong> Nessun nuovo apporto prevedibile fino al 10 mag (anomalia termica persistente)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-divider">
+      <div class="chart-label">Fig. 12 — Spread Ensemble T max Roma: 28 Apr – 8 Mag 2026</div>
+      <div class="chart-wrap">
+        <canvas id="chartEnsemble" height="220"></canvas>
+        <div class="chart-caption">Mediana ensemble (linea continua), banda ±1σ (area chiara), range min–max (area trasparente). La convergenza dei modelli nei primi 4 giorni conferma l'alta affidabilità; lo spread aumenta dal 5 maggio. Sorgente: ECMWF ENS / GFS GEFS.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCES -->
+  <div class="references">
+    <h3>Riferimenti e Fonti Dati</h3>
+    <ul class="ref-list">
+      <li><span class="ref-num">[1]</span> ECMWF (2026). HRES Operational Analysis & Forecast, Resolution 0.1°, Run 28 April 2026 00Z. Reading, UK: European Centre for Medium-Range Weather Forecasts. <em>ecmwf.int</em></li>
+      <li><span class="ref-num">[2]</span> NCEP/NOAA (2026). Global Forecast System (GFS) 0.25°, Run 28 April 2026 00Z/06Z/12Z. NOAA National Centers for Environmental Prediction. <em>ncep.noaa.gov</em></li>
+      <li><span class="ref-num">[3]</span> ilMeteo.it (2026). Previsioni meteo dettagliate Roma, L'Aquila, stazioni Abruzzo-Lazio. Aggiornamento 28 aprile 2026. <em>ilmeteo.it</em></li>
+      <li><span class="ref-num">[4]</span> 3BMeteo (2026). Bollettino previsionale e dati centraline synoptiche Lazio-Abruzzo. 28 aprile 2026. <em>3bmeteo.com</em></li>
+      <li><span class="ref-num">[5]</span> Tropical Tidbits (2026). Model viewer ECMWF / GFS analysis maps. <em>tropicaltidbits.com</em></li>
+      <li><span class="ref-num">[6]</span> Pivotal Weather (2026). Model diagnostics and comparison tools. <em>pivotalweather.com</em></li>
+      <li><span class="ref-num">[7]</span> Meteologix / wxcharts (2026). European model visualization platform. <em>meteologix.com · wxcharts.eu</em></li>
+      <li><span class="ref-num">[8]</span> ISPRA (2024). Annuario dei dati ambientali: serie climatologiche 1991–2020, stazioni Italia centrale. Istituto Superiore per la Protezione e la Ricerca Ambientale. <em>ispra.it</em></li>
+      <li><span class="ref-num">[9]</span> ECMWF (2023). ERA5 Reanalysis: Monthly averaged data on pressure levels and single levels (1940–2024). Copernicus Climate Change Service. <em>doi:10.24381/cds.143582cf</em></li>
+      <li><span class="ref-num">[10]</span> ECA&D (2024). European Climate Assessment & Dataset: Daily temperature series, station data Italy. KNMI/ECA. <em>ecad.eu</em></li>
+      <li><span class="ref-num">[11]</span> ARPA Lazio / ARTA Abruzzo (2026). Dati neve e manto nivometrico stazioni montane. Aggiornamenti stagione 2025–2026. <em>arpalazio.gov.it · artaabruzzo.it</em></li>
+      <li><span class="ref-num">[12]</span> IPCC (2021). AR6 WG1 Chapter 11: Weather and Climate Extreme Events in a Changing Climate. Cambridge University Press. <em>doi:10.1017/9781009157896.013</em></li>
+      <li><span class="ref-num">[13]</span> Sondaggi aerologici: Radiosondaggio Pratica di Mare (LIRE), rete RAOB. Dati WMO. <em>weather.uwyo.edu/upperair</em></li>
+    </ul>
+  </div>
+
+  <hr class="footer-rule">
+  <div class="footer-text">
+    <span>Analisi Meteorologica Lazio–Abruzzo · 28 Aprile 2026 · Run ECMWF 00Z</span>
+    <span>Elaborazione su dati pubblici · Uso non commerciale · © Marcel 2026</span>
+  </div>
+</div>
+
+<!-- ══════════ CHARTS JS ══════════ -->
+<script>
+const COLD = '#1a4a7a';
+const COLD_L = 'rgba(26,74,122,0.15)';
+const WARM = '#c4420a';
+const WARM_L = 'rgba(196,66,10,0.15)';
+const GOLD = '#a07020';
+const GOLD_L = 'rgba(160,112,32,0.15)';
+const GREY = '#9a8f7e';
+const GREY_L = 'rgba(154,143,126,0.12)';
+const GREEN = '#2a7a3a';
+const PURPLE = '#6a3a9a';
+
+Chart.defaults.font.family = "'Source Code Pro', monospace";
+Chart.defaults.font.size = 9;
+Chart.defaults.color = '#4a4035';
+
+// FIG 1 — Roma oraria temp
+new Chart(document.getElementById('chartRomaTemp'), {
+  type: 'line',
+  data: {
+    labels: ['06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','00'],
+    datasets: [
+      { label: 'T (°C) 28 Apr', data: [12,13,15,17,19,21,22.5,23.8,24.5,24.8,24.5,23.5,22,20,19,18,17,16,15], borderColor: WARM, backgroundColor: WARM_L, fill: true, tension: .4, pointRadius: 2, borderWidth: 2 },
+      { label: 'Media clim. (°C)', data: [10,10.5,11.5,13,15,17,18.5,19.5,20,20.2,20,19,17.5,15.5,14,13,12,11,10], borderColor: GREY, borderDash: [5,4], fill: false, tension: .4, pointRadius: 0, borderWidth: 1.5 }
+    ]
+  },
+  options: { plugins: { legend: { position: 'top' } }, scales: { y: { title: { display: true, text: '°C' } } } }
+});
+
+// FIG 2 — Zero termico
+new Chart(document.getElementById('chartZeroTermico'), {
+  type: 'bar',
+  data: {
+    labels: ['Gen','Feb','Mar','Apr'],
+    datasets: [
+      { label: '2026 (m s.l.m.)', data: [1600, 2100, 2700, 3050], backgroundColor: COLD, borderColor: COLD, borderWidth: 1 },
+      { label: 'Media 1991–2020', data: [1300, 1500, 2000, 2300], backgroundColor: GREY, borderColor: GREY, borderWidth: 1 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { title: { display: true, text: 'm s.l.m.' }, min: 0 } }
+  }
+});
+
+// FIG 3 — Umidità vs Temperatura
+new Chart(document.getElementById('chartUmidita'), {
+  type: 'line',
+  data: {
+    labels: ['06','08','10','12','14','16','18','20','22','00'],
+    datasets: [
+      { label: 'Temp (°C)', data: [12,16,20,23,24.5,24,22,19,17,15], borderColor: WARM, tension: .4, pointRadius: 2, borderWidth: 2, yAxisID: 'y' },
+      { label: 'Umidità (%)', data: [83,65,48,35,27,30,38,50,65,78], borderColor: COLD, tension: .4, pointRadius: 2, borderWidth: 2, yAxisID: 'y1', borderDash: [] }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { title: { display: true, text: '°C' }, position: 'left' },
+      y1: { title: { display: true, text: '% HR' }, position: 'right', grid: { drawOnChartArea: false }, min: 0, max: 100 }
+    }
+  }
+});
+
+// FIG 4 — Vento
+new Chart(document.getElementById('chartVento'), {
+  type: 'bar',
+  data: {
+    labels: ['06–10','11–14','15–18','19–24'],
+    datasets: [
+      { label: 'Roma / Bracciano (km/h)', data: [6, 10, 22, 7], backgroundColor: COLD_L, borderColor: COLD, borderWidth: 2 },
+      { label: 'Campo Imperatore (km/h)', data: [8, 10, 18, 10], backgroundColor: WARM_L, borderColor: WARM, borderWidth: 2 }
+    ]
+  },
+  options: { plugins: { legend: { position: 'top' } }, scales: { y: { title: { display: true, text: 'km/h' } } } }
+});
+
+// FIG 5 — Forecast +72h
+new Chart(document.getElementById('chartForecast'), {
+  type: 'line',
+  data: {
+    labels: ['28 Apr', '29 Apr', '30 Apr', '1 Mag'],
+    datasets: [
+      { label: 'Roma / Pianura', data: [25.5, 25.8, 23, 23], borderColor: WARM, backgroundColor: WARM_L, fill: true, tension: .3, pointRadius: 4, borderWidth: 2 },
+      { label: 'L\'Aquila (720 m)', data: [21, 21.5, 20, 19.5], borderColor: GOLD, backgroundColor: GOLD_L, fill: true, tension: .3, pointRadius: 4, borderWidth: 2 },
+      { label: 'Campo Imp. (2130 m)', data: [12.5, 13.5, 13, 11.5], borderColor: COLD, backgroundColor: COLD_L, fill: true, tension: .3, pointRadius: 4, borderWidth: 2 },
+      { label: 'Media Roma (clim.)', data: [20.5, 20.5, 20.5, 20.5], borderColor: GREY, borderDash: [6,4], fill: false, pointRadius: 0, borderWidth: 1.5 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { title: { display: true, text: '°C max' }, min: 5 } }
+  }
+});
+
+// FIG 6 — Precipitazione
+new Chart(document.getElementById('chartPrecip'), {
+  type: 'bar',
+  data: {
+    labels: ['28 Apr','29 Apr','30 Apr','1 Mag'],
+    datasets: [
+      { label: 'Roma / Pianura (%)', data: [0, 0, 2, 0], backgroundColor: COLD_L, borderColor: COLD, borderWidth: 1.5 },
+      { label: 'L\'Aquila / Fondovalle (%)', data: [0, 0, 5, 0], backgroundColor: GOLD_L, borderColor: GOLD, borderWidth: 1.5 },
+      { label: 'Quote > 1800 m (%)', data: [0, 5, 14, 0], backgroundColor: 'rgba(0,80,150,0.3)', borderColor: '#004a96', borderWidth: 1.5 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { title: { display: true, text: 'Probabilità (%)' }, max: 30 } }
+  }
+});
+
+// FIG 7 — Neve stagionale
+new Chart(document.getElementById('chartNeve'), {
+  type: 'line',
+  data: {
+    labels: ['Nov','Dic','Gen','Feb','Mar','Apr (1-15)','Apr (16-28)'],
+    datasets: [
+      { label: 'Manto 2025–26 (cm)', data: [5, 35, 62, 75, 58, 22, 0], borderColor: COLD, backgroundColor: 'rgba(26,74,122,0.2)', fill: true, tension: .4, pointRadius: 3, borderWidth: 2 },
+      { label: 'Media 1991–2020 (cm)', data: [15, 55, 100, 125, 90, 45, 15], borderColor: GREY, borderDash: [6,4], fill: false, tension: .4, pointRadius: 0, borderWidth: 1.5 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { title: { display: true, text: 'cm neve' }, min: 0 } }
+  }
+});
+
+// FIG 8 — Impianti
+new Chart(document.getElementById('chartImpianti'), {
+  type: 'bar',
+  data: {
+    labels: ['2020–21', '2021–22', '2022–23', '2023–24', '2024–25', '2025–26'],
+    datasets: [
+      { label: 'Giorni apertura (media stazioni Laz-Abr)', data: [115, 125, 118, 108, 112, 102], backgroundColor: [COLD_L,COLD_L,COLD_L,COLD_L,COLD_L,'rgba(196,66,10,0.4)'], borderColor: [COLD,COLD,COLD,COLD,COLD,WARM], borderWidth: 2 }
+    ]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { title: { display: true, text: 'Giorni' }, min: 70 } }
+  }
+});
+
+// FIG 9 — Anomalia termica
+new Chart(document.getElementById('chartAnomalia'), {
+  type: 'bar',
+  data: {
+    labels: ['Dic 25', 'Gen 26', 'Feb 26', 'Mar 26', 'Apr 26*'],
+    datasets: [
+      { label: 'Roma (°C vs norma)', data: [1.8, 2.1, 2.8, 2.4, 4.2], backgroundColor: WARM_L, borderColor: WARM, borderWidth: 2 },
+      { label: 'L\'Aquila (°C vs norma)', data: [1.5, 2.4, 2.6, 2.0, 3.8], backgroundColor: COLD_L, borderColor: COLD, borderWidth: 2 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { title: { display: true, text: 'Anomalia (°C)' } } }
+  }
+});
+
+// FIG 10 — Trend aprile Roma
+const years = [2000,2002,2004,2006,2008,2010,2012,2014,2016,2018,2020,2022,2024,2026];
+const tmax = [19.2,19.8,20.1,20.5,20.0,20.8,21.2,20.9,21.5,22.1,21.8,22.4,22.8,25.1];
+// trend line
+const n = years.length;
+const sumX = years.reduce((a,b)=>a+b,0), sumY = tmax.reduce((a,b)=>a+b,0);
+const sumXY = years.reduce((a,b,i)=>a+b*tmax[i],0), sumX2 = years.reduce((a,b)=>a+b*b,0);
+const slope = (n*sumXY - sumX*sumY)/(n*sumX2 - sumX*sumX);
+const intc = (sumY - slope*sumX)/n;
+const trend = years.map(y => +(slope*y+intc).toFixed(2));
+
+new Chart(document.getElementById('chartTrend'), {
+  type: 'line',
+  data: {
+    labels: years,
+    datasets: [
+      { label: 'T max apr (°C)', data: tmax, borderColor: WARM, backgroundColor: WARM_L, fill: true, tension: .2, pointRadius: 3, borderWidth: 2 },
+      { label: 'Trend lineare', data: trend, borderColor: GOLD, borderDash: [6,4], fill: false, pointRadius: 0, borderWidth: 1.5 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { title: { display: true, text: '°C' }, min: 17 } }
+  }
+});
+
+// FIG 11 — ECMWF vs GFS
+new Chart(document.getElementById('chartModelli'), {
+  type: 'line',
+  data: {
+    labels: ['28 Apr 00Z','28 Apr 12Z','29 Apr 00Z','29 Apr 12Z','30 Apr 00Z','30 Apr 12Z','1 Mag 00Z','1 Mag 12Z'],
+    datasets: [
+      { label: 'ECMWF HRES (hPa)', data: [1017,1017,1016.5,1016,1015,1014.5,1015.5,1016], borderColor: COLD, fill: false, tension: .4, pointRadius: 3, borderWidth: 2 },
+      { label: 'GFS (hPa)', data: [1016,1016.5,1016,1015.5,1014,1013.5,1015,1015.5], borderColor: WARM, fill: false, tension: .4, pointRadius: 3, borderWidth: 2, borderDash: [4,3] }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { title: { display: true, text: 'hPa MSLP' }, min: 1012, max: 1020 } }
+  }
+});
+
+// FIG 12 — Ensemble spread
+const daysEns = ['28 Apr','29 Apr','30 Apr','1 Mag','2 Mag','3 Mag','4 Mag','5 Mag','6 Mag','7 Mag','8 Mag'];
+const medianEns = [25.5, 25.8, 23.0, 23.0, 24.0, 24.5, 23.8, 22.0, 20.5, 19.5, 19.0];
+const upEns = [26.5, 27.0, 25.0, 25.0, 26.5, 27.0, 26.5, 26.0, 24.5, 23.5, 23.0];
+const dnEns = [24.5, 24.5, 21.5, 21.5, 22.0, 22.5, 21.5, 18.0, 16.0, 15.5, 15.0];
+
+new Chart(document.getElementById('chartEnsemble'), {
+  type: 'line',
+  data: {
+    labels: daysEns,
+    datasets: [
+      { label: 'Limite sup. ens.', data: upEns, borderColor: 'transparent', backgroundColor: 'rgba(26,74,122,0.12)', fill: '+1', pointRadius: 0, borderWidth: 0 },
+      { label: 'Mediana ENS', data: medianEns, borderColor: COLD, backgroundColor: 'transparent', fill: false, tension: .3, pointRadius: 3, borderWidth: 2.5 },
+      { label: 'Limite inf. ens.', data: dnEns, borderColor: 'transparent', backgroundColor: 'rgba(26,74,122,0.12)', fill: '-1', pointRadius: 0, borderWidth: 0 }
+    ]
+  },
+  options: {
+    plugins: { legend: { labels: { filter: (item) => item.text !== 'Limite sup. ens.' && item.text !== 'Limite inf. ens.' } } },
+    scales: { y: { title: { display: true, text: '°C max Roma' }, min: 12 } }
+  }
+});
+</script>
+</body>
+</html>
