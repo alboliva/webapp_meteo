@@ -14,34 +14,35 @@ roma_gianicolo=
 marina_san_nicola=https://vedetta.org/webcam/italia/lazio/roma/marina-di-san-nicola
 
 # ── LAGHI ─────────────────────────────────────────────────────
-bracciano=
+bracciano=https://imgproxy.windy.com/_/full/plain/current/1465657442/original.jpg
 trevignano_romano=https://vedetta.org/webcam/italia/lazio/roma/trevignano
 
 # ── MONTI & APPENNINO ─────────────────────────────────────────
 monte_cavo=
 pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
 monte_livata=https://ramsat.it/webcam-montelivata
+prati_di_tivo=https://cdn.whatsupcams.com/snapshot/it_pratiditivo02.jpg
 campo_imperatore=https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
-campo_ di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
+campo_di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
 roccaraso=
 forca_dacero=
 
 # ── NORD ITALIA ───────────────────────────────────────────────
 breuil_cervinia=https://imgproxy.windy.com/_/full/plain/current/1742724160/original.jpg
-selva_val_gardena=
+selva_val_gardena=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
 ortisei=https://imgproxy.windy.com/_/full/plain/current/1199812053/original.jpg
 genova=https://imgproxy.windy.com/_/full/plain/current/1731006477/original.jpg
 alessandria=
-sestriere=
+sestriere=https://imgproxy.windy.com/_/full/plain/current/1666097812/original.jpg
 aosta=https://imgproxy.windy.com/_/full/plain/current/1201549102/original.jpg
 sondrio=https://imgproxy.windy.com/_/full/plain/current/1199821060/original.jpg
 stelvio=https://imgproxy.windy.com/_/full/plain/current/1203067577/original.jpg
 
 # ── SUD ITALIA ────────────────────────────────────────────────
-messina=
+messina=https://imgproxy.windy.com/_/full/plain/current/1560713889/original.jpg
 reggio_calabria=
 palermo=
-lipari=
+lipari=https://imgproxy.windy.com/_/full/plain/current/1793900853/original.jpg
 siracusa=
 
 # ── ESTERO ────────────────────────────────────────────────────

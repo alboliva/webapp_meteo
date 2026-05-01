@@ -140,6 +140,7 @@ STAZIONI = [
     (42.1608, 12.2458, "Trevignano Romano",     "trevignano_romano",     "Lago",   "b-lago",   "Europe/Rome"),
     (41.7700, 12.7200, "Monte Cavo",            "monte_cavo",            "Monti",  "b-monti",  "Europe/Rome"),
     (41.8561, 13.7950, "Pescasseroli",          "pescasseroli",          "Monti",  "b-monti",  "Europe/Rome"),
+    (42.4996, 13.5597, "Prati di Tivo",         "prati_di_tivo",         "Monti",  "b-monti",  "Europe/Rome"),
     (41.8750, 13.0333, "Monte Livata",          "monte_livata",          "Monti",  "b-monti",  "Europe/Rome"),
     (42.2333, 13.5667, "Campo Imperatore",      "campo_imperatore",      "Monti",  "b-monti",  "Europe/Rome"),
     (41.9917, 14.1017, "Campo di Giove",        "campo_di_giove",        "Monti",  "b-monti",  "Europe/Rome"),
@@ -414,12 +415,12 @@ else:
     for tab, zona in zip(tabs, zone_tabs):
         with tab:
             cams = zone_con_cam[zona]
-            # Griglia: 3 colonne per immagini, 1 colonna per iframe
-            img_cams  = [d for d in cams if is_img_url(webcam_links.get(d["chiave"]))]
-            web_cams  = [d for d in cams if not is_img_url(webcam_links.get(d["chiave"]))]
+            # Solo webcam con immagine diretta (jpg / jpeg / png)
+            img_cams = [d for d in cams if is_img_url(webcam_links.get(d["chiave"]))]
 
-            # Immagini dirette → griglia 3 colonne
-            if img_cams:
+            if not img_cams:
+                st.info("Nessuna webcam con immagine diretta configurata per questa zona.")
+            else:
                 cols_per_row = 3
                 for i in range(0, len(img_cams), cols_per_row):
                     cols = st.columns(cols_per_row)
@@ -439,16 +440,6 @@ else:
                                     {cam['nome']}{t_str}
                                 </div>
                             </div>""", unsafe_allow_html=True)
-
-            # Pagine web → una per riga (iframe)
-            if web_cams:
-                if img_cams:
-                    st.markdown("**Webcam live (pagine web):**")
-                for cam in web_cams:
-                    url = webcam_links[cam["chiave"]]
-                    t_str = f" · {cam['temp']:.1f}°C" if cam.get("temp") is not None else ""
-                    st.markdown(f"**{cam['nome']}**{t_str} — [🔗 Apri in nuova scheda]({url})")
-                    st.components.v1.iframe(url, height=380, scrolling=True)
 
 # ─── STORICO DA ARCHIVE API ───────────────────────────────────────────────────
 st.markdown("---")
