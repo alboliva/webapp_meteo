@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bollettino Meteorologico — Italia | 1 Maggio 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,500&family=DM+Mono:wght@400;500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky-deep: #0a1628;
+  --sky-mid: #14253d;
+  --rain-blue: #2e6da4;
+  --rain-light: #5ba3d9;
+  --sun-gold: #e8a020;
+  --sun-amber: #f5c842;
+  --cloud-grey: #7a92a8;
+  --snow-white: #d4e8f5;
+  --lazio-green: #2d7a4f;
+  --abruzzo-teal: #1a6b6b;
+  --messina-purple: #6a3fa0;
+  --paper: #f8f4ec;
+  --paper-tinted: #f0ead8;
+  --text-body: #1c1a16;
+  --text-muted: #5a5048;
+  --border: #c8bfaa;
+  --border-light: #e0d8c8;
+  --col-gap: 2rem;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 11pt;
+  line-height: 1.75;
+}
+
+/* ══ HERO INFOGRAPHIC STRIP ══ */
+.hero {
+  background: linear-gradient(160deg, #061020 0%, #0d2040 45%, #0a2a18 100%);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 60%, rgba(46,109,164,.18) 0%, transparent 55%),
+              radial-gradient(ellipse at 75% 30%, rgba(232,160,32,.10) 0%, transparent 50%);
+}
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 1.6rem 2rem 0;
+}
+.hero-top {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center; gap: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.hero-sun { font-size: 3.5rem; line-height: 1; filter: drop-shadow(0 0 20px rgba(232,160,32,.6)); }
+.hero-title h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem; font-weight: 800;
+  color: #fff; line-height: 1.05;
+  letter-spacing: -.02em;
+  text-shadow: 0 2px 20px rgba(46,109,164,.5);
+}
+.hero-title h1 em { color: var(--sun-amber); font-style: italic; }
+.hero-title .sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5pt; letter-spacing: .2em;
+  text-transform: uppercase; color: #7aa0c0;
+  margin-top: .3rem;
+}
+.hero-badge {
+  background: rgba(46,109,164,.25);
+  border: 1px solid rgba(91,163,217,.35);
+  border-radius: 6px; padding: .6rem 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 7pt; letter-spacing: .1em;
+  color: #9ab5cc; line-height: 1.7; text-align: right;
+}
+.hero-badge strong { color: var(--sun-amber); display: block; }
+
+/* 3-city strip */
+.hero-cities {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+.hero-city {
+  padding: 1rem 1.2rem;
+  border-right: 1px solid rgba(255,255,255,.07);
+  position: relative;
+}
+.hero-city:last-child { border-right: none; }
+.hc-place {
+  font-family: 'DM Mono', monospace;
+  font-size: 8pt; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--sun-amber);
+  margin-bottom: .2rem;
+}
+.hc-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .5rem .8rem;
+  margin-top: .4rem;
+}
+.hc-row { display: flex; flex-direction: column; }
+.hc-label { font-family: 'DM Mono', monospace; font-size: 6pt; letter-spacing: .12em; text-transform: uppercase; color: var(--cloud-grey); }
+.hc-val { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 800; color: white; line-height: 1; }
+.hc-val.small { font-size: 1rem; }
+.hc-val.xs { font-size: .85rem; }
+.hc-sub { font-size: 7.5pt; color: #7aa0c0; font-style: italic; }
+.hc-icon { font-size: 2rem; position: absolute; right: 1rem; top: .9rem; filter: drop-shadow(0 0 8px rgba(232,160,32,.3)); }
+
+/* Synoptic strip */
+.hero-synoptic {
+  background: rgba(0,0,0,.25);
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: .5rem 1.2rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 7pt; letter-spacing: .1em;
+  color: var(--cloud-grey);
+  display: flex; gap: 2rem; flex-wrap: wrap;
+}
+.hero-synoptic .tag { color: var(--sun-amber); }
+
+/* ══ PAGE ══ */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+/* ══ SECTION HEAD ══ */
+.section-head {
+  margin: 2rem 0 .9rem;
+  display: flex; align-items: center; gap: .8rem;
+}
+.section-head::before {
+  content: ''; display: block;
+  width: 4px; height: 1.4em;
+  background: linear-gradient(to bottom, var(--rain-blue), var(--sun-gold));
+  border-radius: 2px; flex-shrink: 0;
+}
+.section-head h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem; font-weight: 800;
+  letter-spacing: -.01em; color: var(--sky-deep);
+}
+.section-head .mono {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.5pt; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--text-muted); margin-left: auto;
+}
+
+/* ══ LAYOUTS ══ */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--col-gap); align-items: start; }
+.two-col-wide { display: grid; grid-template-columns: 1.35fr .65fr; gap: var(--col-gap); align-items: start; }
+.two-col-rev  { display: grid; grid-template-columns: .65fr 1.35fr; gap: var(--col-gap); align-items: start; }
+.col-right { border-left: 1px solid var(--border-light); padding-left: var(--col-gap); }
+.full { grid-column: 1 / -1; }
+hr.div { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+/* ══ MAP WRAPPER ══ */
+.map-wrap {
+  background: linear-gradient(160deg, #d8eaf8 0%, #c8e0f0 40%, #b8d5e8 100%);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .5rem;
+  position: relative;
+}
+.map-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 7pt; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--sky-deep); margin-bottom: .4rem; padding: .2rem .3rem;
+}
+.map-legend {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  padding: .4rem .3rem 0;
+  font-family: 'DM Mono', monospace; font-size: 6.5pt; letter-spacing: .08em;
+}
+.map-legend span { display: flex; align-items: center; gap: .3rem; }
+.lsw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* ══ ABSTRACT ══ */
+.abstract {
+  background: var(--sky-deep); color: #e0d8c8;
+  padding: 1rem 1.5rem; margin: 1rem 0;
+  border-left: 4px solid var(--sun-gold); position: relative;
+}
+.abstract-label { font-family: 'DM Mono', monospace; font-size: 7pt; letter-spacing: .2em; text-transform: uppercase; color: var(--sun-gold); margin-bottom: .35rem; }
+.abstract p { font-size: 9.5pt; line-height: 1.62; color: #b8b0a0; margin: 0; }
+
+/* ══ CHART CARD ══ */
+.chart-card {
+  background: white; border: 1px solid var(--border-light);
+  border-top: 3px solid var(--rain-blue);
+  border-radius: 0 0 4px 4px; padding: .9rem .9rem .55rem; margin: .7rem 0;
+}
+.chart-card.gold { border-top-color: var(--sun-gold); }
+.chart-card.green { border-top-color: var(--lazio-green); }
+.chart-card.teal { border-top-color: var(--abruzzo-teal); }
+.chart-card.purple { border-top-color: var(--messina-purple); }
+.chart-card.red { border-top-color: #c0392b; }
+.chart-title { font-family: 'DM Mono', monospace; font-size: 7.5pt; letter-spacing: .13em; text-transform: uppercase; color: var(--rain-blue); margin-bottom: .45rem; }
+.chart-card.gold .chart-title { color: #a07020; }
+.chart-card.green .chart-title { color: var(--lazio-green); }
+.chart-card.teal .chart-title { color: var(--abruzzo-teal); }
+.chart-card.purple .chart-title { color: var(--messina-purple); }
+.chart-card.red .chart-title { color: #c0392b; }
+.chart-note { font-family: 'DM Mono', monospace; font-size: 6.5pt; letter-spacing: .06em; color: var(--text-muted); margin-top: .35rem; padding-top: .3rem; border-top: 1px solid var(--border-light); line-height: 1.45; }
+
+/* ══ DAY STRIP ══ */
+.day-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: .8rem; margin: .9rem 0; }
+.day-box { background: var(--sky-deep); color: #e0d8c8; padding: .8rem 1rem; border-radius: 4px; position: relative; overflow: hidden; }
+.day-box.today   { border-top: 3px solid #c0392b; }
+.day-box.tom     { border-top: 3px solid var(--sun-gold); }
+.day-box.after   { border-top: 3px solid var(--lazio-green); }
+.db-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at top, rgba(192,57,43,.12) 0%, transparent 70%); }
+.day-box.tom .db-glow { background: radial-gradient(ellipse at top, rgba(232,160,32,.1) 0%, transparent 70%); }
+.day-box.after .db-glow { background: radial-gradient(ellipse at top, rgba(45,122,79,.1) 0%, transparent 70%); }
+.db-inner { position: relative; z-index: 1; }
+.db-date { font-family: 'DM Mono', monospace; font-size: 6.5pt; letter-spacing: .18em; text-transform: uppercase; color: var(--cloud-grey); margin-bottom: .15rem; }
+.db-icon { font-size: 1.7rem; margin: .2rem 0; }
+.db-temp { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 800; color: white; letter-spacing: -.01em; }
+.db-temp small { font-size: .68rem; font-weight: 400; color: var(--cloud-grey); font-family: 'DM Mono', monospace; }
+.db-desc { font-size: 8pt; color: #9ab5cc; font-style: italic; margin-top: .2rem; line-height: 1.4; }
+.db-pills { display: flex; gap: .5rem; margin-top: .45rem; flex-wrap: wrap; }
+.pill { font-family: 'DM Mono', monospace; font-size: 6pt; letter-spacing: .07em; background: rgba(255,255,255,.08); padding: .12rem .38rem; border-radius: 20px; color: var(--snow-white); }
+
+/* ══ LOC CARDS ══ */
+.loc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .65rem; margin: .7rem 0; }
+.loc-card { background: var(--paper-tinted); border: 1px solid var(--border-light); border-left: 3px solid var(--cloud-grey); padding: .6rem .75rem; border-radius: 0 4px 4px 0; }
+.loc-card.mtn { border-left-color: #9bb8d0; background: #e8f0f8; }
+.loc-card.cst { border-left-color: var(--rain-light); background: #e8f5f8; }
+.loc-card.city { border-left-color: var(--sun-gold); }
+.loc-card.lake { border-left-color: var(--abruzzo-teal); background: #e0f4f4; }
+.loc-card.str  { border-left-color: var(--messina-purple); background: #f0eaf8; }
+.loc-name { font-family: 'DM Mono', monospace; font-size: 7pt; letter-spacing: .12em; text-transform: uppercase; color: var(--sky-deep); font-weight: 500; }
+.loc-alt  { font-family: 'DM Mono', monospace; font-size: 6pt; color: var(--text-muted); }
+.loc-temp { font-family: 'Playfair Display', serif; font-size: 1.45rem; font-weight: 800; color: var(--sky-deep); margin: .12rem 0; letter-spacing: -.02em; }
+.loc-detail { font-size: 8pt; color: var(--text-muted); line-height: 1.4; }
+.loc-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 5.5pt; letter-spacing: .08em; text-transform: uppercase; background: var(--sky-deep); color: var(--snow-white); padding: .08rem .3rem; border-radius: 2px; margin-top: .2rem; }
+.loc-badge.sun { background: var(--sun-gold); color: var(--sky-deep); }
+.loc-badge.snow { background: #7a92a8; }
+.loc-badge.rain { background: var(--rain-blue); }
+.loc-badge.water { background: var(--abruzzo-teal); }
+.loc-badge.str { background: var(--messina-purple); }
+
+/* ══ THEORY ══ */
+.theory { background: #f0ead8; border: 1px solid var(--border); border-left: 4px solid var(--sky-deep); padding: 1rem 1.3rem; margin: .7rem 0; }
+.theory-lbl { font-family: 'DM Mono', monospace; font-size: 7pt; letter-spacing: .2em; text-transform: uppercase; color: var(--sky-deep); margin-bottom: .4rem; }
+.theory p { font-size: 9.5pt; color: var(--text-body); margin-bottom: .45rem; line-height: 1.65; }
+.theory p:last-child { margin-bottom: 0; }
+
+/* ══ FORMULA ══ */
+.formulas { display: flex; gap: .7rem; flex-wrap: wrap; margin: .7rem 0; }
+.fbox { background: var(--sky-deep); color: var(--snow-white); padding: .45rem .85rem; border-radius: 4px; font-family: 'DM Mono', monospace; font-size: 8pt; line-height: 1.5; }
+.fbox .lbl { font-size: 6pt; letter-spacing: .15em; text-transform: uppercase; color: var(--cloud-grey); display: block; margin-bottom: .15rem; }
+
+/* ══ WIND GRID ══ */
+.wind-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: .55rem; margin: .7rem 0; }
+.wind-box { background: white; border: 1px solid var(--border-light); padding: .55rem .6rem; text-align: center; border-radius: 3px; }
+.wa { font-size: 1.3rem; color: var(--rain-blue); }
+.wl { font-family: 'DM Mono', monospace; font-size: 6pt; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.ws { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 800; color: var(--sky-deep); }
+.wd { font-family: 'DM Mono', monospace; font-size: 6.5pt; color: var(--cloud-grey); }
+
+/* ══ ALERT BOX ══ */
+.alert-box { border-radius: 4px; padding: .8rem 1.1rem; margin: .7rem 0; display: flex; align-items: flex-start; gap: .8rem; }
+.alert-box.blue  { background: linear-gradient(135deg,#1a3a5e,#2a5080); }
+.alert-box.green { background: linear-gradient(135deg,#1a3d2a,#2d6040); }
+.alert-box.purple{ background: linear-gradient(135deg,#2d1a4a,#4a2a70); }
+.al-icon { font-size: 1.8rem; flex-shrink: 0; }
+.al-text { font-size: 9pt; line-height: 1.55; color: #cce0f0; }
+.alert-box.green .al-text { color: #b0dcc0; }
+.alert-box.purple .al-text { color: #d0c0f0; }
+.al-text strong { color: var(--sun-amber); }
+
+/* ══ TABLE ══ */
+table.mt { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin: .7rem 0; }
+.mt th { font-family: 'DM Mono', monospace; font-size: 6.5pt; letter-spacing: .12em; text-transform: uppercase; background: var(--sky-deep); color: var(--snow-white); padding: .38rem .55rem; text-align: left; }
+.mt td { padding: .32rem .55rem; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.mt tr:nth-child(even) td { background: var(--paper-tinted); }
+.mt tr:hover td { background: #e8f0f8; }
+.pbar { display: inline-block; height: 7px; border-radius: 2px; vertical-align: middle; margin-right: 3px; }
+.pbar.c { background: linear-gradient(to right,#7a92a8,#b0c4d8); }
+.pbar.r { background: linear-gradient(to right,#2e6da4,#5ba3d9); }
+
+/* ══ DROPCAP ══ */
+.dc::first-letter { float: left; font-family: 'Playfair Display', serif; font-size: 3.6rem; line-height: .82; padding-right: .1rem; padding-top: .05rem; color: var(--rain-blue); font-weight: 800; }
+
+/* ══ INLINE BADGE ══ */
+.ib { display: inline-block; font-family: 'DM Mono', monospace; font-size: 6.5pt; letter-spacing: .08em; text-transform: uppercase; padding: .1rem .38rem; border-radius: 2px; vertical-align: middle; margin: 0 .12rem; }
+.ib-b { background: #ddeeff; color: var(--rain-blue); }
+.ib-g { background: #e0f4e8; color: var(--lazio-green); }
+.ib-y { background: #fff3cc; color: #8a6000; }
+.ib-p { background: #ede5f8; color: var(--messina-purple); }
+
+/* ══ HOURLY STRIP ══ */
+.hourly { display: grid; grid-template-columns: repeat(5,1fr); gap: .5rem; margin: .7rem 0; }
+.hr-box { background: var(--sky-deep); border-radius: 3px; padding: .5rem .4rem; text-align: center; }
+.hr-time { font-family: 'DM Mono', monospace; font-size: 6.5pt; letter-spacing: .1em; color: var(--cloud-grey); }
+.hr-icon { font-size: 1.3rem; margin: .2rem 0; }
+.hr-temp { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 800; color: white; }
+.hr-pct  { font-family: 'DM Mono', monospace; font-size: 6.5pt; color: var(--cloud-grey); }
+
+/* ══ MESSINA SPECIAL ══ */
+.strait-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin: .7rem 0; }
+.strait-card { background: linear-gradient(135deg,#1a1a3a,#2a2a5a); border: 1px solid rgba(106,63,160,.35); border-radius: 4px; padding: .7rem .9rem; }
+.sc-label { font-family: 'DM Mono', monospace; font-size: 6.5pt; letter-spacing: .15em; text-transform: uppercase; color: #a090c0; margin-bottom: .3rem; }
+.sc-val { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 800; color: #e0d8f8; }
+.sc-sub { font-size: 7.5pt; color: #9080b0; font-style: italic; line-height: 1.4; margin-top: .15rem; }
+
+/* ══ FOOTER ══ */
+footer { background: var(--sky-deep); color: var(--cloud-grey); padding: 1rem 2rem; font-family: 'DM Mono', monospace; font-size: 7pt; letter-spacing: .1em; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
+footer .ts { color: var(--sun-amber); }
+
+@media(max-width:900px){
+  .two-col,.two-col-wide,.two-col-rev{grid-template-columns:1fr;}
+  .col-right{border-left:none;border-top:1px solid var(--border-light);padding-left:0;padding-top:1rem;}
+  .day-strip,.loc-grid,.wind-grid,.hero-cities{grid-template-columns:1fr;}
+  .hourly{grid-template-columns:repeat(3,1fr);}
+  .strait-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ HERO INFOGRAPHIC ══════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-top">
+      <div class="hero-sun">☀️</div>
+      <div class="hero-title">
+        <h1>Meteo Italia — <em>1 Maggio 2026</em></h1>
+        <div class="sub">Alta Pressione Subtropicale · Tempo Stabile · Temperature Sopra la Media · Festa dei Lavoratori ☀</div>
+      </div>
+      <div class="hero-badge">
+        <strong>ECMWF HRES 0.1°</strong>
+        Run: Thu 30 Apr 00Z<br>
+        Modello: IFS Cy49r1<br>
+        Orizzonte: +48–72h<br>
+        Attendibilità: ~88–93%
+      </div>
+    </div>
+
+    <div class="hero-cities">
+      <!-- ROMA -->
+      <div class="hero-city">
+        <div class="hc-icon">🌤</div>
+        <div class="hc-place">Roma — Lazio</div>
+        <div class="hc-grid">
+          <div class="hc-row"><span class="hc-label">Mattina 07:00</span><span class="hc-val">11–13°C</span><span class="hc-sub">☁ ~30% · NE debole</span></div>
+          <div class="hc-row"><span class="hc-label">Pomeriggio 15:00</span><span class="hc-val">23–25°C</span><span class="hc-sub">☁ ~15% · W variabile</span></div>
+          <div class="hc-row"><span class="hc-label">PoP giornaliera</span><span class="hc-val small">~5%</span><span class="hc-sub">nessuna pioggia prevista</span></div>
+          <div class="hc-row"><span class="hc-label">Pressione</span><span class="hc-val small">1023 hPa</span><span class="hc-sub">anticiclone dominante</span></div>
+          <div class="hc-row"><span class="hc-label">Umidità media</span><span class="hc-val small">38–52%</span><span class="hc-sub">aria secca e gradevole</span></div>
+          <div class="hc-row"><span class="hc-label">UV Index</span><span class="hc-val small">7–8</span><span class="hc-sub" style="color:#f5c842;">ALTO · protezione</span></div>
+        </div>
+      </div>
+
+      <!-- L'AQUILA / GRAN SASSO -->
+      <div class="hero-city" style="border-left: 1px solid rgba(255,255,255,.07);">
+        <div class="hc-icon">⛰️</div>
+        <div class="hc-place">L'Aquila / Gran Sasso</div>
+        <div class="hc-grid">
+          <div class="hc-row"><span class="hc-label">Mattina 07:00</span><span class="hc-val">3–6°C</span><span class="hc-sub">sereno, freddo in quota</span></div>
+          <div class="hc-row"><span class="hc-label">Pomeriggio 15:00</span><span class="hc-val">14–17°C</span><span class="hc-sub">soleggiato, NE 8-15 km/h</span></div>
+          <div class="hc-row"><span class="hc-label">Copertura ☁</span><span class="hc-val small">~20%</span><span class="hc-sub">poco nuvoloso, sereno</span></div>
+          <div class="hc-row"><span class="hc-label">Pressione</span><span class="hc-val small">1017 hPa</span><span class="hc-sub">alta in consolidamento</span></div>
+          <div class="hc-row"><span class="hc-label">Neve residua</span><span class="hc-val xs">da 2200 m</span><span class="hc-sub">nessuna nevicata nuova</span></div>
+          <div class="hc-row"><span class="hc-label">Escursione termica</span><span class="hc-val xs">10–14°C</span><span class="hc-sub">sbalzo mattina/sera</span></div>
+        </div>
+      </div>
+
+      <!-- MESSINA / STRETTO -->
+      <div class="hero-city" style="border-left: 1px solid rgba(255,255,255,.07);">
+        <div class="hc-icon">🌊</div>
+        <div class="hc-place">Stretto di Messina</div>
+        <div class="hc-grid">
+          <div class="hc-row"><span class="hc-label">T aria Messina</span><span class="hc-val">18–26°C</span><span class="hc-sub">soleggiato e caldo</span></div>
+          <div class="hc-row"><span class="hc-label">T acqua Stretto</span><span class="hc-val">17–19°C</span><span class="hc-sub">correnti di upwelling</span></div>
+          <div class="hc-row"><span class="hc-label">Vento</span><span class="hc-val small">N/NE 15–28</span><span class="hc-sub">Tramontana · km/h</span></div>
+          <div class="hc-row"><span class="hc-label">Corrente di marea</span><span class="hc-val xs">1.2–2.8 kt</span><span class="hc-sub">ciclo ~6h, inversioni</span></div>
+          <div class="hc-row"><span class="hc-label">Onda significativa</span><span class="hc-val xs">0.4–0.9 m</span><span class="hc-sub">mare poco mosso</span></div>
+          <div class="hc-row"><span class="hc-label">Gambarie (1350 m)</span><span class="hc-val xs">9–18°C</span><span class="hc-sub">soleggiato, umid. 45%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Synoptic note -->
+    <div class="hero-synoptic">
+      <span class="tag">⬡ SINOTTICA:</span> Alta subtropicale 1023–1030 hPa — subsidenza domina tutta la penisola
+      <span class="tag">⬡ LAZIO/ABRUZZO:</span> Sereno, T max 23–25°C Roma · neve residua oltre 2200 m
+      <span class="tag">⬡ STRETTO MESSINA:</span> Tramontana 15–28 km/h · correnti di marea fino 2.8 kt · risacca su Gambarie
+      <span class="tag">⬡ BRACCIANO:</span> T acqua 16–18°C · lago calmo · ideale escursioni
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ══ ABSTRACT ══ -->
+<div class="abstract">
+  <div class="abstract-label">Abstract — Sinottica 1 Maggio 2026</div>
+  <p>L'alta pressione subtropicale (nucleo 1028–1030 hPa tra Azzorre e Iberica) si estende con un promontorio verso il Mediterraneo centrale, imponendo <em>subsidenza</em> (discesa di aria secca con riscaldamento adiabatico ~3°C/1000 m) su tutta l'Italia. Il gradiente barico debole favorisce venti N/NE moderati su canali ristretti (Stretto di Messina, Bocche di Bonifacio). Le isoterme a 850 hPa (+10/+14°C al Centro) indicano anomalia positiva di +3/+5°C rispetto alla media storica di inizio maggio. Attendibilità previsionale 48–72h: 90–95%. Unica incertezza: qualche addensamento serale sull'Appennino calabro-lucano e possibili velature da NW su Alpi occidentali.</p>
+</div>
+
+<!-- ══ 3-DAY STRIP ══ -->
+<div class="section-head">
+  <h2>Panoramica Previsionale — 3 Giorni</h2>
+  <span class="mono">30 Apr · 1 Mag · 2 Mag 2026</span>
+</div>
+<div class="day-strip">
+  <div class="day-box today">
+    <div class="db-glow"></div>
+    <div class="db-inner">
+      <div class="db-date">Giovedì 30 Aprile</div>
+      <div class="db-icon">⛅🌧</div>
+      <div class="db-temp">13–24°C <small>Centro</small></div>
+      <div class="db-desc">Variabile, nubi e piovaschi pomeridiani su Appennino. Instabilità residua ciclone Tirreno. Neve sopra 1660 m.</div>
+      <div class="db-pills">
+        <span class="pill">☁ 70–85%</span><span class="pill">🌧 PoP 40–60%</span><span class="pill">💨 N/NE 15–25</span><span class="pill">❄ quota 1800 m</span>
+      </div>
+    </div>
+  </div>
+  <div class="day-box tom">
+    <div class="db-glow"></div>
+    <div class="db-inner">
+      <div class="db-date">Venerdì 1 Maggio — FESTA ★</div>
+      <div class="db-icon">☀️🌤</div>
+      <div class="db-temp">11–25°C <small>Centro</small></div>
+      <div class="db-desc">Alta pressione in rimonta. Soleggiato su tutta Italia. Perfetto per il Concertone e gite. Temperatura anomala +3°C.</div>
+      <div class="db-pills">
+        <span class="pill">☁ 15–25%</span><span class="pill">🌧 PoP 5%</span><span class="pill">💨 NE deboli</span><span class="pill">🌡 +3°C anomalia</span>
+      </div>
+    </div>
+  </div>
+  <div class="day-box after">
+    <div class="db-glow"></div>
+    <div class="db-inner">
+      <div class="db-date">Sabato 2 Maggio</div>
+      <div class="db-icon">☀️</div>
+      <div class="db-temp">10–27°C <small>Centro</small></div>
+      <div class="db-desc">Alta pressione consolidata. Cielo sereno, sole pieno. Caldo anomalo. UV alto. Condizioni ideali outdoor.</div>
+      <div class="db-pills">
+        <span class="pill">☁ 8–15%</span><span class="pill">🌧 PoP &lt;3%</span><span class="pill">💨 &lt;10 km/h</span><span class="pill">🌡 +5°C anomalia</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ORARIA OGGI 1 MAGGIO ══ -->
+<div class="section-head">
+  <h2>Evoluzione Oraria Roma — 1 Maggio</h2>
+  <span class="mono">Sintesi oraria · UTC+2</span>
+</div>
+<div class="hourly">
+  <div class="hr-box"><div class="hr-time">07:00</div><div class="hr-icon">🌤</div><div class="hr-temp">13°C</div><div class="hr-pct">☁30%</div></div>
+  <div class="hr-box"><div class="hr-time">10:00</div><div class="hr-icon">🌤</div><div class="hr-temp">19°C</div><div class="hr-pct">☁20%</div></div>
+  <div class="hr-box"><div class="hr-time">13:00</div><div class="hr-icon">☀️</div><div class="hr-temp">23°C</div><div class="hr-pct">☁12%</div></div>
+  <div class="hr-box"><div class="hr-time">16:00</div><div class="hr-icon">☀️</div><div class="hr-temp">25°C</div><div class="hr-pct">☁10%</div></div>
+  <div class="hr-box"><div class="hr-time">20:00</div><div class="hr-icon">🌙</div><div class="hr-temp">18°C</div><div class="hr-pct">☁8%</div></div>
+</div>
+
+<hr class="div">
+
+<!-- ══ TEORIA ══ -->
+<div class="section-head">
+  <h2>Fondamenti Teorici — NWP e Sinottica</h2>
+  <span class="mono">Atmospheric Science · Modelling</span>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="theory">
+      <div class="theory-lbl">§1 — Numerical Weather Prediction (NWP)</div>
+      <p class="dc">La previsione meteorologica moderna si fonda sulla risoluzione numerica delle <strong>equazioni primitive dell'atmosfera</strong>: continuità di massa, momento (Navier-Stokes filtrate), termodinamica e trasporto di umidità. Il modello ECMWF IFS (Integrated Forecasting System) opera su griglia O1280 (~9 km orizzontale) con 137 livelli verticali da superficie a ~80 km.</p>
+      <p>L'assimilazione dati avviene tramite <em>4D-Var</em> su finestre di 12h: ottimizza lo stato iniziale minimizzando il costo funzionale J = J_b + J_o (background + osservazioni). Input da: satelliti geostazionari MSG-4/Meteosat-12 (immagini VIS/IR/WV), radiosonde RAOB, scatterometri ASCAT (vento oceano), GNSS-RO per profili di umidità, stazioni SYNOP/METAR.</p>
+      <p>La <strong>PoP</strong> (Probability of Precipitation ≥1 mm/6h) deriva dall'ensemble ENS a 51 membri: lo spread del'ensemble misura l'incertezza previsionale. Attendibilità 48h: ~92%. La <strong>copertura nuvolosa</strong> è parametrizzata con lo schema microfisico a doppio momento di Sundqvist.</p>
+    </div>
+    <div class="formulas">
+      <div class="fbox"><span class="lbl">Eq. termodinamica</span>∂θ/∂t = −V·∇θ + Q/Π</div>
+      <div class="fbox"><span class="lbl">Subsidenza adiabatica</span>∂T/∂t|sub = −ω·(∂T/∂p − T·κ/p)</div>
+      <div class="fbox"><span class="lbl">Costo 4D-Var</span>J = ½(x−x_b)ᵀB⁻¹(x−x_b) + ½(y−H(x))ᵀR⁻¹(…)</div>
+    </div>
+  </div>
+  <div class="col-right">
+    <div class="theory">
+      <div class="theory-lbl">§2 — Anticiclone Subtropicale e Subsidenza</div>
+      <p>L'<strong>anticiclone delle Azzorre</strong> è una cellula semipermanente di alta pressione centrata ~1025–1035 hPa, legata alla zona di subsidenza della circolazione di Hadley (30°N). Quando il suo promontorio si estende verso il Mediterraneo (situazione attuale: nucleo ~1028 hPa su Baleari), genera:</p>
+      <p><strong>Subsidenza</strong>: aria discende da ~500 hPa → riscaldamento adiabatico (~3°C per 100 hPa) → inversione termica bassa (~800–900 hPa) → inibizione convezione → dissipazione nubi → soleggiamento. Oggi: strato limite bene mescolato, inversione a ~1200–1500 m s.l.m. — visibilità eccellente.</p>
+      <p><strong>Flusso geostrofico</strong>: attorno all'alta (senso orario) → N/NE deboli su Italia centrale. Sullo Stretto di Messina: canalizzazione del vento tra Aspromonte (1955 m) e Peloritani (1374 m) → accelerazione Tramontana. Effetto Bernoulli: riduzione sezione trasversale → ↑ velocità fino a 28–35 km/h in canale.</p>
+    </div>
+    <div class="theory">
+      <div class="theory-lbl">§3 — Stretto di Messina: Idrodinamica</div>
+      <p>Lo Stretto di Messina (~3.2 km larghezza minima) è uno dei sistemi a correnti più complessi del Mediterraneo. Le <strong>maree astronomiche</strong> (micro-tidale, ΔH ~15–30 cm) interagiscono con la differenza di livello medio Tirreno–Ionio (fino 30–50 cm), generando correnti bi-direzionali: corrente Nord→Sud (Montante) e Sud→Nord (Scendente). Oggi con Tramontana N/NE: corrente superficiale N→S rinforzata, 1.5–2.8 nodi in canale. <strong>Upwelling</strong> localizzato in prossimità di Punta Pezzo → acque più fredde (17°C) in superficie rispetto al Mar Ionio (19°C).</p>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══ MAPPA SVG ITALIA ══ -->
+<div class="section-head">
+  <h2>Mappa Sinottica — Nuvolosità &amp; Localizzazioni 1 Maggio 2026</h2>
+  <span class="mono">ECMWF HRES · Alta Pressione Dominante</span>
+</div>
+
+<div class="two-col-wide">
+  <div>
+    <div class="map-wrap">
+      <div class="map-title">☀ Copertura Nuvolosa Prevista — 1 Maggio 2026 · 12:00 UTC</div>
+
+<svg viewBox="0 0 520 680" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;border-radius:3px;">
+  <defs>
+    <radialGradient id="skyGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#daf0ff"/>
+      <stop offset="100%" stop-color="#b8d8f0"/>
+    </radialGradient>
+    <radialGradient id="seaGrad" cx="40%" cy="60%" r="80%">
+      <stop offset="0%" stop-color="#4a90c4"/>
+      <stop offset="100%" stop-color="#2a6090"/>
+    </radialGradient>
+    <!-- cloud patches - today mostly absent due to high pressure -->
+    <radialGradient id="cloudN" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <radialGradient id="cloudS" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#2e6da4" opacity="0.6"/>
+    </marker>
+  </defs>
+
+  <!-- Sky background -->
+  <rect width="520" height="680" fill="url(#skyGrad)"/>
+
+  <!-- HIGH PRESSURE symbol -->
+  <text x="200" y="90" font-size="52" fill="rgba(255,140,0,0.12)" font-weight="bold" font-family="serif" text-anchor="middle">A</text>
+  <text x="200" y="105" font-size="10" fill="rgba(200,100,0,0.5)" text-anchor="middle" font-family="monospace">1028 hPa</text>
+
+  <!-- isobar lines (concentric, dashed style) -->
+  <ellipse cx="205" cy="200" rx="260" ry="190" fill="none" stroke="rgba(180,120,40,0.18)" stroke-width="1.2" stroke-dasharray="6,4"/>
+  <ellipse cx="205" cy="200" rx="210" ry="155" fill="none" stroke="rgba(180,120,40,0.14)" stroke-width="1" stroke-dasharray="5,4"/>
+
+  <!-- SEAS -->
+  <!-- Tirreno -->
+  <ellipse cx="120" cy="370" rx="80" ry="120" fill="url(#seaGrad)" opacity="0.7"/>
+  <text x="100" y="378" font-size="9" fill="rgba(255,255,255,0.7)" font-family="serif" font-style="italic">Mar Tirreno</text>
+  <!-- Adriatico -->
+  <ellipse cx="360" cy="300" rx="55" ry="130" fill="url(#seaGrad)" opacity="0.65"/>
+  <text x="335" y="295" font-size="9" fill="rgba(255,255,255,0.7)" font-family="serif" font-style="italic">M. Adriatico</text>
+  <!-- Ionio -->
+  <ellipse cx="330" cy="530" rx="80" ry="70" fill="url(#seaGrad)" opacity="0.65"/>
+  <text x="295" y="535" font-size="8" fill="rgba(255,255,255,0.7)" font-family="serif" font-style="italic">Mar Ionio</text>
+  <!-- Med W -->
+  <ellipse cx="55" cy="510" rx="55" ry="50" fill="url(#seaGrad)" opacity="0.55"/>
+
+  <!-- ITALY mainland (simplified polygon) -->
+  <path d="M195,45 L230,48 L255,60 L270,80 L280,100 L295,115
+           L310,125 L320,140 L315,155 L300,160 L285,158
+           L285,175 L290,195 L295,215 L300,235 L305,255
+           L310,275 L310,290 L305,305 L295,315 L285,325
+           L280,340 L278,360 L275,375 L270,385
+           L262,395 L255,408 L252,422 L255,435
+           L262,445 L268,455 L265,468 L258,478
+           L250,485 L242,490 L235,492
+           L225,488 L218,480 L215,470 L218,460
+           L225,452 L228,442 L222,432 L215,428
+           L210,420 L205,410 L200,400 L195,388
+           L190,375 L186,362 L184,348 L186,335
+           L188,322 L186,308 L180,295 L172,285
+           L165,272 L160,258 L158,242 L162,228
+           L166,215 L168,200 L165,185 L158,172
+           L150,162 L142,152 L136,140 L134,128
+           L138,115 L146,105 L158,98 L170,90
+           L180,78 L188,62 Z"
+        fill="#b8c880" stroke="#8aaa50" stroke-width="1.2"/>
+
+  <!-- Hills/mountains shading -->
+  <path d="M210,140 L240,120 L265,135 L285,158 L270,175 L240,168 L215,158 Z" fill="#90a860" opacity="0.6"/>
+  <path d="M200,200 L235,188 L265,200 L280,220 L260,235 L225,232 L200,220 Z" fill="#90a860" opacity="0.5"/>
+  <path d="M210,270 L250,255 L280,268 L290,288 L268,302 L230,298 L210,285 Z" fill="#8aaa60" opacity="0.45"/>
+
+  <!-- SICILIA -->
+  <path d="M170,530 L215,520 L250,525 L268,540 L265,558 L245,568 L220,572 L195,568 L175,555 L165,542 Z"
+        fill="#c8d890" stroke="#8aaa50" stroke-width="1"/>
+
+  <!-- SARDEGNA -->
+  <path d="M62,375 L80,365 L95,370 L105,385 L108,405 L102,422 L88,432 L72,430 L60,415 L56,398 L60,385 Z"
+        fill="#c8d890" stroke="#8aaa50" stroke-width="1"/>
+
+  <!-- Cloud patches (today: very sparse due to high pressure) -->
+  <!-- Slight clouds on Alps NW -->
+  <ellipse cx="185" cy="58" rx="40" ry="18" fill="url(#cloudN)" opacity="0.8"/>
+  <!-- Slight clouds S/Calabria -->
+  <ellipse cx="268" cy="498" rx="30" ry="15" fill="url(#cloudS)" opacity="0.5"/>
+
+  <!-- Wind arrows (N/NE flow) -->
+  <g opacity="0.55" stroke="#2e6da4" stroke-width="1.2" fill="none" marker-end="url(#arrow)">
+    <line x1="100" y1="100" x2="108" y2="130"/>
+    <line x1="155" y1="80" x2="162" y2="110"/>
+    <line x1="225" y1="70" x2="232" y2="100"/>
+    <line x1="280" y1="90" x2="286" y2="120"/>
+    <line x1="160" y1="200" x2="166" y2="228"/>
+    <line x1="230" y1="190" x2="236" y2="218"/>
+    <line x1="165" y1="320" x2="170" y2="348"/>
+  </g>
+
+  <!-- ══ LOCATION MARKERS ══ -->
+  <!-- Campo Imperatore (1) -->
+  <g transform="translate(278,238)">
+    <circle cx="0" cy="0" r="7" fill="#2e6da4" stroke="white" stroke-width="1.5"/>
+    <text x="10" y="4" font-size="9" fill="#0a1628" font-family="monospace" font-weight="bold">Campo Imperatore</text>
+    <text x="10" y="14" font-size="7.5" fill="#5a5048" font-family="monospace">11°C · ☁35% · 2130m</text>
+  </g>
+
+  <!-- Roma (2) -->
+  <g transform="translate(198,335)">
+    <circle cx="0" cy="0" r="9" fill="#e8a020" stroke="white" stroke-width="2"/>
+    <text x="12" y="4" font-size="9.5" fill="#0a1628" font-family="monospace" font-weight="bold">Roma</text>
+    <text x="12" y="15" font-size="7.5" fill="#5a5048" font-family="monospace">23–25°C · ☁15%</text>
+  </g>
+
+  <!-- Campo di Giove (3) -->
+  <g transform="translate(292,290)">
+    <circle cx="0" cy="0" r="6" fill="#5ba3d9" stroke="white" stroke-width="1.5"/>
+    <text x="10" y="4" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold">Campo di Giove</text>
+    <text x="10" y="13" font-size="7" fill="#5a5048" font-family="monospace">8–14°C · ☁25% · 1065m</text>
+  </g>
+
+  <!-- Pescasseroli (4) -->
+  <g transform="translate(256,318)">
+    <circle cx="0" cy="0" r="6" fill="#1a6b6b" stroke="white" stroke-width="1.5"/>
+    <text x="9" y="4" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold">Pescasseroli</text>
+    <text x="9" y="13" font-size="7" fill="#5a5048" font-family="monospace">4–15°C · ☁22% · 1167m</text>
+  </g>
+
+  <!-- Capracotta (5) -->
+  <g transform="translate(290,340)">
+    <circle cx="0" cy="0" r="6" fill="#2d7a4f" stroke="white" stroke-width="1.5"/>
+    <text x="9" y="4" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold">Capracotta</text>
+    <text x="9" y="13" font-size="7" fill="#5a5048" font-family="monospace">6–14°C · ☁28% · 1421m</text>
+  </g>
+
+  <!-- Passo Godi (6) -->
+  <g transform="translate(262,348)">
+    <circle cx="0" cy="0" r="6" fill="#7a92a8" stroke="white" stroke-width="1.5"/>
+    <text x="9" y="4" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold">Passo Godi</text>
+    <text x="9" y="13" font-size="7" fill="#5a5048" font-family="monospace">2–12°C · ☁22% · 1630m</text>
+  </g>
+
+  <!-- Marina San Nicola (7) -->
+  <g transform="translate(155,325)">
+    <circle cx="0" cy="0" r="7" fill="#5ba3d9" stroke="white" stroke-width="1.5"/>
+    <text x="-5" y="-12" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold" text-anchor="middle">Marina San Nicola</text>
+    <text x="-5" y="-3" font-size="7" fill="#5a5048" font-family="monospace" text-anchor="middle">20°C · lago 17°C</text>
+  </g>
+  <!-- connector to Bracciano -->
+  <line x1="155" y1="318" x2="168" y2="310" stroke="#5ba3d9" stroke-width="1" stroke-dasharray="3,2"/>
+
+  <!-- Monte Palodina (8) – Appennino Tosco-Emiliano area -->
+  <g transform="translate(188,200)">
+    <circle cx="0" cy="0" r="6" fill="#a07020" stroke="white" stroke-width="1.5"/>
+    <text x="9" y="4" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold">M. Palodina</text>
+    <text x="9" y="13" font-size="7" fill="#5a5048" font-family="monospace">6–16°C · ☁18% · 1920m</text>
+  </g>
+
+  <!-- Breuil-Cervinia (9) – note: actually Valle d'Aosta, top-left -->
+  <g transform="translate(112,68)">
+    <circle cx="0" cy="0" r="7" fill="#d4e8f5" stroke="#2e6da4" stroke-width="1.5"/>
+    <text x="11" y="4" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold">Breuil-Cervinia</text>
+    <text x="11" y="13" font-size="7" fill="#5a5048" font-family="monospace">-2–8°C · ☁20% · 2006m</text>
+  </g>
+
+  <!-- Messina (10) -->
+  <g transform="translate(280,498)">
+    <circle cx="0" cy="0" r="8" fill="#6a3fa0" stroke="white" stroke-width="2"/>
+    <text x="11" y="4" font-size="9" fill="#0a1628" font-family="monospace" font-weight="bold">Messina</text>
+    <text x="11" y="14" font-size="7.5" fill="#5a5048" font-family="monospace">18–26°C · Tramontana</text>
+  </g>
+
+  <!-- Gambarie (11) – Aspromonte -->
+  <g transform="translate(268,520)">
+    <circle cx="0" cy="0" r="6" fill="#2d7a4f" stroke="white" stroke-width="1.5"/>
+    <text x="9" y="4" font-size="8.5" fill="#0a1628" font-family="monospace" font-weight="bold">Gambarie</text>
+    <text x="9" y="13" font-size="7" fill="#5a5048" font-family="monospace">9–18°C · ☁30% · 1350m</text>
+  </g>
+
+  <!-- Stretto di Messina current arrow -->
+  <g opacity="0.7">
+    <line x1="282" y1="490" x2="282" y2="515" stroke="#6a3fa0" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="288" y="503" font-size="7" fill="#6a3fa0" font-family="monospace">corrente</text>
+    <text x="288" y="512" font-size="7" fill="#6a3fa0" font-family="monospace">1.5–2.8 kt</text>
+  </g>
+
+  <!-- HIGH symbol central -->
+  <text x="195" y="205" font-size="36" fill="rgba(255,140,0,0.22)" font-weight="bold" font-family="serif" text-anchor="middle">H</text>
+  <text x="195" y="218" font-size="8.5" fill="rgba(200,100,0,0.45)" text-anchor="middle" font-family="monospace">1023 hPa</text>
+
+  <!-- Legend: cloud %, color scale -->
+  <rect x="8" y="620" width="200" height="48" rx="3" fill="rgba(0,0,0,0.12)"/>
+  <text x="14" y="633" font-size="7.5" fill="#334" font-family="monospace" font-weight="bold">COPERTURA NUVOLOSA (%)</text>
+  <rect x="14" y="638" width="22" height="8" rx="2" fill="#daf0ff" stroke="#aaa" stroke-width=".5"/>
+  <text x="38" y="646" font-size="7" fill="#334" font-family="monospace">0–15% Sereno</text>
+  <rect x="14" y="648" width="22" height="8" rx="2" fill="#cce0f8" stroke="#aaa" stroke-width=".5"/>
+  <text x="38" y="656" font-size="7" fill="#334" font-family="monospace">15–40% Poco nuvoloso</text>
+  <rect x="100" y="638" width="22" height="8" rx="2" fill="#a0c0e0" stroke="#aaa" stroke-width=".5"/>
+  <text x="124" y="646" font-size="7" fill="#334" font-family="monospace">40–70% Var.</text>
+  <rect x="100" y="648" width="22" height="8" rx="2" fill="#708090" stroke="#aaa" stroke-width=".5"/>
+  <text x="124" y="656" font-size="7" fill="#334" font-family="monospace">70–100% Nuvoloso</text>
+
+  <!-- Location legend -->
+  <rect x="218" y="620" width="298" height="55" rx="3" fill="rgba(0,0,0,0.12)"/>
+  <text x="224" y="633" font-size="7.5" fill="#334" font-family="monospace" font-weight="bold">LOCALIZZAZIONI</text>
+  <circle cx="228" cy="641" r="4" fill="#e8a020"/><text x="235" y="644" font-size="7" fill="#334" font-family="monospace">Roma</text>
+  <circle cx="268" cy="641" r="4" fill="#2e6da4"/><text x="275" y="644" font-size="7" fill="#334" font-family="monospace">Costiero/lago</text>
+  <circle cx="320" cy="641" r="4" fill="#1a6b6b"/><text x="327" y="644" font-size="7" fill="#334" font-family="monospace">Appennino</text>
+  <circle cx="376" cy="641" r="4" fill="#6a3fa0"/><text x="383" y="644" font-size="7" fill="#334" font-family="monospace">Messina/Stretto</text>
+  <circle cx="440" cy="641" r="4" fill="#d4e8f5" stroke="#2e6da4" stroke-width="1"/><text x="447" y="644" font-size="7" fill="#334" font-family="monospace">Alpi/neve</text>
+  <circle cx="228" cy="654" r="4" fill="#5ba3d9"/><text x="235" y="657" font-size="7" fill="#334" font-family="monospace">Marina/laghi</text>
+  <circle cx="268" cy="654" r="4" fill="#2d7a4f"/><text x="275" y="657" font-size="7" fill="#334" font-family="monospace">Montagna S</text>
+  <circle cx="320" cy="654" r="4" fill="#a07020"/><text x="327" y="657" font-size="7" fill="#334" font-family="monospace">Appennino C</text>
+  <circle cx="376" cy="654" r="4" fill="#7a92a8"/><text x="383" y="657" font-size="7" fill="#334" font-family="monospace">Passi/valichi</text>
+</svg>
+
+      <div class="map-legend">
+        <span><span class="lsw" style="background:#e8a020"></span> Roma</span>
+        <span><span class="lsw" style="background:#2e6da4"></span> Campo Imperatore</span>
+        <span><span class="lsw" style="background:#1a6b6b"></span> Pescasseroli</span>
+        <span><span class="lsw" style="background:#5ba3d9"></span> Marina San Nicola</span>
+        <span><span class="lsw" style="background:#6a3fa0"></span> Messina/Stretto</span>
+        <span><span class="lsw" style="background:#2d7a4f"></span> Gambarie/Capracotta</span>
+        <span><span class="lsw" style="background:#d4e8f5;border:1px solid #2e6da4"></span> Cervinia (Alpi)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-right">
+    <!-- CHART: cloud cover by region today vs tomorrow -->
+    <div class="chart-card">
+      <div class="chart-title">🗺 Copertura Nuvolosa % per Regione</div>
+      <canvas id="regionCloud" height="220"></canvas>
+      <div class="chart-note">Confronto 30 Apr (grigio) vs 1 Mag (oro) vs 2 Mag (verde). Crollo netto della copertura nuvolosa con rimonta anticiclone subtropicale.</div>
+    </div>
+
+    <div class="chart-card gold" style="margin-top:.7rem;">
+      <div class="chart-title">☁ vs 🌧 — Capoluoghi · 1 Maggio</div>
+      <canvas id="capoluoghiToday" height="200"></canvas>
+      <div class="chart-note">Copertura nuvolosa (grigio) e PoP pioggia (blu) per capoluoghi selezionati. Valori molto bassi: alta pressione ben consolidata.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══ SEZIONE CHARTS PRINCIPALI ══ -->
+<div class="section-head">
+  <h2>Grafici Analitici — Evoluzione Temporale e Comparativa</h2>
+  <span class="mono">NWP · 3-day forecast · % estimates</span>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="chart-card green">
+      <div class="chart-title">📊 Roma — Evoluzione ☁ Copertura e 🌧 PoP · 3 Giorni</div>
+      <canvas id="romaEvol" height="180"></canvas>
+      <div class="chart-note">Passaggio da 75% copertura oggi (30/4) a 15% domani (1/5) e 8% dopodomani (2/5). Anticliclone subtropicale elimina ogni rischio precipitazione.</div>
+    </div>
+  </div>
+  <div class="col-right">
+    <div class="chart-card teal">
+      <div class="chart-title">📊 Abruzzo Montano — ☁ Copertura per Quota · 1 Maggio</div>
+      <canvas id="quotaCloud" height="180"></canvas>
+      <div class="chart-note">Copertura residua in quota maggiore del fondovalle: inversione termica mattutina porta strato di nubi basse che si dissolvono entro le 10–11 UTC.</div>
+    </div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="chart-card gold">
+      <div class="chart-title">🌡 Temperature Max Attese — Zone Principali · 3 Giorni</div>
+      <canvas id="tempEvol" height="180"></canvas>
+      <div class="chart-note">Trend termico crescente: anomalia positiva +3/+5°C rispetto media storica fine aprile. Caldo anomalo su Roma e pianure il 2 maggio.</div>
+    </div>
+  </div>
+  <div class="col-right">
+    <div class="chart-card red">
+      <div class="chart-title">💨 Vento per Zona — 1 Maggio (km/h medio)</div>
+      <canvas id="windChart" height="180"></canvas>
+      <div class="chart-note">Stretto di Messina con venti più intensi per effetto canalizzazione Tramontana. Appennino in quota: vento moderato da NE. Pianure: calmo-debole.</div>
+    </div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="chart-card purple">
+      <div class="chart-title">🌊 Stretto di Messina — T Acqua per Punto · 1 Maggio</div>
+      <canvas id="messinaTemp" height="180"></canvas>
+      <div class="chart-note">Gradiente termico Tirreno→Ionio attraverso lo Stretto. Upwelling a Punta Pezzo (lato calabrese): acque più fredde per risalita di acque profonde.</div>
+    </div>
+  </div>
+  <div class="col-right">
+    <div class="chart-card">
+      <div class="chart-title">📈 Evoluzione Oraria Vento Messina — 1 Maggio (km/h)</div>
+      <canvas id="messinaWind" height="180"></canvas>
+      <div class="chart-note">Tramontana con massimo nelle ore centrali (10–15 UTC), attenuazione serale. Raffiche fino 35 km/h in canale alle 12–14 UTC.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══ FOCUS LAZIO ══ -->
+<div class="section-head">
+  <h2>Focus Lazio — Roma · Bracciano · Marina San Nicola</h2>
+  <span class="mono">Analisi Locale · Lacuale &amp; Costiera</span>
+</div>
+
+<div class="two-col-wide">
+  <div>
+    <p class="dc">Il <strong>Lazio</strong> è oggi pienamente sotto l'influenza dell'alta pressione subtropicale. Roma e l'hinterland laziale beneficiano di cielo sereno o con nubi sparse mattutine che si dissolvono rapidamente dopo le 09:00. La copertura nuvolosa media giornaliera scende a ~15–20%, con PoP praticamente nulla (&lt;5%). Temperature massime attese 23–25°C in città, percepite come gradevoli grazie alla bassa umidità relativa (38–52%).</p>
+    <p>Il <strong>Lago di Bracciano</strong> e l'area di <strong>Marina San Nicola</strong> si trovano in condizioni molto favorevoli. La caldera vulcanica (165 km², profondità max 160 m) mostra forte inerzia termica: temperatura superficiale attesa <strong>16–18°C</strong>, con termoclina in sviluppo a ~10–15 m. Il lago è praticamente privo di vento rilevante (debole N/NE 5–10 km/h), superficie pressoché piatta, visibilità eccellente. Condizioni ideali per canoa, vela leggera e camminate lungo la riva.</p>
+
+    <table class="mt">
+      <thead>
+        <tr>
+          <th>Località</th><th>T Max 1/5</th><th>☁%</th><th>PoP%</th><th>Vento</th><th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Roma Centro</strong></td><td>25°C</td><td><span class="pbar c" style="width:15px"></span>15%</td><td><span class="pbar r" style="width:5px"></span>5%</td><td>NE 8–14</td><td>Sereno · UV 7–8</td></tr>
+        <tr><td><strong>Bracciano (lago)</strong></td><td>22°C</td><td><span class="pbar c" style="width:16px"></span>17%</td><td><span class="pbar r" style="width:4px"></span>4%</td><td>N 5–10</td><td>T acqua 16–18°C</td></tr>
+        <tr><td><strong>Marina San Nicola</strong></td><td>21°C</td><td><span class="pbar c" style="width:14px"></span>14%</td><td><span class="pbar r" style="width:4px"></span>4%</td><td>NE 8–16</td><td>Mare poco mosso</td></tr>
+        <tr><td><strong>Castelli Romani</strong></td><td>22°C</td><td><span class="pbar c" style="width:20px"></span>20%</td><td><span class="pbar r" style="width:5px"></span>5%</td><td>N 6–12</td><td>Soleggiato</td></tr>
+        <tr><td><strong>Viterbo</strong></td><td>23°C</td><td><span class="pbar c" style="width:18px"></span>18%</td><td><span class="pbar r" style="width:5px"></span>5%</td><td>NE 8–14</td><td>Soleggiato</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-right">
+    <div class="alert-box green">
+      <div class="al-icon">🌊</div>
+      <div class="al-text">
+        <strong>Lago di Bracciano — Condizioni 1 Maggio</strong><br>
+        T acqua superficie: <strong>16–18°C</strong> (inerzia termica caldera vulcanica). Termoclina: ~12 m. Trasparenza Secchi: 5–7 m (ottima). Qualità: buona (ARPA Lazio). Vento: N/NE 5–10 km/h, lago quasi piatto. Onde: &lt;15 cm. Ideale per canottaggio, kayak, windsurf leggero, pesca. Balneazione: fresca ma possibile per abituati. No fioritura algale segnalata.
+      </div>
+    </div>
+    <div class="chart-card green" style="margin-top:.7rem;">
+      <div class="chart-title">🌡 T Acqua Lago Bracciano — Trend Mensile Apr–Mag</div>
+      <canvas id="braccianoTemp" height="165"></canvas>
+      <div class="chart-note">Risalita termica primaverile: da 12°C inizio aprile a 16–18°C fine aprile, verso 20–21°C fine maggio. Overturn primaverile completato.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══ FOCUS ABRUZZO ══ -->
+<div class="section-head">
+  <h2>Focus Abruzzo — Teramo · Gran Sasso · Appennino</h2>
+  <span class="mono">Alta Quota · Neve Residua · Escursionismo</span>
+</div>
+
+<div class="alert-box blue">
+  <div class="al-icon">❄️</div>
+  <div class="al-text">
+    <strong>NEVE RESIDUA IN QUOTA — 1 Maggio 2026</strong><br>
+    Nessuna nevicata nuova prevista. Neve residua presente oltre <strong>2000–2200 m s.l.m.</strong> (Gran Sasso versante N, Maiella, Monte La Meta). Zero termico: ~2400–2600 m. Condizioni di buon innevamento residuo primaverile su versanti esposti a N/NE. Attrezzatura adeguata necessaria per escursioni in quota. Impianti sciistici: <strong>tutti chiusi</strong> (stagione 2025/26 conclusa). Prati di Tivo e Pietracamela: neve solo da ~1800 m su neve vecchia.
+  </div>
+</div>
+
+<div class="loc-grid" style="grid-template-columns: repeat(3,1fr);">
+  <div class="loc-card city">
+    <div class="loc-name">Teramo</div><div class="loc-alt">265 m s.l.m.</div>
+    <div class="loc-temp">10–20°C</div>
+    <div class="loc-detail">☁ 22% · PoP 6%<br>Soleggiato, bel tempo. Vento NE 10–16 km/h. Visibilità ottima.</div>
+    <span class="loc-badge sun">sereno</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Prati di Tivo</div><div class="loc-alt">1450 m s.l.m.</div>
+    <div class="loc-temp">0–12°C</div>
+    <div class="loc-detail">☁ 28% · PoP 8%<br>Poco nuvoloso. Neve da 1800 m. NE 14–22 km/h. Escursioni OK.</div>
+    <span class="loc-badge snow">neve da 1800m</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Pietracamela</div><div class="loc-alt">1005 m s.l.m.</div>
+    <div class="loc-temp">2–14°C</div>
+    <div class="loc-detail">☁ 25% · PoP 7%<br>Sereno o poco nuvoloso. Neve da ~1700 m. Vento moderato.</div>
+    <span class="loc-badge sun">soleggiato</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Fano Adriano</div><div class="loc-alt">1028 m s.l.m.</div>
+    <div class="loc-temp">3–13°C</div>
+    <div class="loc-detail">☁ 26% · PoP 7%<br>Sereno. Neve residua da 1750 m. Visibilità eccellente su Adriatico.</div>
+    <span class="loc-badge snow">neve residua</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Campo Imperatore</div><div class="loc-alt">2130 m s.l.m.</div>
+    <div class="loc-temp">-2–8°C</div>
+    <div class="loc-detail">☁ 35% · PoP 10%<br>Poco nuvoloso. Neve diffusa al piano. NE 18–28 km/h. Freddo.</div>
+    <span class="loc-badge snow">manto nevoso</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Campo di Giove</div><div class="loc-alt">1065 m s.l.m.</div>
+    <div class="loc-temp">4–14°C</div>
+    <div class="loc-detail">☁ 25% · PoP 7%<br>Sereno con nubi sparse. Neve da 1700 m. Maiella ben visibile.</div>
+    <span class="loc-badge sun">sereno</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Pescasseroli</div><div class="loc-alt">1167 m s.l.m.</div>
+    <div class="loc-temp">4–15°C</div>
+    <div class="loc-detail">☁ 22% · PoP 6%<br>P.N. d'Abruzzo. Soleggiato. Fauna attiva. Neve da 1900 m.</div>
+    <span class="loc-badge sun">ottimo per escursioni</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Scanno</div><div class="loc-alt">1010 m s.l.m.</div>
+    <div class="loc-temp">4–15°C</div>
+    <div class="loc-detail">☁ 22% · PoP 6%<br>Lago di Scanno: T acqua ~12°C. Sereno, panorama eccezionale.</div>
+    <span class="loc-badge water">lago 12°C</span>
+  </div>
+  <div class="loc-card mtn">
+    <div class="loc-name">Capracotta</div><div class="loc-alt">1421 m s.l.m.</div>
+    <div class="loc-temp">2–14°C</div>
+    <div class="loc-detail">☁ 28% · PoP 8%<br>Altipiani molisani. Neve da 1800 m. Vento NE 12–20 km/h.</div>
+    <span class="loc-badge snow">neve residua</span>
+  </div>
+</div>
+
+<!-- Monte La Meta and Passo Godi full-width -->
+<div class="loc-grid" style="grid-template-columns: 1fr 1fr;">
+  <div class="loc-card mtn" style="border-left-color:#c0392b; background:#f0e8e8;">
+    <div class="loc-name" style="color:#c0392b;">Monte La Meta</div><div class="loc-alt">2242 m s.l.m. · P.N. Abruzzo</div>
+    <div class="loc-temp" style="font-size:1.3rem;">-2 — +7°C</div>
+    <div class="loc-detail">☁ 30% · PoP 8% · Neve residua diffusa da 1800 m<br>Rispetto a ieri netto miglioramento. Vento ENE 15–25 km/h (era 40 km/h). Visibilità buona-ottima. Escursioni in quota possibili con attrezzatura adeguata (ramponi consigliati da 2000 m). Zero termico 2400–2600 m.</div>
+    <span class="loc-badge snow">neve residua</span> <span class="loc-badge sun">migliorato</span>
+  </div>
+  <div class="loc-card mtn" style="border-left-color:#7a92a8;">
+    <div class="loc-name">Passo Godi</div><div class="loc-alt">1630 m s.l.m. · Abruzzo</div>
+    <div class="loc-temp" style="font-size:1.3rem;">0 — +12°C</div>
+    <div class="loc-detail">☁ 22% · PoP 6% · Neve da 1800 m<br>Valico soleggiato. Vista eccellente su Maiella e Mar Adriatico. Vento NE 12–20 km/h. Ideale punto panoramico. Neve solo su versanti esposti N/NE sopra quota.</div>
+    <span class="loc-badge snow">neve da 1800m</span> <span class="loc-badge sun">soleggiato</span>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══ STRETTO DI MESSINA ══ -->
+<div class="section-head">
+  <h2>Focus Stretto di Messina — Gambarie — Analisi Idrometerologica</h2>
+  <span class="mono">Correnti · T Acqua · Tramontana · Aspromonte</span>
+</div>
+
+<div class="two-col">
+  <div>
+    <div class="theory">
+      <div class="theory-lbl">§ Stretto di Messina — Meteorologia e Idrodinamica</div>
+      <p class="dc">Lo <strong>Stretto di Messina</strong> (lunghezza ~32 km, larghezza minima ~3.2 km a Punta Pezzo–Torre Faro) rappresenta uno dei sistemi oceanografici più complessi del Mediterraneo, determinato dalla simultanea influenza di <em>forzanti astronomiche</em> (maree), <em>forzanti meteorologiche</em> (vento, pressione) e <em>forzanti barocline</em> (differenza di densità tra Tirreno e Ionio).</p>
+      <p>Oggi (1 maggio), con l'alta pressione sul Mediterraneo centrale, il vento prevalente è <strong>Tramontana</strong> (N/NE), che si accelera significativamente all'interno del canale per effetto di <em>canalizzazione orografica</em>: l'aria compressa tra la catena dei Peloritani (versante siciliano, 1374 m) e dell'Aspromonte (versante calabrese, 1955 m) subisce un aumento di velocità per conservazione della portata (analogia con tubo di Venturi). La velocità media prevista è di <strong>15–22 km/h</strong> sulle rive, con picchi di <strong>25–35 km/h</strong> nel canale ristretto centrale nelle ore 10–15 UTC.</p>
+      <p>Le <strong>correnti di marea</strong> nello Stretto si invertono ogni ~6 ore (ciclo semidiurno modificato): corrente <em>Montante</em> (→ Nord, Ionio→Tirreno) e corrente <em>Scendente</em> (→ Sud, Tirreno→Ionio). I valori attuali attesi: 1.5–2.8 nodi in canale (massimo durante le transizioni), con vortici secondari ("mulinelli") localizzati a Torre Faro e Capo Peloro. <strong>Upwelling</strong> in prossimità di Punta Pezzo: risalita di acque profonde Tirrene (più fredde, 16–17°C) vs acque ioniche superficiali (18–19°C).</p>
+    </div>
+    <div class="formulas">
+      <div class="fbox"><span class="lbl">Venturi (canalizzazione)</span>v₂ = v₁ · A₁/A₂</div>
+      <div class="fbox"><span class="lbl">Corrente geostr. Stretto</span>f·V = −(1/ρ)·∂p/∂n</div>
+      <div class="fbox"><span class="lbl">Upwelling (Ekman)</span>W = ∇·(τ/ρf)</div>
+    </div>
+    <div class="theory">
+      <div class="theory-lbl">§ Gambarie d'Aspromonte (1350 m s.l.m.)</div>
+      <p>Gambarie, stazione montana sull'Aspromonte (RC), si trova oggi in condizioni di <strong>foehn attenuato</strong>: l'aria N/NE che scende dal crinale (1955 m) verso il versante tirrenico si riscalda adiabaticamente (~3°C/300 m) → temperature più miti rispetto alle quote equivalenti sul versante ionico. Previsione 1 maggio: T min 9°C / T max 18°C, umidità relativa 42–55% (secca), vento NE 14–22 km/h con raffiche a 30 km/h sui crinali esposti, copertura nuvolosa 25–35%, PoP 8%, visibilità 40–80 km (panorama su Etna possibile con condizioni ottimali).</p>
+    </div>
+  </div>
+  <div class="col-right">
+    <div class="strait-grid">
+      <div class="strait-card">
+        <div class="sc-label">T Acqua · Lato Calabria (Punta Pezzo)</div>
+        <div class="sc-val">16–17°C</div>
+        <div class="sc-sub">Upwelling attivo: risalita acque profonde Tirrene fredde. Strato misto superficiale: ~8 m.</div>
+      </div>
+      <div class="strait-card">
+        <div class="sc-label">T Acqua · Lato Sicilia (Torre Faro)</div>
+        <div class="sc-val">18–19°C</div>
+        <div class="sc-sub">Acque ioniche più calde. Fronte termico in canale centrale: ΔT 1.5–2°C in 1 km.</div>
+      </div>
+      <div class="strait-card">
+        <div class="sc-label">Corrente Montante (N→S oggi)</div>
+        <div class="sc-val">1.5–2.8 kt</div>
+        <div class="sc-sub">Picco alle 08–10 UTC e 20–22 UTC. Inversione a ~14 UTC. Vortici a Capo Peloro.</div>
+      </div>
+      <div class="strait-card">
+        <div class="sc-label">Tramontana in Canale</div>
+        <div class="sc-val">22–35 km/h</div>
+        <div class="sc-sub">Accelerazione Venturi nel canale ristretto. Onda significativa 0.4–0.9 m. Navigazione: prudenza.</div>
+      </div>
+    </div>
+
+    <div class="alert-box purple" style="margin-top:.8rem;">
+      <div class="al-icon">🌊</div>
+      <div class="al-text">
+        <strong>Messina Città — 1 Maggio</strong><br>
+        T aria: <strong>18–26°C</strong> · Umidità: 45–58% · Vento NE 15–25 km/h (Tramontana) · Pressione 1022 hPa. Qualità aria: buona (NE porta aria pulita). UV: 7–8 (alto). T acqua riva: 17–18°C. Navigazione nello Stretto: <strong>prudenza</strong> — raffiche e correnti irregolari. Festa dei Lavoratori: soleggiato, evento outdoor ottimale nonostante vento fresco.
+      </div>
+    </div>
+
+    <div class="chart-card purple" style="margin-top:.8rem;">
+      <div class="chart-title">🌡 Gambarie — Evoluzione Termica Oraria · 1 Maggio</div>
+      <canvas id="gambarieEvol" height="165"></canvas>
+      <div class="chart-note">Escursione termica di 9°C. Minimo alle 06 UTC (9°C), massimo alle 14 UTC (18°C). Vento NE: 14–30 km/h. Umidità in calo nel pomeriggio (effetto foehn attenuato).</div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══ VENTI ══ -->
+<div class="section-head">
+  <h2>Analisi Venti — 1 Maggio 2026</h2>
+  <span class="mono">Velocità media giornaliera · km/h</span>
+</div>
+
+<div class="wind-grid">
+  <div class="wind-box"><div class="wa">↓</div><div class="wl">Roma</div><div class="ws">8–14</div><div class="wd">N/NE · debole</div></div>
+  <div class="wind-box"><div class="wa">↓</div><div class="wl">Teramo</div><div class="ws">10–16</div><div class="wd">NE · debole-mod.</div></div>
+  <div class="wind-box"><div class="wa">↙</div><div class="wl">Gran Sasso</div><div class="ws">18–28</div><div class="wd">ENE · moderato</div></div>
+  <div class="wind-box"><div class="wa">↓</div><div class="wl">Bracciano</div><div class="ws">5–10</div><div class="wd">N · debole</div></div>
+  <div class="wind-box"><div class="wa">↙</div><div class="wl">Stretto Messina</div><div class="ws">22–35</div><div class="wd">N/NE · Tramontana</div></div>
+  <div class="wind-box"><div class="wa">↓</div><div class="wl">Gambarie</div><div class="ws">14–30</div><div class="wd">NE · mod-forte</div></div>
+  <div class="wind-box"><div class="wa">↓</div><div class="wl">Cervinia</div><div class="ws">10–20</div><div class="wd">N · moderato</div></div>
+  <div class="wind-box"><div class="wa">↓</div><div class="wl">Capracotta</div><div class="ws">12–20</div><div class="wd">NE · moderato</div></div>
+</div>
+
+<hr class="div">
+
+<!-- ══ TABELLA SINOTTICA COMPLETA ══ -->
+<div class="section-head">
+  <h2>Tabella Sinottica — Tutti i Capoluoghi · 3 Giorni</h2>
+  <span class="mono">Stime NWP · 30 Apr – 2 Mag 2026</span>
+</div>
+
+<div style="overflow-x:auto;">
+<table class="mt" style="font-size:8pt;">
+  <thead>
+    <tr>
+      <th>Capoluogo</th><th>Regione</th>
+      <th colspan="3">30 Apr</th>
+      <th colspan="3">1 Mag ★</th>
+      <th colspan="2">2 Mag</th>
+    </tr>
+    <tr>
+      <th></th><th></th>
+      <th>☁%</th><th>🌧%</th><th>🌡Max</th>
+      <th>☁%</th><th>🌧%</th><th>🌡Max</th>
+      <th>☁%</th><th>🌡Max</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Milano</td><td>Lombardia</td><td>45%</td><td>15%</td><td>22°C</td><td>15%</td><td>4%</td><td>24°C</td><td>10%</td><td>25°C</td></tr>
+    <tr><td>Torino</td><td>Piemonte</td><td>40%</td><td>12%</td><td>21°C</td><td>12%</td><td>3%</td><td>23°C</td><td>8%</td><td>24°C</td></tr>
+    <tr><td>Venezia</td><td>Veneto</td><td>55%</td><td>20%</td><td>21°C</td><td>22%</td><td>6%</td><td>23°C</td><td>12%</td><td>24°C</td></tr>
+    <tr><td>Bologna</td><td>E. Romagna</td><td>60%</td><td>25%</td><td>22°C</td><td>18%</td><td>5%</td><td>24°C</td><td>10%</td><td>26°C</td></tr>
+    <tr><td>Firenze</td><td>Toscana</td><td>65%</td><td>30%</td><td>23°C</td><td>15%</td><td>4%</td><td>25°C</td><td>8%</td><td>27°C</td></tr>
+    <tr><td>Ancona</td><td>Marche</td><td>75%</td><td>45%</td><td>19°C</td><td>20%</td><td>7%</td><td>21°C</td><td>12%</td><td>23°C</td></tr>
+    <tr style="background:#e0f4e8;"><td><strong>Roma</strong></td><td><strong>Lazio ★</strong></td><td><strong>75%</strong></td><td><strong>35%</strong></td><td><strong>24°C</strong></td><td><strong>15%</strong></td><td><strong>5%</strong></td><td><strong>25°C</strong></td><td><strong>8%</strong></td><td><strong>27°C</strong></td></tr>
+    <tr style="background:#e0f4f4;"><td><strong>Teramo</strong></td><td><strong>Abruzzo ★</strong></td><td><strong>80%</strong></td><td><strong>50%</strong></td><td><strong>15°C</strong></td><td><strong>22%</strong></td><td><strong>6%</strong></td><td><strong>20°C</strong></td><td><strong>12%</strong></td><td><strong>22°C</strong></td></tr>
+    <tr style="background:#e0f4f4;"><td><strong>L'Aquila</strong></td><td><strong>Abruzzo ★</strong></td><td><strong>85%</strong></td><td><strong>55%</strong></td><td><strong>12°C</strong></td><td><strong>20%</strong></td><td><strong>6%</strong></td><td><strong>17°C</strong></td><td><strong>10%</strong></td><td><strong>19°C</strong></td></tr>
+    <tr><td>Napoli</td><td>Campania</td><td>60%</td><td>35%</td><td>22°C</td><td>18%</td><td>6%</td><td>24°C</td><td>10%</td><td>26°C</td></tr>
+    <tr><td>Bari</td><td>Puglia</td><td>65%</td><td>38%</td><td>21°C</td><td>20%</td><td>7%</td><td>23°C</td><td>12%</td><td>25°C</td></tr>
+    <tr style="background:#ede5f8;"><td><strong>Messina</strong></td><td><strong>Sicilia ★</strong></td><td><strong>40%</strong></td><td><strong>12%</strong></td><td><strong>22°C</strong></td><td><strong>18%</strong></td><td><strong>5%</strong></td><td><strong>26°C</strong></td><td><strong>10%</strong></td><td><strong>28°C</strong></td></tr>
+    <tr><td>Palermo</td><td>Sicilia</td><td>40%</td><td>12%</td><td>24°C</td><td>15%</td><td>4%</td><td>26°C</td><td>8%</td><td>28°C</td></tr>
+    <tr><td>Cagliari</td><td>Sardegna</td><td>35%</td><td>10%</td><td>23°C</td><td>12%</td><td>3%</td><td>25°C</td><td>8%</td><td>27°C</td></tr>
+    <tr><td>Reggio Cal.</td><td>Calabria</td><td>38%</td><td>10%</td><td>22°C</td><td>16%</td><td>5%</td><td>25°C</td><td>9%</td><td>27°C</td></tr>
+  </tbody>
+</table>
+</div>
+
+</div><!-- /page -->
+
+<footer>
+  <div class="sources">
+    FONTI: ECMWF HRES 0.1° (Run Thu 30 Apr 00Z) · ICON-EU · GFS 0.25° · 3B Meteo · ilMeteo.it · Meteo.it · Aeronautica Militare Italiana · ARPA Lazio · ARPA Calabria · Protezione Civile Abruzzo · ISPRA (dati oceanografici Stretto) · Meteo Messina<br>
+    Copertura nuvolosa e PoP: stime derivate da descrizioni orarie modello e output ensemble. T acqua Bracciano: dati storici ARPA + modello. Attendibilità previsionale 48–72h: ~90–95%.
+  </div>
+  <div class="ts">Generato: Venerdì 1 Maggio 2026 · Bollettino Meteorologico Nazionale</div>
+</footer>
+
+<!-- ══════════════════════ SCRIPTS ══════════════════════ -->
+<script>
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#5a5048';
+
+const C = 'rgba(120,160,200,0.75)';
+const R = 'rgba(46,109,164,0.80)';
+const G = 'rgba(45,122,79,0.75)';
+
+// 1. Regional cloud cover 3 days
+new Chart(document.getElementById('regionCloud'), {
+  type: 'bar',
+  data: {
+    labels: ['Nord-Ovest','Nord-Est','Centro Tir.','Lazio','Abruzzo','Campania','Sud','Sicilia','Sardegna'],
+    datasets: [
+      { label: '30 Apr', data: [42,55,68,75,82,60,58,40,35], backgroundColor: 'rgba(120,160,200,0.7)', borderWidth:1, borderRadius:3 },
+      { label: '1 Mag ★', data: [14,20,15,16,22,18,16,15,12], backgroundColor: 'rgba(232,160,32,0.78)', borderWidth:1, borderRadius:3 },
+      { label: '2 Mag', data: [9,12,8,8,12,10,10,9,8], backgroundColor: 'rgba(45,122,79,0.72)', borderWidth:1, borderRadius:3 }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ labels:{ font:{ size:8 }}}},
+    scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%' }, grid:{ color:'#e8e0d0' }}, x:{ ticks:{ font:{size:7} }, grid:{ display:false }}}}
+});
+
+// 2. Capoluoghi today 1 May
+new Chart(document.getElementById('capoluoghiToday'), {
+  type: 'bar',
+  data: {
+    labels: ['Milano','Roma','Firenze','Teramo','L\'Aquila','Napoli','Messina','Palermo'],
+    datasets: [
+      { label: '☁ Copertura%', data: [15,15,14,22,20,18,18,15], backgroundColor: C, borderWidth:1, borderRadius:3 },
+      { label: '🌧 PoP%',      data: [4,5,4,6,6,6,5,4], backgroundColor: R, borderWidth:1, borderRadius:3 }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ labels:{ font:{ size:8 }}}},
+    scales:{ y:{ beginAtZero:true, max:40, ticks:{ callback:v=>v+'%' }, grid:{ color:'#e8e0d0' }}, x:{ ticks:{ font:{size:8} }, grid:{ display:false }}}}
+});
+
+// 3. Roma 3-day evol
+new Chart(document.getElementById('romaEvol'), {
+  type: 'bar',
+  data: {
+    labels: ['30 Apr', '1 Mag ★', '2 Mag'],
+    datasets: [
+      { label: '☁ Copertura%', data: [75,15,8], backgroundColor: C, borderWidth:1, borderRadius:4 },
+      { label: '🌧 PoP%',      data: [35,5,3],  backgroundColor: R, borderWidth:1, borderRadius:4 }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ labels:{ font:{ size:9 }}}},
+    scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%' }, grid:{ color:'#e8e0d0' }}, x:{ grid:{ display:false }}}}
+});
+
+// 4. Mountain cloud by altitude
+new Chart(document.getElementById('quotaCloud'), {
+  type: 'bar',
+  data: {
+    labels: ['Teramo\n265m','Pietracamela\n1005m','Fano Adr.\n1028m','Prati Tivo\n1450m','C.Imperatore\n2130m'],
+    datasets: [
+      { label: '☁ 1 Mag (mattina)', data: [30,35,36,42,48], backgroundColor: 'rgba(120,160,200,0.78)', borderWidth:1, borderRadius:3 },
+      { label: '☁ 1 Mag (pomeriggio)', data: [14,18,19,22,28], backgroundColor: 'rgba(45,122,79,0.72)', borderWidth:1, borderRadius:3 }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ labels:{ font:{ size:8 }}}},
+    scales:{ y:{ beginAtZero:true, max:60, ticks:{ callback:v=>v+'%' }, grid:{ color:'#e8e0d0' }}, x:{ ticks:{ font:{size:7} }, grid:{ display:false }}}}
+});
+
+// 5. Temperature evolution 3 days
+new Chart(document.getElementById('tempEvol'), {
+  type: 'line',
+  data: {
+    labels: ['30 Apr','1 Mag','2 Mag'],
+    datasets: [
+      { label:'Roma', data:[24,25,27], borderColor:'#c0392b', backgroundColor:'rgba(192,57,43,.08)', tension:.4, borderWidth:2, pointRadius:4, fill:true },
+      { label:'Teramo', data:[15,20,22], borderColor:'#2e6da4', backgroundColor:'rgba(46,109,164,.07)', tension:.4, borderWidth:2, pointRadius:4, fill:true },
+      { label:'L\'Aquila', data:[12,17,19], borderColor:'#1a6b6b', backgroundColor:'rgba(26,107,107,.07)', tension:.4, borderWidth:2, pointRadius:4, fill:true },
+      { label:'Messina', data:[22,26,28], borderColor:'#6a3fa0', backgroundColor:'rgba(106,63,160,.06)', tension:.4, borderWidth:2, pointRadius:4, fill:true },
+      { label:'Gambarie', data:[14,18,20], borderColor:'#2d7a4f', backgroundColor:'rgba(45,122,79,.06)', tension:.4, borderWidth:2, pointRadius:4, fill:true }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ labels:{ font:{ size:8 }}}},
+    scales:{ y:{ min:8, max:32, ticks:{ callback:v=>v+'°C' }, grid:{ color:'#e8e0d0' }}, x:{ grid:{ display:false }}}}
+});
+
+// 6. Wind by zone
+new Chart(document.getElementById('windChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Roma','Bracciano','Teramo','L\'Aquila','C.Imperatore','Capracotta','Gambarie','Stretto Mess.'],
+    datasets: [{ label:'💨 km/h medio', data:[11,7,13,18,23,16,22,28],
+      backgroundColor:['rgba(122,146,168,.7)','rgba(91,163,217,.6)','rgba(100,130,165,.72)','rgba(80,115,160,.75)','rgba(60,100,155,.80)','rgba(70,110,150,.75)','rgba(45,122,79,.75)','rgba(106,63,160,.80)'],
+      borderWidth:1, borderRadius:3 }]
+  },
+  options: { indexAxis:'y', responsive:true, plugins:{ legend:{ display:false }},
+    scales:{ x:{ beginAtZero:true, max:38, ticks:{ callback:v=>v+' km/h' }, grid:{ color:'#e8e0d0' }}, y:{ ticks:{ font:{size:8} }, grid:{ display:false }}}}
+});
+
+// 7. Messina water temp by point
+new Chart(document.getElementById('messinaTemp'), {
+  type: 'bar',
+  data: {
+    labels: ['Pta Pezzo\n(upwelling)','Canale\nCentrale','Torre Faro\n(Sicilia)','Golfo\nMessina N','Costa\nCalabria S','Golfo\nGioia Tauro'],
+    datasets: [{ label:'T Acqua (°C)',
+      data:[16.5, 17.5, 18.5, 18, 18.5, 19],
+      backgroundColor:['rgba(46,109,164,.85)','rgba(46,130,164,.75)','rgba(46,160,164,.70)','rgba(46,155,160,.70)','rgba(45,170,155,.68)','rgba(45,180,150,.65)'],
+      borderWidth:1, borderRadius:4 }]
+  },
+  options: { responsive:true, plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: ctx=>` ${ctx.raw}°C` }}},
+    scales:{ y:{ min:15, max:21, ticks:{ callback:v=>v+'°C' }, grid:{ color:'#e8e0d0' }}, x:{ ticks:{ font:{size:7} }, grid:{ display:false }}}}
+});
+
+// 8. Messina wind hourly
+new Chart(document.getElementById('messinaWind'), {
+  type: 'line',
+  data: {
+    labels: ['06','07','08','09','10','11','12','13','14','15','16','17','18','19','20'],
+    datasets: [
+      { label:'Vento città (km/h)', data:[12,14,16,18,20,22,24,25,26,24,22,20,18,16,14],
+        borderColor:'#6a3fa0', backgroundColor:'rgba(106,63,160,.1)', fill:true, tension:.4, borderWidth:2, pointRadius:3 },
+      { label:'Raffiche canale (km/h)', data:[18,22,26,30,32,34,35,34,32,30,28,25,22,20,18],
+        borderColor:'rgba(192,57,43,.8)', backgroundColor:'rgba(192,57,43,.05)', fill:false, tension:.4, borderWidth:2, pointRadius:3, borderDash:[4,3] }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ labels:{ font:{ size:8 }}}},
+    scales:{ y:{ beginAtZero:false, min:8, max:40, ticks:{ callback:v=>v+' km/h' }, grid:{ color:'#e8e0d0' }}, x:{ ticks:{ font:{size:8} }, grid:{ display:false }}}}
+});
+
+// 9. Bracciano temp trend
+new Chart(document.getElementById('braccianoTemp'), {
+  type: 'line',
+  data: {
+    labels: ['1 Apr','8 Apr','15 Apr','22 Apr','30 Apr','1 Mag','8 Mag','15 Mag','22 Mag','31 Mag'],
+    datasets: [{ label:'T Acqua Bracciano (°C)',
+      data:[11.5,12.5,13.5,14.5,17,17.5,18.5,19.5,20.5,21.5],
+      borderColor:'#1a6b6b', backgroundColor:'rgba(26,107,107,.12)', fill:true, tension:.5, borderWidth:2, pointRadius:4,
+      pointBackgroundColor:['#2e6da4','#2e6da4','#2e6da4','#2e6da4','#e8a020','#e8a020','#2d7a4f','#2d7a4f','#2d7a4f','#2d7a4f'] }]
+  },
+  options: { responsive:true, plugins:{ legend:{ display:false }},
+    scales:{ y:{ min:10, max:24, ticks:{ callback:v=>v+'°C' }, grid:{ color:'#e8e0d0' }}, x:{ ticks:{ font:{size:7.5} }, grid:{ display:false }}}}
+});
+
+// 10. Gambarie hourly temp
+new Chart(document.getElementById('gambarieEvol'), {
+  type: 'line',
+  data: {
+    labels: ['06','08','10','12','14','16','18','20','22'],
+    datasets: [
+      { label:'T (°C)', data:[9,11,14,17,18,17,15,13,11],
+        borderColor:'#2d7a4f', backgroundColor:'rgba(45,122,79,.12)', fill:true, tension:.5, borderWidth:2, pointRadius:4 },
+      { label:'Umidità %', data:[58,52,48,44,42,44,48,52,56],
+        borderColor:'rgba(46,109,164,.7)', backgroundColor:'rgba(46,109,164,.04)', fill:false, tension:.5, borderWidth:1.5, pointRadius:3, borderDash:[4,3] }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ labels:{ font:{ size:8 }}}},
+    scales:{ y:{ min:35, max:65, ticks:{ callback:v=>v }, grid:{ color:'#e8e0d0' }}, x:{ ticks:{ font:{size:8} }, grid:{ display:false }}}}
+});
+</script>
+</body>
+</html>
