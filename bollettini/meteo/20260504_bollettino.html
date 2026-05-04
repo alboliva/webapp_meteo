@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bollettino Meteo Scientifico — 4–6 Maggio 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1525;
+    --bg3: #141c2e;
+    --card: #1a2340;
+    --card2: #1e2847;
+    --accent: #4fc3f7;
+    --accent2: #81d4fa;
+    --warm: #ffb74d;
+    --cold: #80deea;
+    --rain: #5c6bc0;
+    --snow: #e1f5fe;
+    --sun: #ffd54f;
+    --storm: #ef5350;
+    --green: #66bb6a;
+    --text: #e8edf8;
+    --text2: #9db2d0;
+    --text3: #5f7a9e;
+    --border: rgba(79,195,247,0.15);
+    --border2: rgba(79,195,247,0.08);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,195,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,195,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 40px 20px 30px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(79,195,247,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+
+  .header-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 15px;
+  }
+  .header-meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* SINOTTICA BANNER */
+  .synoptic-banner {
+    background: linear-gradient(135deg, rgba(92,107,192,0.2) 0%, rgba(79,195,247,0.1) 100%);
+    border: 1px solid rgba(92,107,192,0.3);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 24px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .syn-item { }
+  .syn-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .syn-value {
+    font-size: 13px;
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 30px 0 12px;
+    border-bottom: 1px solid var(--border2);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border2);
+  }
+
+  /* DAY TABS */
+  .day-nav {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: var(--bg2);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border2);
+    width: fit-content;
+  }
+  .day-tab {
+    padding: 8px 20px;
+    border-radius: 7px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    transition: all 0.2s;
+  }
+  .day-tab.active {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .day-tab:hover:not(.active) { background: var(--border2); color: var(--text); }
+
+  /* LOCATION GRID */
+  .loc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+
+  .loc-card {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .loc-card:hover {
+    border-color: rgba(79,195,247,0.3);
+    transform: translateY(-2px);
+  }
+  .loc-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .loc-card.sun::before { background: var(--sun); }
+  .loc-card.rain::before { background: var(--rain); }
+  .loc-card.storm::before { background: var(--storm); }
+  .loc-card.snow::before { background: var(--snow); }
+  .loc-card.mix::before { background: linear-gradient(90deg, var(--rain), var(--snow)); }
+
+  .loc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .loc-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .loc-alt {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .loc-icon { font-size: 24px; }
+
+  .temp-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .temp-box {
+    flex: 1;
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .temp-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: var(--text3);
+    letter-spacing: 1px;
+  }
+  .temp-val {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  .temp-val.hot { color: var(--warm); }
+  .temp-val.cool { color: var(--cold); }
+  .temp-val.cold { color: #b3e5fc; }
+
+  .rain-bar-wrap {
+    margin: 10px 0 6px;
+  }
+  .rain-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+  .rain-bar-track {
+    height: 5px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .rain-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+  .rain-bar-fill.low { background: #43a047; }
+  .rain-bar-fill.med { background: #5c6bc0; }
+  .rain-bar-fill.high { background: #7e57c2; }
+  .rain-bar-fill.very-high { background: var(--storm); }
+
+  .detail-text {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+  .detail-text strong { color: var(--accent); }
+
+  /* HOURLY CHART */
+  .hourly-section {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .chart-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  canvas { max-width: 100%; }
+
+  /* HIGHLIGHT BOXES */
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .hl-box {
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .hl-icon { font-size: 22px; flex-shrink: 0; }
+  .hl-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .hl-value { font-size: 15px; font-weight: 600; color: var(--accent); }
+  .hl-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* PHYSICS BOX */
+  .physics-box {
+    background: linear-gradient(135deg, rgba(92,107,192,0.1) 0%, rgba(33,150,243,0.08) 100%);
+    border: 1px solid rgba(92,107,192,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .physics-box h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .physics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .phys-item {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .phys-item b { color: var(--accent2); font-weight: 500; }
+  .formula {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: var(--bg3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--warm);
+    display: inline-block;
+    margin: 2px 0;
+  }
+
+  /* WATER TEMPS */
+  .water-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .water-card {
+    background: linear-gradient(135deg, rgba(2,136,209,0.2) 0%, rgba(79,195,247,0.1) 100%);
+    border: 1px solid rgba(2,136,209,0.3);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .water-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .water-temp {
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--accent2);
+    line-height: 1;
+  }
+  .water-unit { font-size: 14px; }
+  .water-desc { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+  /* SNOW TABLE */
+  .snow-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  .snow-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .snow-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border2);
+  }
+  .snow-table tr:hover td { background: var(--card2); }
+  .snow-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+  }
+  .snow-badge.low { background: rgba(79,195,247,0.15); color: var(--accent); }
+  .snow-badge.med { background: rgba(129,212,250,0.2); color: #b3e5fc; }
+  .snow-badge.high { background: rgba(225,245,254,0.2); color: #e1f5fe; }
+
+  /* ALERT */
+  .alert-box {
+    background: linear-gradient(135deg, rgba(239,83,80,0.15) 0%, rgba(239,83,80,0.05) 100%);
+    border: 1px solid rgba(239,83,80,0.3);
+    border-left: 3px solid var(--storm);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .alert-box strong { color: #ef9a9a; }
+
+  /* APENNINE SECTION */
+  .apennine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .ap-card {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+  }
+  .ap-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--rain), var(--cold));
+  }
+  .ap-name { font-family:'Instrument Serif',serif; font-size:17px; margin-bottom:2px; }
+  .ap-alt { font-family:'Space Mono',monospace; font-size:9px; color:var(--text3); margin-bottom:10px; }
+  .ap-row { display:flex; justify-content:space-between; font-size:12px; color:var(--text2); margin-bottom:5px; }
+  .ap-row b { color:var(--text); }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 24px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 4px; bottom: 4px;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 16px;
+    padding-left: 16px;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 5px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  .tl-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 1.5px;
+    margin-bottom: 2px;
+  }
+  .tl-text { font-size: 12px; color: var(--text2); }
+  .tl-text strong { color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border2);
+    padding: 20px;
+    margin-top: 40px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  @media (max-width:768px) {
+    .synoptic-banner { grid-template-columns: 1fr 1fr; }
+    .physics-grid { grid-template-columns: 1fr; }
+    .loc-grid { grid-template-columns: 1fr; }
+  }
+
+  /* DAY PANELS */
+  .day-panel { display: none; }
+  .day-panel.active { display: block; }
+
+  .regime-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+  .regime-badge.unstable { background:rgba(92,107,192,0.25); color:#9fa8da; }
+  .regime-badge.stable { background:rgba(255,183,77,0.2); color:var(--warm); }
+  .regime-badge.storm { background:rgba(239,83,80,0.2); color:#ef9a9a; }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-tag">🛰 ECMWF HRES 0.1 · Run Mon 04 May 00Z · Analisi Sinottica</div>
+    <h1>Bollettino <em>Meteo Scientifico</em><br>4–6 Maggio 2026</h1>
+    <div class="header-meta">
+      <span>📍 17 località • Centro-Sud Italia + Alpi</span>
+      <span>🗓 Validità: Lun→Mer</span>
+      <span>⚡ Pattern: Saccatura Atlantica</span>
+      <span>🏔 Focus: Appennino Centrale + Neve Alpina</span>
+    </div>
+  </header>
+
+  <!-- SYNOPTIC SUMMARY -->
+  <div class="synoptic-banner">
+    <div class="syn-item">
+      <div class="syn-label">Sistema dominante</div>
+      <div class="syn-value">Saccatura Atlantica in approfondimento</div>
+    </div>
+    <div class="syn-item">
+      <div class="syn-label">Geopotenziale 500 hPa</div>
+      <div class="syn-value">Calo marcato su Tirreno → flussi SW umidi</div>
+    </div>
+    <div class="syn-item">
+      <div class="syn-label">Anticiclone subtropicale</div>
+      <div class="syn-value">Domina il Sud — subsidenza stabile</div>
+    </div>
+  </div>
+
+  <!-- PHYSICS -->
+  <div class="physics-box">
+    <h3>⚗️ Fisica tecnica & teoria meteorologica</h3>
+    <div class="physics-grid">
+      <div class="phys-item">
+        <b>Raffreddamento adiabatico secco</b><br>
+        <span class="formula">Γd ≈ 9.8 °C/km</span><br>
+        L'aria in sollevamento si espande e si raffredda. Raggiunta la temperatura di rugiada (T_d), inizia la condensazione.
+      </div>
+      <div class="phys-item">
+        <b>Gradiente pseudo-adiabatico</b><br>
+        <span class="formula">Γs ≈ 4–6.5 °C/km</span><br>
+        Con saturazione e rilascio di calore latente (~2500 J/g), l'aria raffredda più lentamente → instabilità convettiva amplificata (CAPE elevato).
+      </div>
+      <div class="phys-item">
+        <b>Effetto Stau orografico (Liguria/Alpi)</b><br>
+        <span class="formula">w = -U · ∇h (uplift forzato)</span><br>
+        Flusso SW a 20–40 kt forzato sulle Alpi Liguri e Apuane → precipitazioni 3–5× rispetto pianura. Massimi a barlovento.
+      </div>
+      <div class="phys-item">
+        <b>Zero termico & quota neve</b><br>
+        <span class="formula">Z_neve ≈ Z_0°C - 300 m</span><br>
+        Con 0°C previsto a ~2200 m mar. 5 → neve oltre 1800–2000 m. Su Alpi occidentali accumulo 20–40 cm possibile.
+      </div>
+      <div class="phys-item">
+        <b>Convergenza al suolo (Appennino)</b><br>
+        Canalizzazione venti tra Tirreno e Adriatico + uplift → convezione diurna su catena appenninica. Precipitazioni intense e localizzate.
+      </div>
+      <div class="phys-item">
+        <b>Subsidenza anticiclonica (Sud)</b><br>
+        <span class="formula">ω &lt; 0 (moto discendente)</span><br>
+        Inversione termica bassa → cloudbase alto → cielo sereno o velato. Temperatura in lieve aumento verso metà settimana.
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="alert-box">
+    ⚠️ <strong>ALLERTA IDROGEOLOGICA potenziale Martedì 5:</strong> Liguria, Toscana settentrionale, Appennino ligure-emiliano. Precipitazioni cumulate 30–60 mm in 6 h possibili. Effetto stau sulle Alpi Liguri.
+  </div>
+  <div class="alert-box" style="border-left-color:#7e57c2; background:linear-gradient(135deg, rgba(126,87,194,0.15) 0%, rgba(126,87,194,0.05) 100%); border-color:rgba(126,87,194,0.3)">
+    🏔 <strong>NEVE ALPINA significativa Mar 5–Mer 6:</strong> Cervinia/Zermatt 15–35 cm, Sestriere 8–15 cm. Quota neve scende a ~1800 m. Condizioni invernali fuori stagione sulle Alpi occidentali.
+  </div>
+
+  <!-- SECTION: CHARTS -->
+  <div class="section-title">📊 Charts sinottici multi-città</div>
+
+  <div class="hourly-section">
+    <div class="chart-title">Temperature massime (°C) — 3 giorni</div>
+    <canvas id="tempChart" height="100"></canvas>
+  </div>
+
+  <div class="hourly-section">
+    <div class="chart-title">Probabilità precipitazioni (%) per giorno</div>
+    <canvas id="rainChart" height="100"></canvas>
+  </div>
+
+  <div class="hourly-section">
+    <div class="chart-title">Andamento orario precipitazioni Martedì 5 (mm/h stimati) — Focus Liguria/Centro</div>
+    <canvas id="hourlyChart" height="100"></canvas>
+  </div>
+
+  <!-- HIGHLIGHTS -->
+  <div class="section-title">🔑 Highlights chiave</div>
+  <div class="highlights">
+    <div class="hl-box">
+      <div class="hl-icon">🌨️</div>
+      <div>
+        <div class="hl-label">Neve alpina max accumulo</div>
+        <div class="hl-value">35 cm</div>
+        <div class="hl-sub">Zermatt/Cervinia Mer 6 (cumulo totale)</div>
+      </div>
+    </div>
+    <div class="hl-box">
+      <div class="hl-icon">🌧️</div>
+      <div>
+        <div class="hl-label">Pioggia orografica massima</div>
+        <div class="hl-value">60 mm/6h</div>
+        <div class="hl-sub">Liguria / Alpi Liguri Mar 5</div>
+      </div>
+    </div>
+    <div class="hl-box">
+      <div class="hl-icon">🌡️</div>
+      <div>
+        <div class="hl-label">Temperatura più alta</div>
+        <div class="hl-value">28 °C</div>
+        <div class="hl-sub">Palermo Lun 4</div>
+      </div>
+    </div>
+    <div class="hl-box">
+      <div class="hl-icon">❄️</div>
+      <div>
+        <div class="hl-label">Quota zero termico min</div>
+        <div class="hl-value">2100 m</div>
+        <div class="hl-sub">Martedì 5 sera sulle Alpi</div>
+      </div>
+    </div>
+    <div class="hl-box">
+      <div class="hl-icon">⛈️</div>
+      <div>
+        <div class="hl-label">Rischio temporali max</div>
+        <div class="hl-value">85%</div>
+        <div class="hl-sub">Genova/Liguria Mar 5 (CAPE elevato)</div>
+      </div>
+    </div>
+    <div class="hl-box">
+      <div class="hl-icon">🌊</div>
+      <div>
+        <div class="hl-label">Temp acqua Mar Tirreno</div>
+        <div class="hl-value">18 °C</div>
+        <div class="hl-sub">San Nicola / costa laziale</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WATER TEMPS -->
+  <div class="section-title">🌊 Temperature acque marine e lacustri</div>
+  <div class="water-section">
+    <div class="water-card">
+      <div class="water-name">Mar Tirreno — San Nicola</div>
+      <div class="water-temp">17<span class="water-unit">–19°C</span></div>
+      <div class="water-desc">Temperatura superficiale (SST) da modello. Costa laziale-campana. Corrente tirrenica: direzione NW, 0.3 kt</div>
+    </div>
+    <div class="water-card">
+      <div class="water-name">Mar Ionio — Leuca/Otranto</div>
+      <div class="water-temp">19<span class="water-unit">–21°C</span></div>
+      <div class="water-desc">Acque più calde per influenza subtropicale. Corrente adriatica meridionale verso NW</div>
+    </div>
+    <div class="water-card">
+      <div class="water-name">Mar Mediterraneo — Palermo</div>
+      <div class="water-temp">18<span class="water-unit">–20°C</span></div>
+      <div class="water-desc">Canale di Sicilia. Corrente sud-nordafricana. Brezza termica pomeridiana da SW</div>
+    </div>
+    <div class="water-card">
+      <div class="water-name">Lago di Bracciano</div>
+      <div class="water-temp">14<span class="water-unit">–15°C</span></div>
+      <div class="water-desc">Lago vulcanico (alt. 164 m). Acqua ancora fredda per maggio. Circolazione convettiva profonda lenta. Balneazione ancora fredda.</div>
+    </div>
+    <div class="water-card">
+      <div class="water-name">Lago di Scanno</div>
+      <div class="water-temp">10<span class="water-unit">–12°C</span></div>
+      <div class="water-desc">Lago appenninico ~1010 m. Acqua ancora molto fredda — scioglimento nevi tardivo. Non balneabile.</div>
+    </div>
+  </div>
+
+  <!-- DAY NAVIGATION -->
+  <div class="section-title">📅 Previsioni dettagliate per città</div>
+  <div class="day-nav">
+    <button class="day-tab active" onclick="showDay(0)">Lun 4 Maggio</button>
+    <button class="day-tab" onclick="showDay(1)">Mar 5 Maggio</button>
+    <button class="day-tab" onclick="showDay(2)">Mer 6 Maggio</button>
+  </div>
+
+  <!-- DAY 0: LUNEDÌ -->
+  <div class="day-panel active" id="day0">
+    <div class="loc-grid">
+
+      <!-- ROMA -->
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">Roma</div><div class="loc-alt">Capitale — 21 m slm · Lazio</div></div>
+          <div class="loc-icon">🌤️</div>
+        </div>
+        <div class="regime-badge unstable">Instabilità in aumento</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">22°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">11°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>30%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:30%"></div></div>
+        </div>
+        <div class="detail-text">Mattina soleggiata, nubi in aumento dal pomeriggio. <strong>Possibili piovaschi serali</strong> (21–23 LT) portati dall'avanzata del fronte SW. Vento: Libeccio 15–25 km/h. Umidità in aumento a 65–75%.</div>
+      </div>
+
+      <!-- L'AQUILA -->
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">L'Aquila</div><div class="loc-alt">~720 m slm · Abruzzo</div></div>
+          <div class="loc-icon">🌥️</div>
+        </div>
+        <div class="regime-badge unstable">Quota elevata</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">19°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">7°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>25%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill low" style="width:25%"></div></div>
+        </div>
+        <div class="detail-text">Cielo parzialmente nuvoloso. Mattino fresco per la quota. <strong>Nessuna precipitazione significativa</strong> nella prima parte; possibili rovesci in serata (prob. 25%). Gelate notturne escluse. Vento da W.</div>
+      </div>
+
+      <!-- FIRENZE -->
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">Firenze</div><div class="loc-alt">50 m slm · Toscana</div></div>
+          <div class="loc-icon">🌥️</div>
+        </div>
+        <div class="regime-badge unstable">Fronte in avvicin.</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">23°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">12°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>35%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:35%"></div></div>
+        </div>
+        <div class="detail-text">Mattina discreta, velature dal mezzogiorno. <strong>Rischio piovaschi nel tardo pomeriggio</strong>. Domani (Mar 5) sarà il giorno critico con piogge orografiche abbondanti sull'Appennino tosco-emiliano.</div>
+      </div>
+
+      <!-- LUCCA -->
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">Lucca</div><div class="loc-alt">19 m slm · Toscana</div></div>
+          <div class="loc-icon">🌧️</div>
+        </div>
+        <div class="regime-badge unstable">Precursore frontale</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">22°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">12°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>45%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:45%"></div></div>
+        </div>
+        <div class="detail-text">Vicina alle Apuane, risente prima del flusso umido SW. <strong>Piogge moderate già dal tardo pomeriggio</strong>. Rischio accumuli apuani 10–20 mm già nella notte su martedì.</div>
+      </div>
+
+      <!-- GENOVA -->
+      <div class="loc-card storm">
+        <div class="loc-header">
+          <div><div class="loc-name">Genova</div><div class="loc-alt">5 m slm · Liguria</div></div>
+          <div class="loc-icon">🌩️</div>
+        </div>
+        <div class="regime-badge storm">Alta criticità</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">21°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">14°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>60%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill high" style="width:60%"></div></div>
+        </div>
+        <div class="detail-text">Già oggi <strong>prime piogge significative</strong> nelle ore centrali. Classico "Genova Low" potenziale in formazione. Vento da SW 25–40 km/h in rinforzo. Attenzione ai torrenti. Domani sarà peggio.</div>
+      </div>
+
+      <!-- TORRIGLIA -->
+      <div class="loc-card storm">
+        <div class="loc-header">
+          <div><div class="loc-name">Torriglia</div><div class="loc-alt">769 m slm · App. Ligure</div></div>
+          <div class="loc-icon">⛈️</div>
+        </div>
+        <div class="regime-badge storm">Effetto stau</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">17°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">10°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>70%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill high" style="width:70%"></div></div>
+        </div>
+        <div class="detail-text">Zona di massima convergenza orografica. <strong>Piogge già intense da metà giornata</strong>. Effetto stau ligure classico: uplift forzato SW→NE. Accumuli possibili 20–35 mm solo oggi.</div>
+      </div>
+
+      <!-- M. PALODINA -->
+      <div class="loc-card mix">
+        <div class="loc-header">
+          <div><div class="loc-name">M. Palodina</div><div class="loc-alt">~1170 m slm · Apuane</div></div>
+          <div class="loc-icon">🌨️</div>
+        </div>
+        <div class="regime-badge unstable">Orografia Apuana</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">16°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">6°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>55%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:55%"></div></div>
+        </div>
+        <div class="detail-text">Piogge orografiche in arrivo dal pomeriggio. A questa quota <strong>possibili piogge miste</strong> in serata se lo zero termico scende. Vento forte da SW oltre i 1000 m (raffiche 50–70 km/h).</div>
+      </div>
+
+      <!-- TORINO -->
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">Torino</div><div class="loc-alt">240 m slm · Piemonte</div></div>
+          <div class="loc-icon">🌦️</div>
+        </div>
+        <div class="regime-badge unstable">Pianura padana W</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">20°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">10°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>40%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:40%"></div></div>
+        </div>
+        <div class="detail-text">Mattina discreta, nubi dal pomeriggio. <strong>Piogge attese dalla sera</strong> con l'avanzata del fronte. Domani giornata più perturbata con rischio temporali pomeridiani.</div>
+      </div>
+
+      <!-- SESTRIERE -->
+      <div class="loc-card mix">
+        <div class="loc-header">
+          <div><div class="loc-name">Sestriere</div><div class="loc-alt">2035 m slm · Alpi Cozie</div></div>
+          <div class="loc-icon">🌨️</div>
+        </div>
+        <div class="regime-badge unstable">Alta quota alpina</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cold">10°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">2°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. prec.</span><span>50%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:50%"></div></div>
+        </div>
+        <div class="detail-text"><strong>Neve fresca già dal tardo pomeriggio</strong> (2–5 cm possibili). Zero termico scende verso i 2000 m in serata. Condizioni sciistiche in netto peggioramento. Domani nevicherà più intensamente.</div>
+      </div>
+
+      <!-- CERVINIA -->
+      <div class="loc-card snow">
+        <div class="loc-header">
+          <div><div class="loc-name">Breuil-Cervinia</div><div class="loc-alt">2050 m slm · Alpi Pennine</div></div>
+          <div class="loc-icon">❄️</div>
+        </div>
+        <div class="regime-badge unstable">Neve in quota</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cold">8°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">0°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. neve</span><span>65%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill high" style="width:65%"></div></div>
+        </div>
+        <div class="detail-text"><strong>2–4 cm neve</strong> già oggi pomeriggio-sera. Visibilità ridotta oltre 2500 m. Vento in aumento da W (raffiche 60–80 km/h in quota). Condizioni difficili per escursionisti.</div>
+      </div>
+
+      <!-- ZERMATT -->
+      <div class="loc-card snow">
+        <div class="loc-header">
+          <div><div class="loc-name">Zermatt</div><div class="loc-alt">1608 m slm · Vallese (CH)</div></div>
+          <div class="loc-icon">🏔️</div>
+        </div>
+        <div class="regime-badge unstable">Versante CH</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cold">8°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">0°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. neve</span><span>60%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill high" style="width:60%"></div></div>
+        </div>
+        <div class="detail-text">Similare a Cervinia. <strong>Neve dal tardo pomeriggio</strong>. A 1600 m potrebbe cadere pioggia/neve mista. Oltre 2000 m neve certa. Gornergletscher: condizioni invernali.</div>
+      </div>
+
+      <!-- SUD ITALIA -->
+      <div class="loc-card sun">
+        <div class="loc-header">
+          <div><div class="loc-name">Messina · Palermo · Brindisi</div><div class="loc-alt">0–10 m slm · Sud Italia</div></div>
+          <div class="loc-icon">☀️</div>
+        </div>
+        <div class="regime-badge stable">Anticiclonico stabile</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">25–28°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val hot">17–20°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>&lt;5%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill low" style="width:5%"></div></div>
+        </div>
+        <div class="detail-text">Giornata splendida. <strong>Brezze marine pomeridiane</strong> (Maestrale 15–20 km/h). Subsidenza anticiclonica garantisce stabilità. Otranto e Leuca: mare quasi calmo (Bf 2–3). Tramonto spettacolare.</div>
+      </div>
+
+    </div>
+  </div><!-- end day0 -->
+
+  <!-- DAY 1: MARTEDÌ -->
+  <div class="day-panel" id="day1">
+
+    <div class="alert-box">
+      ⚠️ <strong>PICCO DEL MALTEMPO — Martedì 5 Maggio:</strong> Situazione più critica dell'episodio. Saccatura in piena estensione. Convergenze al suolo + uplift orografico + CAPE elevato = temporali possibili su Liguria e Toscana settentrionale.
+    </div>
+
+    <div class="section-title" style="padding-top:10px">⏰ Timeline oraria — Martedì 5</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-time">00–06 LT</div>
+        <div class="tl-text"><strong>Liguria:</strong> Piogge già intense, 5–10 mm/h. Genova/Torriglia: temporali possibili. <strong>Alpi:</strong> neve in corso sopra 1800 m.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">06–12 LT</div>
+        <div class="tl-text"><strong>Toscana/Lucca/Firenze:</strong> Piogge moderate (3–6 mm/h). <strong>Roma:</strong> nubi spesse, prime piogge. <strong>Centro-Nord:</strong> vento SW in rinforzo 30–50 km/h.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">12–18 LT</div>
+        <div class="tl-text"><strong>Picco precipitazioni Liguria:</strong> 8–15 mm/h possibili, cumulati 30–50 mm. <strong>Appennino centrale:</strong> rovesci e temporali (CAPE 500–1000 J/kg). <strong>Torino:</strong> pioggia moderata, grandine possibile.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-time">18–24 LT</div>
+        <div class="tl-text"><strong>Fronte si sposta verso SE.</strong> Roma: piogge intense 2–5 mm/h. <strong>Alpi:</strong> nevicate abbondanti sopra 1800 m (5–10 cm/h possibili in quota). <strong>Sud:</strong> ancora stabile ma in attesa.</div>
+      </div>
+    </div>
+
+    <div class="loc-grid">
+
+      <div class="loc-card storm">
+        <div class="loc-header">
+          <div><div class="loc-name">Genova</div><div class="loc-alt">5 m slm</div></div>
+          <div class="loc-icon">⛈️</div>
+        </div>
+        <div class="regime-badge storm">Criticità massima</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">19°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">15°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia/tempora</span><span>85%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill very-high" style="width:85%"></div></div>
+        </div>
+        <div class="detail-text"><strong>Piogge intense per tutta la giornata.</strong> Cumulo previsto: 40–60 mm totali. Temporali possibili 09–21 LT. Vento: Libeccio 40–60 km/h, raffiche fino 80 km/h. Mare: molto mosso (Bf 5–6).</div>
+      </div>
+
+      <div class="loc-card storm">
+        <div class="loc-header">
+          <div><div class="loc-name">Torriglia</div><div class="loc-alt">769 m slm</div></div>
+          <div class="loc-icon">⛈️</div>
+        </div>
+        <div class="regime-badge storm">Stau alpino max</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">16°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">11°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>90%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill very-high" style="width:90%"></div></div>
+        </div>
+        <div class="detail-text"><strong>Zona di massima intensità pluviometrica</strong> dell'episodio. Possibili 50–80 mm nella giornata. Effetto stau Appennino Ligure classico. Allerta idrogeologica probabile.</div>
+      </div>
+
+      <div class="loc-card storm">
+        <div class="loc-header">
+          <div><div class="loc-name">M. Palodina</div><div class="loc-alt">~1170 m slm · Apuane</div></div>
+          <div class="loc-icon">⛈️</div>
+        </div>
+        <div class="regime-badge storm">Orografia critica</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cold">13°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">7°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia forte</span><span>80%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill very-high" style="width:80%"></div></div>
+        </div>
+        <div class="detail-text"><strong>20–35 mm possibili.</strong> In serata con abbassamento dello zero termico verso 1500–1600 m: possibili fiocchi misti sulla cima. Vento di burrasca (60–90 km/h).</div>
+      </div>
+
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">Roma</div><div class="loc-alt">21 m slm</div></div>
+          <div class="loc-icon">🌧️</div>
+        </div>
+        <div class="regime-badge unstable">Fronte attivo</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">18°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">15°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>65%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill high" style="width:65%"></div></div>
+        </div>
+        <div class="detail-text">Piogge moderate-intense specie al mattino e sera. <strong>Cumulo atteso 15–25 mm.</strong> Temperature in calo rispetto a ieri. Vento SW 25–35 km/h.</div>
+      </div>
+
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">L'Aquila</div><div class="loc-alt">720 m slm</div></div>
+          <div class="loc-icon">🌧️</div>
+        </div>
+        <div class="regime-badge unstable">Inflow appenninico</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">16°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">9°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>60%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill high" style="width:60%"></div></div>
+        </div>
+        <div class="detail-text">Piogge sparse. In montagna sui Gran Sasso <strong>nevicate sopra 1800 m</strong>. Vento forte da W-SW. Notte fresca (9°C a 720 m → ~3°C sui 2000 m del Gran Sasso).</div>
+      </div>
+
+      <div class="loc-card snow">
+        <div class="loc-header">
+          <div><div class="loc-name">Breuil-Cervinia</div><div class="loc-alt">2050 m slm</div></div>
+          <div class="loc-icon">❄️❄️</div>
+        </div>
+        <div class="regime-badge unstable">Tempesta alpina</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cold">6°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">1°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. neve intensa</span><span>85%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill very-high" style="width:85%"></div></div>
+        </div>
+        <div class="detail-text"><strong>8–15 cm neve fresca previsti.</strong> Accumulo totale 2 giorni: 20–30 cm. Visibilità azzerata sopra 2500 m. Funivia Plateau Rosà: probabile chiusura. Temperatura: -5°C a 3500 m.</div>
+      </div>
+
+      <div class="loc-card sun">
+        <div class="loc-header">
+          <div><div class="loc-name">Sud Italia</div><div class="loc-alt">Palermo · Messina · Brindisi · Otranto · Leuca</div></div>
+          <div class="loc-icon">☀️</div>
+        </div>
+        <div class="regime-badge stable">Anticiclone domina</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">24–27°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val hot">17–19°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>&lt;10%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill low" style="width:10%"></div></div>
+        </div>
+        <div class="detail-text">Ancora <strong>splendida giornata</strong> al Sud. Leggero aumento dell'umidità in quota per cirrus in transito. Brezze marine regolari. Mare: poco mosso (Bf 2–3). Ottima visibilità.</div>
+      </div>
+
+    </div>
+  </div><!-- end day1 -->
+
+  <!-- DAY 2: MERCOLEDÌ -->
+  <div class="day-panel" id="day2">
+    <div class="loc-grid">
+
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">Roma</div><div class="loc-alt">21 m slm</div></div>
+          <div class="loc-icon">🌦️</div>
+        </div>
+        <div class="regime-badge unstable">Residui perturbati</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">19°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">14°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>40%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:40%"></div></div>
+        </div>
+        <div class="detail-text">Miglioramento progressivo da W. <strong>Residui piovaschi al mattino</strong>, poi schiarite nel pomeriggio. Temperature ancora sotto la norma di 2–3°C. Vento in attenuazione.</div>
+      </div>
+
+      <div class="loc-card rain">
+        <div class="loc-header">
+          <div><div class="loc-name">Genova / Torriglia</div><div class="loc-alt">5 / 769 m slm</div></div>
+          <div class="loc-icon">🌦️</div>
+        </div>
+        <div class="regime-badge unstable">Strascico frontale</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cool">20°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cool">13°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>50%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill med" style="width:50%"></div></div>
+        </div>
+        <div class="detail-text">Ancora instabile al mattino con piogge residue. <strong>Pomeriggio in miglioramento</strong>. Cumulati totali dell'episodio (Lun–Mer) a Torriglia: potenziali 80–120 mm. Sorvegliare livelli dei torrenti.</div>
+      </div>
+
+      <div class="loc-card snow">
+        <div class="loc-header">
+          <div><div class="loc-name">Cervinia / Zermatt</div><div class="loc-alt">2050 / 1608 m slm</div></div>
+          <div class="loc-icon">🌨️</div>
+        </div>
+        <div class="regime-badge unstable">Accumulo max</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val cold">5°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val cold">-1°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. neve</span><span>70%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill high" style="width:70%"></div></div>
+        </div>
+        <div class="detail-text"><strong>Accumulo totale: 20–35 cm in 2 giorni.</strong> Mercoledì ancora nevicate residue (5–10 cm in più). Il Cervino tornerà bianco fino alla base. Condizioni di tarda primavera "invernale".</div>
+      </div>
+
+      <div class="loc-card sun">
+        <div class="loc-header">
+          <div><div class="loc-name">Sud Italia</div><div class="loc-alt">Palermo · Otranto · Leuca</div></div>
+          <div class="loc-icon">☀️</div>
+        </div>
+        <div class="regime-badge stable">Stabile</div>
+        <div class="temp-row">
+          <div class="temp-box"><div class="temp-label">MAX</div><div class="temp-val hot">23–27°C</div></div>
+          <div class="temp-box"><div class="temp-label">MIN</div><div class="temp-val hot">16–19°C</div></div>
+        </div>
+        <div class="rain-bar-wrap">
+          <div class="rain-bar-label"><span>Prob. pioggia</span><span>&lt;10%</span></div>
+          <div class="rain-bar-track"><div class="rain-bar-fill low" style="width:10%"></div></div>
+        </div>
+        <div class="detail-text">Tempo ancora buono al Sud. <strong>Possibile infiltrazione di nubi alte</strong> dal Canale di Sicilia. Temperatura stabile. Leuca: mare mosso da Maestrale in arrivo da NW (Bf 3–4).</div>
+      </div>
+
+    </div>
+  </div><!-- end day2 -->
+
+  <!-- APPENNINO CENTRALE -->
+  <div class="section-title">🏔️ Focus Appennino Centrale — Roccaraso, Pescopennataro, Barrea, M. Meta, Scanno, Velino, Forca d'Acero, Passo Godi</div>
+
+  <div class="physics-box" style="margin-bottom:16px">
+    <h3>🌬️ Circolazione locale Appenninica — Fisica</h3>
+    <div class="physics-grid">
+      <div class="phys-item">
+        <b>Canale Tirrenico-Adriatico</b><br>
+        I flussi SW vengono canalizzati dalle valli traverse dell'Appennino. Convergenza al crinale → uplift intensificato → precipitazioni superiori ai fondivalle del 30–50%.
+      </div>
+      <div class="phys-item">
+        <b>Zero termico e neve</b><br>
+        <span class="formula">Z_neve ≈ 1700–2000 m (Mar 5)</span><br>
+        Gran Sasso, Monte Meta, Monte Velino: tutte quote sopra 2000 m → neve certa da Mar 5. Passo Godi (~1630 m) e Forca d'Acero (~1540 m) border-line.
+      </div>
+    </div>
+  </div>
+
+  <div class="apennine-grid">
+
+    <div class="ap-card">
+      <div class="ap-name">Roccaraso</div>
+      <div class="ap-alt">1236 m slm · Altopiano delle Cinquemiglia · AQ</div>
+      <div class="ap-row"><span>Lun 4: Max/Min</span><b>15 / 6 °C</b></div>
+      <div class="ap-row"><span>Mar 5: Max/Min</span><b>12 / 7 °C</b></div>
+      <div class="ap-row"><span>Mer 6: Max/Min</span><b>13 / 5 °C</b></div>
+      <div class="ap-row"><span>Pioggia Lun</span><b>~5 mm</b></div>
+      <div class="ap-row"><span>Pioggia/Neve Mar 5</span><b>15–25 mm equiv. · neve oltre 1800 m</b></div>
+      <div class="ap-row"><span>Vento Mar 5</span><b>SW 40–60 km/h</b></div>
+      <div class="detail-text" style="margin-top:8px">A 1236 m: <strong>pioggia giovedì 5</strong>, non neve. Zero termico a ~1700 m. Rischio gelate notturne mercoledì notte (5–6 °C). Piste da sci: già chiuse stagione.</div>
+    </div>
+
+    <div class="ap-card">
+      <div class="ap-name">Pescopennataro</div>
+      <div class="ap-alt">1262 m slm · Alto Molise · IS</div>
+      <div class="ap-row"><span>Lun 4: Max/Min</span><b>14 / 5 °C</b></div>
+      <div class="ap-row"><span>Mar 5: Max/Min</span><b>11 / 6 °C</b></div>
+      <div class="ap-row"><span>Mer 6: Max/Min</span><b>13 / 4 °C</b></div>
+      <div class="ap-row"><span>Pioggia/Neve Mar 5</span><b>20–30 mm equiv.</b></div>
+      <div class="ap-row"><span>Neve Mar 5</span><b>Bordi quota (1800+ m vicino)</b></div>
+      <div class="detail-text" style="margin-top:8px">Zona altomolisana esposta ai flussi dall'Adriatico. <strong>Piogge abbondanti martedì.</strong> Rischio allagamenti locali. Visibilità ridotta in nebbia/nuvole basse. Temperatura minima in calo a 4°C mercoledì notte.</div>
+    </div>
+
+    <div class="ap-card">
+      <div class="ap-name">Barrea · M. La Meta</div>
+      <div class="ap-alt">Barrea 1064 m · M. Meta 2242 m slm · PNALM</div>
+      <div class="ap-row"><span>Barrea Lun 4</span><b>16 / 7 °C — parz. nuvoloso</b></div>
+      <div class="ap-row"><span>Barrea Mar 5</span><b>13 / 8 °C — pioggia 15–20 mm</b></div>
+      <div class="ap-row"><span>Monte Meta Mar 5</span><b>5 / -1 °C — neve 10–20 cm ❄️</b></div>
+      <div class="ap-row"><span>Vento in quota</span><b>SW 60–80 km/h oltre 2000 m</b></div>
+      <div class="detail-text" style="margin-top:8px">Monte La Meta (2242 m): <strong>nevicate sicure Mar 5</strong>, 10–20 cm possibili. Escursionismo vietato. Barrea: pioggia, lago verde-cupo spettacolare. Lago di Barrea: livello in aumento per apporti.</div>
+    </div>
+
+    <div class="ap-card">
+      <div class="ap-name">Forca d'Acero</div>
+      <div class="ap-alt">~1540 m slm · Passo Caserta-Sora</div>
+      <div class="ap-row"><span>Lun 4</span><b>13 / 4 °C — nuvoloso</b></div>
+      <div class="ap-row"><span>Mar 5</span><b>9 / 3 °C — pioggia/neve mista ⚠️</b></div>
+      <div class="ap-row"><span>Mer 6</span><b>10 / 2 °C — residui</b></div>
+      <div class="ap-row"><span>Rischio ghiaccio</span><b>Moderato notte Mar 5→Mer 6</b></div>
+      <div class="detail-text" style="margin-top:8px"><strong>Zona border-line neve/pioggia.</strong> Con zero termico a 1700 m il 5, possibile neve mista a 1540 m specie in serata. Strada statale SS509: attenzione a ghiaccio notturno. Consigliato monitoraggio ANAS.</div>
+    </div>
+
+    <div class="ap-card">
+      <div class="ap-name">Passo Godi</div>
+      <div class="ap-alt">~1630 m slm · Passo tra Sulmona e Scanno · AQ</div>
+      <div class="ap-row"><span>Lun 4</span><b>12 / 4 °C — coperto</b></div>
+      <div class="ap-row"><span>Mar 5</span><b>8 / 2 °C — neve mista/neve ❄️</b></div>
+      <div class="ap-row"><span>Accumulo neve Mar 5</span><b>3–8 cm probabile</b></div>
+      <div class="ap-row"><span>Mer 6</span><b>9 / 1 °C — residui neve possibili</b></div>
+      <div class="detail-text" style="margin-top:8px">A 1630 m con zero termico atteso a ~1700 m: <strong>neve molto probabile martedì pomeriggio-sera.</strong> Accumulo 3–8 cm. Strada del passo: potenzialmente innevata o ghiacciata nella notte. Catene consigliabili.</div>
+    </div>
+
+    <div class="ap-card">
+      <div class="ap-name">Lago di Scanno</div>
+      <div class="ap-alt">~1010 m slm · Gorge naturale · AQ</div>
+      <div class="ap-row"><span>Temp acqua lago</span><b>10–12 °C (ancora fredda)</b></div>
+      <div class="ap-row"><span>Lun 4</span><b>17 / 8 °C — nuvoloso ma asciutto</b></div>
+      <div class="ap-row"><span>Mar 5</span><b>14 / 9 °C — pioggia 15–20 mm</b></div>
+      <div class="ap-row"><span>Vento</span><b>Canalizzato in gola SW 30–40 km/h</b></div>
+      <div class="detail-text" style="margin-top:8px">Il lago a forma di cuore diventa spettacolare con pioggia e nebbia sulle gole. <strong>Livello del lago in aumento dopo le piogge.</strong> Escursioni: pericolose martedì per vento in gola e visibilità ridotta.</div>
+    </div>
+
+    <div class="ap-card">
+      <div class="ap-name">Monte Velino</div>
+      <div class="ap-alt">2487 m slm · Appennino Marsicano · AQ</div>
+      <div class="ap-row"><span>Lun 4</span><b>6 / -1 °C — coperto, vento</b></div>
+      <div class="ap-row"><span>Mar 5</span><b>3 / -3 °C — neve 15–25 cm ❄️❄️</b></div>
+      <div class="ap-row"><span>Mer 6</span><b>4 / -4 °C — neve residua</b></div>
+      <div class="ap-row"><span>Zero termico</span><b>scende a 1800–2000 m Mar 5</b></div>
+      <div class="detail-text" style="margin-top:8px">A 2487 m: <strong>nevicate abbondanti sicure martedì</strong>. Accumulo 15–25 cm su neve già presente. Vento di tempesta (80–100 km/h in cresta). Escursionismo: VIETATO. Rischio valanghe moderato su versanti N.</div>
+    </div>
+
+  </div>
+
+  <!-- SNOW TABLE -->
+  <div class="section-title">⛷️ Tabella neve alpina & appenninica</div>
+  <table class="snow-table">
+    <thead>
+      <tr>
+        <th>Località</th>
+        <th>Quota (m)</th>
+        <th>Neve Lun 4</th>
+        <th>Neve Mar 5</th>
+        <th>Totale 2gg</th>
+        <th>Intensità</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Zermatt (4478 m vetta)</td>
+        <td>1608 (paese)</td>
+        <td>~3 cm</td>
+        <td>10–15 cm</td>
+        <td>15–20 cm</td>
+        <td><span class="snow-badge high">ALTA</span></td>
+      </tr>
+      <tr>
+        <td>Breuil-Cervinia</td>
+        <td>2050</td>
+        <td>3–5 cm</td>
+        <td>10–18 cm</td>
+        <td>15–25 cm</td>
+        <td><span class="snow-badge high">ALTA</span></td>
+      </tr>
+      <tr>
+        <td>Sestriere</td>
+        <td>2035</td>
+        <td>2–4 cm</td>
+        <td>6–12 cm</td>
+        <td>8–16 cm</td>
+        <td><span class="snow-badge med">MEDIA</span></td>
+      </tr>
+      <tr>
+        <td>Monte Velino (cima)</td>
+        <td>2487</td>
+        <td>0–2 cm</td>
+        <td>15–25 cm</td>
+        <td>15–27 cm</td>
+        <td><span class="snow-badge high">ALTA</span></td>
+      </tr>
+      <tr>
+        <td>Monte La Meta (cima)</td>
+        <td>2242</td>
+        <td>0 cm</td>
+        <td>10–20 cm</td>
+        <td>10–20 cm</td>
+        <td><span class="snow-badge med">MEDIA</span></td>
+      </tr>
+      <tr>
+        <td>Passo Godi</td>
+        <td>1630</td>
+        <td>0 cm</td>
+        <td>3–8 cm</td>
+        <td>3–8 cm</td>
+        <td><span class="snow-badge low">BASSA</span></td>
+      </tr>
+      <tr>
+        <td>Forca d'Acero</td>
+        <td>1540</td>
+        <td>0 cm</td>
+        <td>0–4 cm (misto)</td>
+        <td>0–4 cm</td>
+        <td><span class="snow-badge low">INCERTA</span></td>
+      </tr>
+      <tr>
+        <td>Monte Palodina</td>
+        <td>1170</td>
+        <td>0 cm</td>
+        <td>0 cm (pioggia)</td>
+        <td>0 cm</td>
+        <td><span class="snow-badge low">NESSUNA</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Bollettino elaborato su base ECMWF HRES 0.1° · Run Mon 04 May 00Z · Validità 4–6 Maggio 2026<br>
+    Dati: modello ECMWF/GFS + analisi sinottica manuale · Temperature acqua: SST CMEMS<br>
+    ⚠️ Le previsioni hanno incertezza crescente oltre le 48h. Aggiornare con run successivi.
+  </footer>
+
+</div>
+
+<script>
+// Day switcher
+function showDay(n) {
+  document.querySelectorAll('.day-panel').forEach((p,i) => {
+    p.classList.toggle('active', i === n);
+  });
+  document.querySelectorAll('.day-tab').forEach((t,i) => {
+    t.classList.toggle('active', i === n);
+  });
+}
+
+// Chart defaults
+Chart.defaults.color = '#9db2d0';
+Chart.defaults.borderColor = 'rgba(79,195,247,0.08)';
+Chart.defaults.font.family = "'Space Mono', monospace";
+Chart.defaults.font.size = 10;
+
+// TEMP CHART
+const cities = ['Roma','L\'Aquila','Firenze','Lucca','Genova','Torriglia','Torino','Sestriere','Cervinia','Palermo','Brindisi'];
+const tempLun = [22,19,23,22,21,17,20,10,8,28,26];
+const tempMar = [18,16,19,19,19,16,17,8,6,27,25];
+const tempMer = [19,17,20,20,20,17,18,9,5,26,24];
+
+const colors = [
+  '#ef5350','#ff8a65','#ffa726','#ffcc02',
+  '#5c6bc0','#7e57c2','#26a69a','#42a5f5',
+  '#80deea','#ec407a','#f48fb1'
+];
+
+new Chart(document.getElementById('tempChart'), {
+  type: 'line',
+  data: {
+    labels: ['Lun 4', 'Mar 5', 'Mer 6'],
+    datasets: cities.map((c,i) => ({
+      label: c,
+      data: [tempLun[i], tempMar[i], tempMer[i]],
+      borderColor: colors[i],
+      backgroundColor: colors[i]+'22',
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      tension: 0.3,
+      borderWidth: 2,
+    }))
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
+      tooltip: { mode: 'index' }
+    },
+    scales: {
+      y: { title: { display: true, text: '°C' }, min: 0, max: 32 },
+      x: {}
+    }
+  }
+});
+
+// RAIN PROB CHART
+const rainCities = ['Roma','Firenze','Genova','Torriglia','M.Palodina','Torino','Sestriere','Cervinia','Palermo','L\'Aquila','Roccaraso'];
+const rainLun = [30,35,60,70,55,40,50,65,5,25,20];
+const rainMar = [65,65,85,90,80,65,75,85,10,60,55];
+const rainMer = [40,40,50,50,40,35,45,70,10,30,25];
+
+new Chart(document.getElementById('rainChart'), {
+  type: 'bar',
+  data: {
+    labels: rainCities,
+    datasets: [
+      { label: 'Lun 4', data: rainLun, backgroundColor: 'rgba(79,195,247,0.5)', borderColor: 'rgba(79,195,247,0.8)', borderWidth:1 },
+      { label: 'Mar 5', data: rainMar, backgroundColor: 'rgba(126,87,194,0.6)', borderColor: 'rgba(126,87,194,0.9)', borderWidth:1 },
+      { label: 'Mer 6', data: rainMer, backgroundColor: 'rgba(38,166,154,0.5)', borderColor: 'rgba(38,166,154,0.8)', borderWidth:1 },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12 } },
+    },
+    scales: {
+      y: { min: 0, max: 100, title: { display: true, text: '%' } },
+      x: { ticks: { maxRotation: 30 } }
+    }
+  }
+});
+
+// HOURLY CHART
+const hours = ['00','02','04','06','08','10','12','14','16','18','20','22'];
+const genovaHourly = [4,5,6,7,6,8,12,10,8,6,5,4];
+const torrigliaHourly = [5,7,9,10,8,10,14,13,11,9,7,6];
+const romaHourly = [0,0,0,0,1,2,2,3,4,5,4,3];
+const firenzeHourly = [0,0,1,2,3,4,5,5,4,3,2,2];
+const aquilaHourly = [0,0,0,0,1,2,3,4,4,3,2,1];
+
+new Chart(document.getElementById('hourlyChart'), {
+  type: 'line',
+  data: {
+    labels: hours,
+    datasets: [
+      { label: 'Genova', data: genovaHourly, borderColor: '#ef5350', backgroundColor: 'rgba(239,83,80,0.1)', fill: true, tension: 0.4, borderWidth: 2.5 },
+      { label: 'Torriglia', data: torrigliaHourly, borderColor: '#7e57c2', backgroundColor: 'rgba(126,87,194,0.1)', fill: true, tension: 0.4, borderWidth: 2.5 },
+      { label: 'Roma', data: romaHourly, borderColor: '#ff8a65', backgroundColor: 'rgba(255,138,101,0.1)', fill: true, tension: 0.4, borderWidth: 2 },
+      { label: 'Firenze', data: firenzeHourly, borderColor: '#26a69a', backgroundColor: 'rgba(38,166,154,0.1)', fill: true, tension: 0.4, borderWidth: 2 },
+      { label: 'L\'Aquila', data: aquilaHourly, borderColor: '#42a5f5', backgroundColor: 'rgba(66,165,245,0.1)', fill: true, tension: 0.4, borderWidth: 2 },
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12 } },
+      tooltip: { mode: 'index' }
+    },
+    scales: {
+      y: { min: 0, max: 16, title: { display: true, text: 'mm/h stimati' } },
+      x: { title: { display: true, text: 'Ora locale (LT)' } }
+    }
+  }
+});
+
+// Animate rain bars on load
+document.querySelectorAll('.rain-bar-fill').forEach(bar => {
+  const w = bar.style.width;
+  bar.style.width = '0%';
+  setTimeout(() => { bar.style.width = w; }, 300);
+});
+</script>
+
+</body>
+</html>
