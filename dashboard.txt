@@ -41,14 +41,14 @@ stelvio=https://imgproxy.windy.com/_/full/plain/current/1203067577/original.jpg
 # ── SUD ITALIA ────────────────────────────────────────────────
 messina=https://imgproxy.windy.com/_/full/plain/current/1560713889/original.jpg
 reggio_calabria=
-palermo=
+palermo=https://imgproxy.windy.com/_/full/plain/current/1633099175/original.jpg
 lipari=https://imgproxy.windy.com/_/full/plain/current/1793900853/original.jpg
 siracusa=
 
 # ── ESTERO ────────────────────────────────────────────────────
-berlino=
+berlino=https://imgproxy.windy.com/_/full/plain/current/1666966383/original.jpg
 londra=
-tromso=
+tromso=https://imgproxy.windy.com/_/full/plain/current/1653694157/original.jpg
 varsavia=
 new_york=
 miami=
