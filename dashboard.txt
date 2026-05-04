@@ -29,7 +29,7 @@ forca_dacero=
 
 # ── NORD ITALIA ───────────────────────────────────────────────
 breuil_cervinia=https://imgproxy.windy.com/_/full/plain/current/1742724160/original.jpg
-selva_val_gardena=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
+selva_val_gardena=https://imgproxy.windy.com/_/full/plain/current/1471514629/original.jpg
 ortisei=https://imgproxy.windy.com/_/full/plain/current/1199812053/original.jpg
 genova=https://imgproxy.windy.com/_/full/plain/current/1731006477/original.jpg
 alessandria=
