@@ -131,16 +131,20 @@ table.meteo-tbl tr.sep td {
 
 # ─── STAZIONI ────────────────────────────────────────────────────────────────
 STAZIONI = [
-    (41.8967, 12.4822, "Roma Centro",          "roma_centro",           "Roma",   "b-roma",   "Europe/Rome"),
+    (41.8967, 12.4822, "Roma Centro",           "roma_centro",           "Roma",   "b-roma",   "Europe/Rome"),
     (41.9147, 12.4178, "Roma Pineta Sacchetti", "roma_pineta_sacchetti", "Roma",   "b-roma",   "Europe/Rome"),
-    (41.9183, 12.4347, "Roma Monte Mario",       "roma_monte_mario",      "Roma",   "b-roma",   "Europe/Rome"),
-    (41.8836, 12.4694, "Roma Gianicolo",         "roma_gianicolo",        "Roma",   "b-roma",   "Europe/Rome"),
+    (41.9183, 12.4347, "Roma Monte Mario",      "roma_monte_mario",      "Roma",   "b-roma",   "Europe/Rome"),
+    (41.8836, 12.4694, "Roma Gianicolo",        "roma_gianicolo",        "Roma",   "b-roma",   "Europe/Rome"),
     (41.9736, 12.0631, "Marina di San Nicola",  "marina_san_nicola",     "Mare",   "b-mare",   "Europe/Rome"),
+    (42.7500, 10.3830, "Capoliveri",            "capoliveri",            "Mare",   "b-mare",   "Europe/Rome"),
+    (42.7425, 10.2332, "Marina di Campo",       "marina_di_campo",       "Mare",   "b-mare",   "Europe/Rome"),
     (42.1089, 12.1667, "Bracciano",             "bracciano",             "Lago",   "b-lago",   "Europe/Rome"),
     (42.1608, 12.2458, "Trevignano Romano",     "trevignano_romano",     "Lago",   "b-lago",   "Europe/Rome"),
     (41.7700, 12.7200, "Monte Cavo",            "monte_cavo",            "Monti",  "b-monti",  "Europe/Rome"),
+    (42.5539, 13.5367, "Fano Adriano",          "fano_adriano",          "Monti",  "b-monti",  "Europe/Rome"),
     (41.8561, 13.7950, "Pescasseroli",          "pescasseroli",          "Monti",  "b-monti",  "Europe/Rome"),
     (42.4996, 13.5597, "Prati di Tivo",         "prati_di_tivo",         "Monti",  "b-monti",  "Europe/Rome"),
+    (42.5233, 13.5540, "Pietracamela",          "pietracamela",          "Monti",  "b-monti",  "Europe/Rome"),
     (41.8750, 13.0333, "Monte Livata",          "monte_livata",          "Monti",  "b-monti",  "Europe/Rome"),
     (42.2333, 13.5667, "Campo Imperatore",      "campo_imperatore",      "Monti",  "b-monti",  "Europe/Rome"),
     (41.9917, 14.1017, "Campo di Giove",        "campo_di_giove",        "Monti",  "b-monti",  "Europe/Rome"),
@@ -150,7 +154,6 @@ STAZIONI = [
     (46.5569, 11.7855, "Selva Val Gardena",     "selva_val_gardena",     "Nord",   "b-nord",   "Europe/Rome"),
     (46.5750, 11.6722, "Ortisei",               "ortisei",               "Nord",   "b-nord",   "Europe/Rome"),
     (44.4056,  8.9463, "Genova",                "genova",                "Nord",   "b-nord",   "Europe/Rome"),
-    (44.9128,  8.6148, "Alessandria",           "alessandria",           "Nord",   "b-nord",   "Europe/Rome"),
     (44.9561,  6.8761, "Sestriere",             "sestriere",             "Nord",   "b-nord",   "Europe/Rome"),
     (45.7369,  7.3200, "Aosta",                 "aosta",                 "Nord",   "b-nord",   "Europe/Rome"),
     (46.1679,  9.8722, "Sondrio",               "sondrio",               "Nord",   "b-nord",   "Europe/Rome"),
@@ -388,58 +391,179 @@ st.markdown(f"""<div class="meteo-wrap"><table class="meteo-tbl">
 </table></div>""", unsafe_allow_html=True)
 
 # ─── GALLERY WEBCAM PER ZONA ─────────────────────────────────────────────────
+# ─── GALLERY WEBCAM PER ZONA ─────────────────────────────────────────────────
 st.markdown("---")
 st.markdown("### 📷 Gallery Webcam")
 
-# Raggruppa le webcam per zona (solo quelle con URL immagine diretta o pagina)
 zone_con_cam = {}
 for zona in ZONE_ORDER:
     cams = [
         d for d in dati
-        if d.get("zona") == zona and webcam_links.get(d["chiave"])
+        if d.get("zona") == zona and is_img_url(webcam_links.get(d["chiave"]))
     ]
     if cams:
         zone_con_cam[zona] = cams
 
 if not zone_con_cam:
-    st.info("Nessuna webcam configurata. Aggiungi URL in `dashboard.txt`.")
+    st.info("Nessuna webcam configurata. Aggiungi URL immagine diretta (jpg/jpeg/png) in `dashboard.txt`.")
 else:
-    # Tab per zona
     zone_tabs = list(zone_con_cam.keys())
     tab_labels = [f"{ZONE_LABELS[z].split()[0]} {z}" for z in zone_tabs]
     tabs = st.tabs(tab_labels)
 
-    # Cache-busting ogni 5 min per immagini
     cb = int(datetime.now().timestamp() // 300)
+
+    def genera_html_gallery(zone_con_cam, webcam_links, cb):
+        """Genera HTML autonomo con tutte le zone e le webcam in griglia 3 colonne."""
+        now_exp = datetime.now().strftime("%d/%m/%Y %H:%M")
+        sezioni = ""
+        for zona, cams in zone_con_cam.items():
+            label = ZONE_LABELS.get(zona, zona)
+            righe = ""
+            for i in range(0, len(cams), 3):
+                gruppo = cams[i:i+3]
+                celle = ""
+                for cam in gruppo:
+                    url = webcam_links[cam["chiave"]]
+                    url_cb = f"{url}?_cb={cb}" if "?" not in url else url
+                    t_str = f" · {cam['temp']:.1f}°C" if cam.get("temp") is not None else ""
+                    celle += f"""
+                    <div class="card">
+                        <a href="{url}" target="_blank" rel="noopener">
+                            <img src="{url_cb}" alt="{cam['nome']}"
+                                 onerror="this.parentElement.parentElement.style.display='none'">
+                        </a>
+                        <div class="card-title">{cam['nome']}{t_str}</div>
+                    </div>"""
+                # padding celle vuote per mantenere griglia
+                for _ in range(3 - len(gruppo)):
+                    celle += '<div class="card empty"></div>'
+                righe += f'<div class="row">{celle}</div>'
+            sezioni += f"""
+            <section>
+                <h2>{label}</h2>
+                {righe}
+            </section>"""
+
+        return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery Webcam — {now_exp}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap');
+  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{
+    background: #0f172a; color: #e2e8f0;
+    font-family: 'DM Sans', sans-serif; padding: 32px 24px;
+  }}
+  header {{
+    margin-bottom: 40px; border-bottom: 1px solid #1e293b; padding-bottom: 20px;
+  }}
+  header h1 {{
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem; font-weight: 400; color: #f1f5f9; letter-spacing: -0.02em;
+  }}
+  header p {{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; color: #475569; margin-top: 6px;
+  }}
+  section {{ margin-bottom: 52px; }}
+  section h2 {{
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem; font-weight: 400; color: #94a3b8;
+    margin-bottom: 18px; padding-bottom: 8px;
+    border-bottom: 1px solid #1e293b;
+  }}
+  .row {{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+  }}
+  .card {{
+    background: #1e293b; border-radius: 12px;
+    overflow: hidden; border: 1px solid #334155;
+    transition: transform .2s, box-shadow .2s;
+  }}
+  .card:hover {{ transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.5); }}
+  .card.empty {{ background: transparent; border: none; }}
+  .card a {{ display: block; }}
+  .card img {{
+    width: 100%; display: block;
+    aspect-ratio: 16/9; object-fit: cover;
+    background: #0f172a;
+  }}
+  .card-title {{
+    font-size: 0.78rem; font-weight: 600; color: #94a3b8;
+    padding: 10px 14px; text-align: center;
+    background: #1e293b; border-top: 1px solid #334155;
+    letter-spacing: 0.02em;
+  }}
+  footer {{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem; color: #334155;
+    margin-top: 48px; padding-top: 16px;
+    border-top: 1px solid #1e293b; line-height: 1.9;
+  }}
+  @media (max-width: 768px) {{
+    .row {{ grid-template-columns: repeat(2, 1fr); }}
+  }}
+  @media (max-width: 480px) {{
+    .row {{ grid-template-columns: 1fr; }}
+  }}
+</style>
+</head>
+<body>
+<header>
+  <h1>📷 Gallery Webcam</h1>
+  <p>Esportata il {now_exp} · Open-Meteo (ECMWF) · Cache-bust: {cb}</p>
+</header>
+{sezioni}
+<footer>
+  Dati meteo: Open-Meteo Forecast (ECMWF IFS)<br>
+  Immagini: aggiornate ogni 5 min (cache-busting attivo)<br>
+  Gallery esportata il {now_exp}
+</footer>
+</body>
+</html>"""
+
+    # ── Pulsante esporta (sopra i tab) ──────────────────────────────────────
+    col_exp, _ = st.columns([1, 3])
+    with col_exp:
+        html_export = genera_html_gallery(zone_con_cam, webcam_links, cb)
+        fname = f"gallery_webcam_{datetime.now().strftime('%Y%m%d_%H%M')}.html"
+        st.download_button(
+            label="⬇️ Esporta Webcam Gallery",
+            data=html_export.encode("utf-8"),
+            file_name=fname,
+            mime="text/html",
+            help="Scarica un file HTML autonomo con tutte le webcam visibili, cliccabili e a tutto schermo",
+        )
 
     for tab, zona in zip(tabs, zone_tabs):
         with tab:
             cams = zone_con_cam[zona]
-            # Solo webcam con immagine diretta (jpg / jpeg / png)
-            img_cams = [d for d in cams if is_img_url(webcam_links.get(d["chiave"]))]
-
-            if not img_cams:
-                st.info("Nessuna webcam con immagine diretta configurata per questa zona.")
-            else:
-                cols_per_row = 3
-                for i in range(0, len(img_cams), cols_per_row):
-                    cols = st.columns(cols_per_row)
-                    for j, cam in enumerate(img_cams[i:i+cols_per_row]):
-                        url = webcam_links[cam["chiave"]]
-                        url_cb = f"{url}?_cb={cb}" if "?" not in url else url
-                        t_str = f" · {cam['temp']:.1f}°C" if cam.get("temp") is not None else ""
-                        with cols[j]:
-                            st.markdown(f"""
-                            <div class="wcam-card">
-                                <a href="{url}" target="_blank">
-                                    <img src="{url_cb}" class="wcam-img"
-                                         alt="{cam['nome']}"
-                                         onerror="this.src='';this.style.minHeight='80px'">
-                                </a>
-                                <div class="wcam-card-title">
-                                    {cam['nome']}{t_str}
-                                </div>
-                            </div>""", unsafe_allow_html=True)
+            cols_per_row = 3
+            for i in range(0, len(cams), cols_per_row):
+                cols = st.columns(cols_per_row)
+                for j, cam in enumerate(cams[i:i+cols_per_row]):
+                    url = webcam_links[cam["chiave"]]
+                    url_cb = f"{url}?_cb={cb}" if "?" not in url else url
+                    t_str = f" · {cam['temp']:.1f}°C" if cam.get("temp") is not None else ""
+                    with cols[j]:
+                        st.markdown(f"""
+                        <div class="wcam-card">
+                            <a href="{url}" target="_blank">
+                                <img src="{url_cb}" class="wcam-img"
+                                     alt="{cam['nome']}"
+                                     onerror="this.src='';this.style.minHeight='80px'">
+                            </a>
+                            <div class="wcam-card-title">
+                                {cam['nome']}{t_str}
+                            </div>
+                        </div>""", unsafe_allow_html=True)
 
 # ─── STORICO DA ARCHIVE API ───────────────────────────────────────────────────
 st.markdown("---")

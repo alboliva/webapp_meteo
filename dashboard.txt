@@ -12,12 +12,16 @@ roma_gianicolo=
 
 # ── COSTA ─────────────────────────────────────────────────────
 marina_san_nicola=https://vedetta.org/webcam/italia/lazio/roma/marina-di-san-nicola
+capoliveri=https://imgproxy.windy.com/_/full/plain/current/1260360735/original.jpg
+marina_di_campo=https://imgproxy.windy.com/_/full/plain/current/1609073994/original.jpg
 
 # ── LAGHI ─────────────────────────────────────────────────────
 bracciano=https://imgproxy.windy.com/_/full/plain/current/1465657442/original.jpg
 trevignano_romano=https://vedetta.org/webcam/italia/lazio/roma/trevignano
 
 # ── MONTI & APPENNINO ─────────────────────────────────────────
+fano_adriano=https://imgproxy.windy.com/_/full/plain/current/1681211412/original.jpg
+pietracamela=https://imgproxy.windy.com/_/full/plain/current/1694696935/original.jpg
 monte_cavo=
 pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
 monte_livata=https://ramsat.it/webcam-montelivata
@@ -32,7 +36,6 @@ breuil_cervinia=https://imgproxy.windy.com/_/full/plain/current/1742724160/origi
 selva_val_gardena=https://imgproxy.windy.com/_/full/plain/current/1471514629/original.jpg
 ortisei=https://imgproxy.windy.com/_/full/plain/current/1199812053/original.jpg
 genova=https://imgproxy.windy.com/_/full/plain/current/1731006477/original.jpg
-alessandria=
 sestriere=https://imgproxy.windy.com/_/full/plain/current/1666097812/original.jpg
 aosta=https://imgproxy.windy.com/_/full/plain/current/1201549102/original.jpg
 sondrio=https://imgproxy.windy.com/_/full/plain/current/1199821060/original.jpg
