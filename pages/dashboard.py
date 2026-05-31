@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 from datetime import datetime, timedelta
 import os
+import base64, mimetypes
+from concurrent.futures import ThreadPoolExecutor
 
 st.set_page_config(page_title="Dashboard Meteo", layout="wide", page_icon="🌡️")
 
@@ -318,6 +320,284 @@ def fetch_storico(lat, lon, tz, giorni=30):
         return {"error": str(e)}
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# GENERATORE GALLERY HTML (export per sezione / tutte · snapshot "freezato")
+# ═══════════════════════════════════════════════════════════════════════════════
+_GALLERY_TEMPLATE = """<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery Webcam — __NOW__</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f172a; color: #e2e8f0;
+    font-family: 'DM Sans', sans-serif; padding: 32px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  header { margin-bottom: 36px; border-bottom: 1px solid #1e293b; padding-bottom: 20px; }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem; font-weight: 400; color: #f1f5f9; letter-spacing: -0.02em;
+  }
+  header p {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; color: #64748b; margin-top: 8px; line-height: 1.7;
+  }
+  header .tag {
+    display:inline-block; margin-top:10px; padding:3px 10px; border-radius:20px;
+    background:#1e293b; border:1px solid #334155; color:#94a3b8;
+    font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.05em;
+  }
+  section { margin-bottom: 48px; }
+  section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem; font-weight: 400; color: #94a3b8;
+    margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid #1e293b;
+    display:flex; align-items:center; gap:10px;
+  }
+  section h2 .cnt {
+    font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:#64748b;
+    background:#1e293b; border:1px solid #334155; border-radius:20px; padding:2px 9px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .card {
+    background: #1e293b; border-radius: 12px; overflow: hidden;
+    border: 1px solid #334155; cursor: zoom-in;
+    transition: transform .18s, box-shadow .18s, border-color .18s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 34px rgba(0,0,0,.55);
+    border-color:#475569;
+  }
+  .card img {
+    width: 100%; display: block;
+    aspect-ratio: 4/3; object-fit: cover; background: #0f172a;
+  }
+  .card figcaption {
+    font-size: 0.78rem; font-weight: 600; color: #cbd5e1;
+    padding: 10px 14px; text-align: center;
+    background: #1e293b; border-top: 1px solid #334155; letter-spacing: 0.02em;
+  }
+  footer {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem; color: #334155;
+    margin-top: 48px; padding-top: 16px; border-top: 1px solid #1e293b; line-height: 1.9;
+  }
+  /* ── LIGHTBOX (foto grande + nitida) ───────────────────────────────── */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(7,11,20,.96);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .lightbox.on { display: flex; }
+  .lb-img {
+    max-width: 95vw; max-height: 88vh;
+    object-fit: contain; border-radius: 8px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.7);
+    image-rendering: auto;
+  }
+  .lb-cap {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
+    color: #f1f5f9; background: rgba(15,23,42,.85);
+    padding: 8px 18px; border-radius: 24px; border: 1px solid #334155;
+    max-width: 80vw; text-align: center;
+  }
+  .lb-btn {
+    position: fixed; background: rgba(30,41,59,.85); color: #e2e8f0;
+    border: 1px solid #475569; cursor: pointer; user-select: none;
+    width: 52px; height: 52px; border-radius: 50%;
+    font-size: 1.6rem; line-height: 1; display:flex; align-items:center; justify-content:center;
+    transition: background .15s, transform .15s;
+  }
+  .lb-btn:hover { background: #334155; transform: scale(1.06); }
+  .lb-close { top: 20px; right: 20px; font-size: 1.5rem; }
+  .lb-prev  { left: 18px; top: 50%; transform: translateY(-50%); }
+  .lb-next  { right: 18px; top: 50%; transform: translateY(-50%); }
+  .lb-prev:hover, .lb-next:hover { transform: translateY(-50%) scale(1.06); }
+  .lb-dl {
+    position: fixed; top: 20px; left: 20px;
+    background: rgba(30,41,59,.85); color: #e2e8f0; text-decoration: none;
+    border: 1px solid #475569; border-radius: 24px; padding: 9px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px; transition: background .15s;
+  }
+  .lb-dl:hover { background: #334155; }
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .lb-btn { width: 44px; height: 44px; font-size: 1.3rem; }
+  }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr; }
+    .lb-cap { bottom: 80px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>📷 Gallery Webcam</h1>
+  <p>Esportata il __NOW__ · Open-Meteo (ECMWF) · __COUNT__ foto · Cache-bust: __CB__</p>
+  <span class="tag">__MODE__</span>
+</header>
+__SEZIONI__
+<footer>
+  Dati meteo: Open-Meteo Forecast (ECMWF IFS)<br>
+  Modalità: __MODE__ · Gallery esportata il __NOW__<br>
+  Clicca una foto per vederla grande · frecce ← → o tasti per navigare · ESC per chiudere
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lb" class="lightbox">
+  <a id="lb-dl" class="lb-dl" download>⬇︎ Salva foto</a>
+  <button class="lb-btn lb-close" title="Chiudi (ESC)">&times;</button>
+  <button class="lb-btn lb-prev"  title="Precedente (←)">&#8249;</button>
+  <img id="lb-img" class="lb-img" alt="">
+  <button class="lb-btn lb-next"  title="Successiva (→)">&#8250;</button>
+  <div id="lb-cap" class="lb-cap"></div>
+</div>
+
+<script>
+  var figs = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var lb    = document.getElementById('lb');
+  var lbImg = document.getElementById('lb-img');
+  var lbCap = document.getElementById('lb-cap');
+  var lbDl  = document.getElementById('lb-dl');
+  var idx = -1;
+
+  function slug(s){ return (s||'foto').replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'').toLowerCase(); }
+
+  function open(i){
+    idx = i;
+    var f = figs[i];
+    var img = f.querySelector('img');
+    var cap = f.getAttribute('data-cap') || '';
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = cap;
+    lbCap.textContent = cap;
+    lbDl.href = img.currentSrc || img.src;
+    lbDl.setAttribute('download', slug(cap) + '.jpg');
+    lb.classList.add('on');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){ lb.classList.remove('on'); document.body.style.overflow=''; }
+  function step(d){
+    if(!figs.length) return;
+    var i = idx;
+    for(var k=0;k<figs.length;k++){
+      i = (i + d + figs.length) % figs.length;
+      if(figs[i].style.display !== 'none'){ open(i); return; }
+    }
+  }
+  figs.forEach(function(f,i){ f.addEventListener('click', function(){ open(i); }); });
+  document.querySelector('.lb-close').addEventListener('click', close);
+  document.querySelector('.lb-prev').addEventListener('click', function(e){ e.stopPropagation(); step(-1); });
+  document.querySelector('.lb-next').addEventListener('click', function(e){ e.stopPropagation(); step(1); });
+  lb.addEventListener('click', function(e){ if(e.target === lb) close(); });
+  document.addEventListener('keydown', function(e){
+    if(!lb.classList.contains('on')) return;
+    if(e.key === 'Escape') close();
+    else if(e.key === 'ArrowLeft') step(-1);
+    else if(e.key === 'ArrowRight') step(1);
+  });
+</script>
+</body>
+</html>"""
+
+
+def _img_to_data_uri(url, cb, timeout=12):
+    """Scarica l'immagine ORA e la restituisce come data-URI base64 (foto congelata).
+    None se fallisce."""
+    sep  = "&" if "?" in url else "?"
+    full = f"{url}{sep}_cb={cb}"
+    try:
+        r = requests.get(full, timeout=timeout, headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+        ct = r.headers.get("Content-Type", "").split(";")[0].strip()
+        if not ct.startswith("image"):
+            ct = mimetypes.guess_type(url)[0] or "image/jpeg"
+        b64 = base64.b64encode(r.content).decode("ascii")
+        return f"data:{ct};base64,{b64}"
+    except Exception:
+        return None
+
+
+def _live_url(url, cb):
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}_cb={cb}"
+
+
+def genera_html_gallery(zone_dict, webcam_links, cb, freeze=True):
+    """zone_dict: {zona: [cam,...]} — può essere TUTTE le zone o UNA sola sottosezione.
+    freeze=True  -> scarica e incorpora le foto (snapshot fisso del momento).
+    freeze=False -> usa gli URL live (la foto si aggiorna riaprendo il file)."""
+    now_exp = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    # 1) Risolvi la sorgente di ogni webcam (chiave -> src)
+    src_map = {}
+    if freeze:
+        tasks = []
+        for cams in zone_dict.values():
+            for cam in cams:
+                ch = cam["chiave"]
+                if ch not in src_map:
+                    src_map[ch] = None
+                    tasks.append((ch, webcam_links[ch]))
+        def _work(item):
+            ch, url = item
+            return ch, _img_to_data_uri(url, cb)
+        with ThreadPoolExecutor(max_workers=8) as ex:
+            for ch, datauri in ex.map(_work, tasks):
+                src_map[ch] = datauri or _live_url(webcam_links[ch], cb)
+    else:
+        for cams in zone_dict.values():
+            for cam in cams:
+                ch = cam["chiave"]
+                src_map[ch] = _live_url(webcam_links[ch], cb)
+
+    # 2) Costruisci le sezioni HTML
+    sezioni = ""
+    n_foto = 0
+    for zona, cams in zone_dict.items():
+        label = ZONE_LABELS.get(zona, zona)
+        celle = ""
+        for cam in cams:
+            ch  = cam["chiave"]
+            src = src_map[ch]
+            t_str = f" · {cam['temp']:.1f}°C" if cam.get("temp") is not None else ""
+            cap   = (f"{cam['nome']}{t_str}").replace('"', "&quot;")
+            alt   = cam["nome"].replace('"', "&quot;")
+            celle += (
+                f'<figure class="card" data-cap="{cap}">'
+                f'<img src="{src}" loading="lazy" alt="{alt}" '
+                f"onerror=\"this.closest('figure').style.display='none'\">"
+                f'<figcaption>{cap}</figcaption>'
+                f'</figure>'
+            )
+            n_foto += 1
+        sezioni += (
+            f'<section><h2>{label} <span class="cnt">{len(cams)}</span></h2>'
+            f'<div class="grid">{celle}</div></section>'
+        )
+
+    modo = "📸 Snapshot congelato (foto fisse del momento)" if freeze \
+           else "🔄 Live (le foto si aggiornano riaprendo)"
+
+    return (_GALLERY_TEMPLATE
+            .replace("__NOW__", now_exp)
+            .replace("__CB__", str(cb))
+            .replace("__COUNT__", str(n_foto))
+            .replace("__MODE__", modo)
+            .replace("__SEZIONI__", sezioni))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # RENDER
 # ═══════════════════════════════════════════════════════════════════════════════
 st.markdown('<div class="meteo-header">Dashboard Meteo</div>', unsafe_allow_html=True)
@@ -391,7 +671,6 @@ st.markdown(f"""<div class="meteo-wrap"><table class="meteo-tbl">
 </table></div>""", unsafe_allow_html=True)
 
 # ─── GALLERY WEBCAM PER ZONA ─────────────────────────────────────────────────
-# ─── GALLERY WEBCAM PER ZONA ─────────────────────────────────────────────────
 st.markdown("---")
 st.markdown("### 📷 Gallery Webcam")
 
@@ -413,135 +692,60 @@ else:
 
     cb = int(datetime.now().timestamp() // 300)
 
-    def genera_html_gallery(zone_con_cam, webcam_links, cb):
-        """Genera HTML autonomo con tutte le zone e le webcam in griglia 3 colonne."""
-        now_exp = datetime.now().strftime("%d/%m/%Y %H:%M")
-        sezioni = ""
-        for zona, cams in zone_con_cam.items():
-            label = ZONE_LABELS.get(zona, zona)
-            righe = ""
-            for i in range(0, len(cams), 3):
-                gruppo = cams[i:i+3]
-                celle = ""
-                for cam in gruppo:
-                    url = webcam_links[cam["chiave"]]
-                    url_cb = f"{url}?_cb={cb}" if "?" not in url else url
-                    t_str = f" · {cam['temp']:.1f}°C" if cam.get("temp") is not None else ""
-                    celle += f"""
-                    <div class="card">
-                        <a href="{url}" target="_blank" rel="noopener">
-                            <img src="{url_cb}" alt="{cam['nome']}"
-                                 onerror="this.parentElement.parentElement.style.display='none'">
-                        </a>
-                        <div class="card-title">{cam['nome']}{t_str}</div>
-                    </div>"""
-                # padding celle vuote per mantenere griglia
-                for _ in range(3 - len(gruppo)):
-                    celle += '<div class="card empty"></div>'
-                righe += f'<div class="row">{celle}</div>'
-            sezioni += f"""
-            <section>
-                <h2>{label}</h2>
-                {righe}
-            </section>"""
+    # ── Pannello di esportazione (sopra i tab) ──────────────────────────────
+    st.markdown("#### ⬇️ Esporta gallery")
 
-        return f"""<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery Webcam — {now_exp}</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap');
-  *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  body {{
-    background: #0f172a; color: #e2e8f0;
-    font-family: 'DM Sans', sans-serif; padding: 32px 24px;
-  }}
-  header {{
-    margin-bottom: 40px; border-bottom: 1px solid #1e293b; padding-bottom: 20px;
-  }}
-  header h1 {{
-    font-family: 'DM Serif Display', serif;
-    font-size: 2.2rem; font-weight: 400; color: #f1f5f9; letter-spacing: -0.02em;
-  }}
-  header p {{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem; color: #475569; margin-top: 6px;
-  }}
-  section {{ margin-bottom: 52px; }}
-  section h2 {{
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.4rem; font-weight: 400; color: #94a3b8;
-    margin-bottom: 18px; padding-bottom: 8px;
-    border-bottom: 1px solid #1e293b;
-  }}
-  .row {{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
-  }}
-  .card {{
-    background: #1e293b; border-radius: 12px;
-    overflow: hidden; border: 1px solid #334155;
-    transition: transform .2s, box-shadow .2s;
-  }}
-  .card:hover {{ transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.5); }}
-  .card.empty {{ background: transparent; border: none; }}
-  .card a {{ display: block; }}
-  .card img {{
-    width: 100%; display: block;
-    aspect-ratio: 16/9; object-fit: cover;
-    background: #0f172a;
-  }}
-  .card-title {{
-    font-size: 0.78rem; font-weight: 600; color: #94a3b8;
-    padding: 10px 14px; text-align: center;
-    background: #1e293b; border-top: 1px solid #334155;
-    letter-spacing: 0.02em;
-  }}
-  footer {{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.62rem; color: #334155;
-    margin-top: 48px; padding-top: 16px;
-    border-top: 1px solid #1e293b; line-height: 1.9;
-  }}
-  @media (max-width: 768px) {{
-    .row {{ grid-template-columns: repeat(2, 1fr); }}
-  }}
-  @media (max-width: 480px) {{
-    .row {{ grid-template-columns: 1fr; }}
-  }}
-</style>
-</head>
-<body>
-<header>
-  <h1>📷 Gallery Webcam</h1>
-  <p>Esportata il {now_exp} · Open-Meteo (ECMWF) · Cache-bust: {cb}</p>
-</header>
-{sezioni}
-<footer>
-  Dati meteo: Open-Meteo Forecast (ECMWF IFS)<br>
-  Immagini: aggiornate ogni 5 min (cache-busting attivo)<br>
-  Gallery esportata il {now_exp}
-</footer>
-</body>
-</html>"""
+    label_to_zona = {ZONE_LABELS.get(z, z): z for z in zone_tabs}
+    sezione_opts  = ["🌍 Tutte le sezioni"] + list(label_to_zona.keys())
 
-    # ── Pulsante esporta (sopra i tab) ──────────────────────────────────────
-    col_exp, _ = st.columns([1, 3])
-    with col_exp:
-        html_export = genera_html_gallery(zone_con_cam, webcam_links, cb)
-        fname = f"gallery_webcam_{datetime.now().strftime('%Y%m%d_%H%M')}.html"
+    cexp1, cexp2, cexp3 = st.columns([2, 1, 1])
+    with cexp1:
+        sel_sezione = st.selectbox(
+            "Cosa esportare",
+            sezione_opts,
+            key="gal_sel",
+            help="Scegli una singola sezione (Sud, Nord, Mare, Laghi…) oppure tutte.",
+        )
+    with cexp2:
+        freeze = st.checkbox(
+            "📸 Congela foto",
+            value=True,
+            key="gal_freeze",
+            help="Scarica le immagini ADESSO e le incorpora nel file: diventa una "
+                 "fotografia fissa di questo momento, anche riaprendola domani.",
+        )
+    with cexp3:
+        st.write("")
+        prepara = st.button("🛠️ Prepara file", key="gal_prep", use_container_width=True)
+
+    if prepara:
+        if sel_sezione.startswith("🌍"):
+            sub, suffix = zone_con_cam, "tutte"
+        else:
+            z = label_to_zona[sel_sezione]
+            sub, suffix = {z: zone_con_cam[z]}, z.lower().replace(" ", "_")
+
+        spin = "Scarico e congelo le immagini…" if freeze else "Genero la gallery…"
+        with st.spinner(spin):
+            html_export = genera_html_gallery(sub, webcam_links, cb, freeze=freeze)
+
+        st.session_state["gal_html"]  = html_export
+        st.session_state["gal_fname"] = (
+            f"gallery_{suffix}_{datetime.now().strftime('%Y%m%d_%H%M')}.html"
+        )
+        st.session_state["gal_meta"]  = f"{sel_sezione} · {'congelata' if freeze else 'live'}"
+
+    if st.session_state.get("gal_html"):
+        st.success(f"Pronta: {st.session_state.get('gal_meta','')}")
         st.download_button(
-            label="⬇️ Esporta Webcam Gallery",
-            data=html_export.encode("utf-8"),
-            file_name=fname,
+            label="⬇️ Scarica HTML gallery",
+            data=st.session_state["gal_html"].encode("utf-8"),
+            file_name=st.session_state["gal_fname"],
             mime="text/html",
-            help="Scarica un file HTML autonomo con tutte le webcam visibili, cliccabili e a tutto schermo",
+            help="File HTML autonomo: foto cliccabili, grandi e nitide (lightbox).",
         )
 
+    # ── Webcam a video, una scheda per tab ──────────────────────────────────
     for tab, zona in zip(tabs, zone_tabs):
         with tab:
             cams = zone_con_cam[zona]
