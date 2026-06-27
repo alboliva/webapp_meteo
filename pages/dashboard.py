@@ -611,67 +611,9 @@ with st.spinner("Caricamento dati meteo…"):
 now_str = datetime.now().strftime("%d %B %Y — %H:%M")
 st.markdown(f'<div class="update-tag"><span class="dot-live"></span>{now_str} &nbsp;·&nbsp; Open-Meteo (ECMWF)</div>', unsafe_allow_html=True)
 
-# ─── METRICHE ────────────────────────────────────────────────────────────────
-ok_d = [d for d in dati if d.get("ok") and d.get("temp") is not None]
-if ok_d:
-    cold = min(ok_d, key=lambda x: x["temp"])
-    hot  = max(ok_d, key=lambda x: x["temp"])
-    mn   = min((d for d in ok_d if d.get("tmin") is not None), key=lambda x: x["tmin"])
-    mx   = max((d for d in ok_d if d.get("tmax") is not None), key=lambda x: x["tmax"])
-    c1,c2,c3,c4 = st.columns(4)
-    for col,label,val,loc,color in [
-        (c1,"Più Freddo",    f"{cold['temp']:.1f}°C", cold['nome'], "#0ea5e9"),
-        (c2,"Più Caldo",     f"{hot['temp']:.1f}°C",  hot['nome'],  "#ea580c"),
-        (c3,"Minima + Bassa",f"{mn['tmin']:.1f}°C",   mn['nome'],   "#2563eb"),
-        (c4,"Massima + Alta",f"{mx['tmax']:.1f}°C",   mx['nome'],   "#dc2626"),
-    ]:
-        with col:
-            st.markdown(f"""<div class="metric-card">
-                <div class="metric-label">{label}</div>
-                <div class="metric-value" style="color:{color}">{val}</div>
-                <div class="metric-loc">{loc}</div>
-            </div>""", unsafe_allow_html=True)
-
-# ─── TABELLA ─────────────────────────────────────────────────────────────────
-rows = ""
-for zona in ZONE_ORDER:
-    zona_dati = [d for d in dati if d.get("zona") == zona]
-    if not zona_dati: continue
-    rows += f'<tr class="sep"><td colspan="10">{ZONE_LABELS[zona]}</td></tr>'
-    for d in zona_dati:
-        if not d.get("ok"):
-            rows += f'<tr><td class="nome">{d["nome"]}</td><td colspan="9" style="color:#ef4444;background:white">Errore</td></tr>'
-            continue
-        t  = d["temp"]; fe = d["feels"]
-        url = webcam_links.get(d["chiave"])
-        nome_cell = (f'<a href="{url}" target="_blank" rel="noopener">{d["nome"]}</a>'
-                     if url else d["nome"])
-
-        minmax = f'{d["tmin"]:.1f}° / {d["tmax"]:.1f}°' if d.get("tmin") is not None else "–"
-        fz_str = f'{int(d["fz"])} m' if d.get("fz") is not None else "–"
-        rows += f"""<tr>
-  <td class="nome">{nome_cell} <span class="badge {d['badge']}">{d['zona']}</span></td>
-  <td>{wmo_icon(d['wmo'])}</td>
-  <td><span class="{tc(t)}">{t:.1f}°C</span></td>
-  <td><span class="{tc(fe)}">{fe:.1f}°C</span></td>
-  <td>{d['hum']:.0f}%</td>
-  <td>{d['wind']:.0f} km/h {wdir(d['wdir'])}</td>
-  <td>{d['pres']:.0f} hPa</td>
-  <td>{minmax}</td>
-  <td>{d['prec']:.1f} mm</td>
-  <td>{fz_str}</td>
-</tr>"""
-
-st.markdown(f"""<div class="meteo-wrap"><table class="meteo-tbl">
-<thead><tr>
-  <th>Stazione</th><th>Cond.</th><th>Temp</th><th>Percepita</th>
-  <th>Umidità</th><th>Vento</th><th>Pressione</th><th>Min / Max</th><th>Pioggia</th><th>Zero Term.</th>
-</tr></thead>
-<tbody>{rows}</tbody>
-</table></div>""", unsafe_allow_html=True)
-
-# ─── GALLERY WEBCAM PER ZONA ─────────────────────────────────────────────────
-st.markdown("---")
+# ═══════════════════════════════════════════════════════════════════════════════
+# GALLERY WEBCAM + ESPORTAZIONE  ── IN TESTA, prima delle temperature ──────────
+# ═══════════════════════════════════════════════════════════════════════════════
 st.markdown("### 📷 Gallery Webcam")
 
 zone_con_cam = {}
@@ -768,6 +710,67 @@ else:
                                 {cam['nome']}{t_str}
                             </div>
                         </div>""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# ─── METRICHE ────────────────────────────────────────────────────────────────
+ok_d = [d for d in dati if d.get("ok") and d.get("temp") is not None]
+if ok_d:
+    cold = min(ok_d, key=lambda x: x["temp"])
+    hot  = max(ok_d, key=lambda x: x["temp"])
+    mn   = min((d for d in ok_d if d.get("tmin") is not None), key=lambda x: x["tmin"])
+    mx   = max((d for d in ok_d if d.get("tmax") is not None), key=lambda x: x["tmax"])
+    c1,c2,c3,c4 = st.columns(4)
+    for col,label,val,loc,color in [
+        (c1,"Più Freddo",    f"{cold['temp']:.1f}°C", cold['nome'], "#0ea5e9"),
+        (c2,"Più Caldo",     f"{hot['temp']:.1f}°C",  hot['nome'],  "#ea580c"),
+        (c3,"Minima + Bassa",f"{mn['tmin']:.1f}°C",   mn['nome'],   "#2563eb"),
+        (c4,"Massima + Alta",f"{mx['tmax']:.1f}°C",   mx['nome'],   "#dc2626"),
+    ]:
+        with col:
+            st.markdown(f"""<div class="metric-card">
+                <div class="metric-label">{label}</div>
+                <div class="metric-value" style="color:{color}">{val}</div>
+                <div class="metric-loc">{loc}</div>
+            </div>""", unsafe_allow_html=True)
+
+# ─── TABELLA ─────────────────────────────────────────────────────────────────
+rows = ""
+for zona in ZONE_ORDER:
+    zona_dati = [d for d in dati if d.get("zona") == zona]
+    if not zona_dati: continue
+    rows += f'<tr class="sep"><td colspan="10">{ZONE_LABELS[zona]}</td></tr>'
+    for d in zona_dati:
+        if not d.get("ok"):
+            rows += f'<tr><td class="nome">{d["nome"]}</td><td colspan="9" style="color:#ef4444;background:white">Errore</td></tr>'
+            continue
+        t  = d["temp"]; fe = d["feels"]
+        url = webcam_links.get(d["chiave"])
+        nome_cell = (f'<a href="{url}" target="_blank" rel="noopener">{d["nome"]}</a>'
+                     if url else d["nome"])
+
+        minmax = f'{d["tmin"]:.1f}° / {d["tmax"]:.1f}°' if d.get("tmin") is not None else "–"
+        fz_str = f'{int(d["fz"])} m' if d.get("fz") is not None else "–"
+        rows += f"""<tr>
+  <td class="nome">{nome_cell} <span class="badge {d['badge']}">{d['zona']}</span></td>
+  <td>{wmo_icon(d['wmo'])}</td>
+  <td><span class="{tc(t)}">{t:.1f}°C</span></td>
+  <td><span class="{tc(fe)}">{fe:.1f}°C</span></td>
+  <td>{d['hum']:.0f}%</td>
+  <td>{d['wind']:.0f} km/h {wdir(d['wdir'])}</td>
+  <td>{d['pres']:.0f} hPa</td>
+  <td>{minmax}</td>
+  <td>{d['prec']:.1f} mm</td>
+  <td>{fz_str}</td>
+</tr>"""
+
+st.markdown(f"""<div class="meteo-wrap"><table class="meteo-tbl">
+<thead><tr>
+  <th>Stazione</th><th>Cond.</th><th>Temp</th><th>Percepita</th>
+  <th>Umidità</th><th>Vento</th><th>Pressione</th><th>Min / Max</th><th>Pioggia</th><th>Zero Term.</th>
+</tr></thead>
+<tbody>{rows}</tbody>
+</table></div>""", unsafe_allow_html=True)
 
 # ─── STORICO DA ARCHIVE API ───────────────────────────────────────────────────
 st.markdown("---")
