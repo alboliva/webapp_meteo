@@ -10,12 +10,19 @@ Struttura cartella bollettini/ attesa:
 
 Naming file: YYYYMMDD_<qualsiasi>.html  (es. 20260423_bollettino.html)
 File PDF opzionale: stesso nome, estensione .pdf  (es. 20260423_bollettino.pdf)
+
+Novità:
+  • Condivisione con URL statico: ?bollettino=<categoria>/<file>.html
+    apre direttamente quel bollettino (deep link).
+  • Modalità schermo intero, con pulsante "Condividi" che copia il link
+    negli appunti e pulsante fullscreen reale (Fullscreen API) dentro l'iframe.
 """
 
 import streamlit as st
-import os, re
-from datetime import datetime, date, timedelta
+import os, re, json
+from datetime import datetime, date
 import calendar
+from urllib.parse import quote, unquote
 
 # ─────────────────────────────────────────────────────────────────────────────
 # COSTANTI
@@ -180,6 +187,18 @@ MONTHS_IT_FULL = ["", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugn
                   "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
 WEEKDAYS = ["L", "M", "M", "G", "V", "S", "D"]
 
+# Pulsante "schermo intero" (Fullscreen API) iniettato dentro il bollettino.
+# Prova il fullscreen reale del browser; se il contesto non lo permette,
+# avvisa l'utente (la modalità schermo intero di Streamlit resta comunque attiva).
+FS_BUTTON = """
+<div style="position:fixed;top:12px;right:18px;z-index:99999;">
+  <button onclick="(function(){var e=document.documentElement;if(!document.fullscreenElement){if(e.requestFullscreen){e.requestFullscreen().catch(function(){alert('Schermo intero del browser non disponibile in questo riquadro: premi F11 per la modalita a tutto schermo.');});}else{alert('Premi F11 per la modalita a tutto schermo.');}}else{document.exitFullscreen();}})()"
+    style="font-family:system-ui,sans-serif;font-size:0.78rem;font-weight:700;padding:8px 14px;border:none;border-radius:10px;background:#0f172a;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);">
+    ⛶ Schermo intero
+  </button>
+</div>
+"""
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HELPERS
@@ -219,6 +238,82 @@ def _tag_for_category(cat: str) -> str:
     if "eu" in c or "europa" in c:
         return "eu"
     return "meteo"
+
+
+def _bollettino_id(full_path: str) -> str:
+    """ID stabile e leggibile del bollettino: percorso relativo a bollettini/."""
+    rel = os.path.relpath(full_path, BOLLETTINI_DIR)
+    return rel.replace(os.sep, "/")
+
+
+def _base_url() -> str:
+    """Prova a ricostruire l'URL base del sito dagli header (se disponibili)."""
+    try:
+        h = st.context.headers
+        host = h.get("Host") or h.get("host")
+        proto = h.get("X-Forwarded-Proto") or h.get("x-forwarded-proto")
+        if host:
+            if not proto:
+                proto = "http" if host.split(":")[0] in ("localhost", "127.0.0.1") else "https"
+            return f"{proto}://{host}"
+    except Exception:
+        pass
+    return ""
+
+
+def inject_fs_button(html: str) -> str:
+    if "</body>" in html:
+        return html.replace("</body>", FS_BUTTON + "</body>", 1)
+    return html + FS_BUTTON
+
+
+def _share_button_component(url: str) -> str:
+    """Pulsante 'Condividi' renderizzato dentro il componente HTML: il click è
+    un gesto utente dentro l'iframe, quindi la copia negli appunti funziona
+    anche con l'app pubblicata online. Fallback: execCommand e poi prompt()."""
+    u = json.dumps(url)
+    return f"""
+    <style>
+      html, body {{ margin:0; padding:0; }}
+      .shbtn {{
+        width:100%; height:40px; cursor:pointer; box-sizing:border-box;
+        background:#ffffff; color:#31333F;
+        border:1px solid rgba(49,51,63,0.20); border-radius:0.5rem;
+        font-family:"Source Sans Pro", system-ui, sans-serif;
+        font-size:0.95rem; font-weight:400;
+        display:flex; align-items:center; justify-content:center; gap:6px;
+        transition:border-color .15s, color .15s;
+      }}
+      .shbtn:hover {{ border-color:#FF4B4B; color:#FF4B4B; }}
+      .shbtn.ok {{ border-color:#16a34a; color:#16a34a; }}
+    </style>
+    <button class="shbtn" id="shbtn">🔗 Condividi bollettino</button>
+    <script>
+    (function(){{
+      const url = {u};
+      const btn = document.getElementById('shbtn');
+      function flash(txt){{
+        const old = btn.innerHTML;
+        btn.innerHTML = txt; btn.classList.add('ok');
+        setTimeout(function(){{ btn.innerHTML = old; btn.classList.remove('ok'); }}, 1800);
+      }}
+      function legacy(){{
+        try {{
+          const ta = document.createElement('textarea');
+          ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.focus(); ta.select();
+          const ok = document.execCommand('copy'); document.body.removeChild(ta);
+          if (ok) flash('✓ Copiato!'); else window.prompt('Copia il link (Cmd/Ctrl+C):', url);
+        }} catch(e) {{ window.prompt('Copia il link (Cmd/Ctrl+C):', url); }}
+      }}
+      btn.addEventListener('click', function(){{
+        if (navigator.clipboard && navigator.clipboard.writeText) {{
+          navigator.clipboard.writeText(url).then(function(){{ flash('✓ Copiato!'); }}).catch(legacy);
+        }} else {{ legacy(); }}
+      }});
+    }})();
+    </script>
+    """
 
 
 def scan_bollettini(root: str) -> dict:
@@ -325,7 +420,7 @@ body { background:#f7f6f2!important; color:#1a1a1a!important; }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CALENDARIO REDESIGNATO
+# CALENDARIO
 # ─────────────────────────────────────────────────────────────────────────────
 
 def render_calendar(docs: list, current_doc: dict, cal_year: int, cal_month: int) -> tuple[int | None, int | None]:
@@ -373,7 +468,6 @@ def render_calendar(docs: list, current_doc: dict, cal_year: int, cal_month: int
     first_weekday = date(cal_year, cal_month, 1).weekday()  # 0=Mon
     days_in_month = calendar.monthrange(cal_year, cal_month)[1]
 
-    # Build full 6-row grid (42 cells)
     cells: list[date | None] = [None] * first_weekday
     for d in range(1, days_in_month + 1):
         cells.append(date(cal_year, cal_month, d))
@@ -401,7 +495,6 @@ def render_calendar(docs: list, current_doc: dict, cal_year: int, cal_month: int
                 is_today  = (day_date == today)
 
                 if has_doc:
-                    # Styled clickable button
                     btn_style = "primary" if is_active else "secondary"
                     label = f"**{day_date.day}**"
                     if st.button(
@@ -411,13 +504,11 @@ def render_calendar(docs: list, current_doc: dict, cal_year: int, cal_month: int
                         use_container_width=True,
                         help=day_date.strftime("%-d %b %Y"),
                     ):
-                        # Find first doc matching this date
                         for j, doc2 in enumerate(docs):
                             if doc2["date"] == day_date:
                                 clicked_idx = j
                                 break
                 else:
-                    # Non-clickable ghost cell
                     color = "#bbb" if is_today else "#d5d2ca"
                     weight = "600" if is_today else "400"
                     border = "1px solid #ccc" if is_today else "none"
@@ -429,7 +520,6 @@ def render_calendar(docs: list, current_doc: dict, cal_year: int, cal_month: int
                         unsafe_allow_html=True,
                     )
 
-    # ── Legend ───────────────────────────────────────────────────────────────
     st.markdown(
         "<div style='display:flex;align-items:center;gap:7px;margin-top:8px;"
         "padding-top:8px;border-top:1px solid #ede9e2;font-family:monospace;"
@@ -441,6 +531,48 @@ def render_calendar(docs: list, current_doc: dict, cal_year: int, cal_month: int
     )
 
     return clicked_idx, None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MODALITÀ SCHERMO INTERO
+# ─────────────────────────────────────────────────────────────────────────────
+
+def render_fullscreen(doc: dict, cat: str):
+    """Modalità schermo intero: nasconde sidebar/header e mostra il bollettino
+    a tutta larghezza. Pulsante per uscire + pulsante fullscreen reale (Fullscreen
+    API) dentro l'iframe del bollettino."""
+    st.markdown("""
+    <style>
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarCollapsedControl"],
+    header { display: none !important; }
+    .block-container { padding: 0.6rem 1.2rem 0 1.2rem !important; max-width: 100% !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    top1, top2 = st.columns([6, 1])
+    with top1:
+        st.markdown(
+            f"""<div style="font-family:monospace;font-size:1rem;color:#0f172a;">
+                <b>{doc['title']}</b>
+                <span style="color:#64748b;font-size:0.8rem;"> &nbsp;·&nbsp; {cat} &nbsp;·&nbsp; {doc['date_label']}</span>
+            </div>""",
+            unsafe_allow_html=True,
+        )
+    with top2:
+        if st.button("✕ Esci", key="bnav_fs_exit", use_container_width=True):
+            st.session_state.bnav_fs = False
+            st.rerun()
+
+    try:
+        with open(doc["full_path"], "r", encoding="utf-8") as f:
+            html = f.read()
+        is_dark = any(c in html for c in ["#0a1628", "#0d1b2a", "bg-deep:#0"])
+        html = inject_viewer_css(html, is_dark=is_dark)
+        html = inject_fs_button(html)
+        st.components.v1.html(html, height=1500, scrolling=True)
+    except Exception as e:
+        st.error(f"Errore apertura file: {e}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -480,10 +612,30 @@ def main():
         ss.bnav_idx = 0
     if "show_cal" not in ss:
         ss.show_cal = False
+    if "bnav_fs" not in ss:
+        ss.bnav_fs = False
     if "cal_year" not in ss or "cal_month" not in ss:
         today = date.today()
         ss.cal_year  = today.year
         ss.cal_month = today.month
+
+    # ── Deep link: ?bollettino=<categoria>/<file>.html ───────────────────────
+    # Apre direttamente il bollettino condiviso (una sola volta per sessione,
+    # così l'utente può poi navigare liberamente).
+    if "bollettino" in st.query_params and not ss.get("_bnav_deep_done"):
+        bid = unquote(st.query_params["bollettino"]).replace("/", os.sep)
+        target_full = os.path.normpath(os.path.join(BOLLETTINI_DIR, bid))
+        found = None
+        for c, docs2 in catalog.items():
+            for j, d2 in enumerate(docs2):
+                if os.path.normpath(d2["full_path"]) == target_full:
+                    found = (c, j)
+                    break
+            if found:
+                break
+        if found:
+            ss.bnav_cat, ss.bnav_idx = found
+        ss["_bnav_deep_done"] = True
 
     cat   = ss.bnav_cat
     docs  = catalog[cat]
@@ -497,6 +649,11 @@ def main():
         if "cal_year" not in ss:
             ss.cal_year  = ref.year
             ss.cal_month = ref.month
+
+    # ── MODALITÀ SCHERMO INTERO ────────────────────────────────────────────────
+    if ss.bnav_fs:
+        render_fullscreen(doc, cat)
+        return
 
     # ── Header ────────────────────────────────────────────────────────────────
     st.subheader("📄 Bollettino Meteo")
@@ -520,7 +677,6 @@ def main():
     cal_label = "📅 Data" if not ss.show_cal else "✕ Chiudi"
     if cat_cols[len(categories)].button(cal_label, key="bcal_toggle", use_container_width=True):
         ss.show_cal = not ss.show_cal
-        # Sync calendar to current doc date when opening
         if ss.show_cal and doc.get("date"):
             ss.cal_year  = doc["date"].year
             ss.cal_month = doc["date"].month
@@ -528,16 +684,16 @@ def main():
 
     st.divider()
 
-    # ── Calendario redesignato ─────────────────────────────────────────────────
+    # ── Calendario ────────────────────────────────────────────────────────────
     if ss.show_cal:
         all_dates = sorted({d2["date"] for d2 in docs if d2["date"]}, reverse=True)
 
         if all_dates:
             new_idx, nav_action = render_calendar(
-                docs       = docs,
+                docs        = docs,
                 current_doc = doc,
-                cal_year   = ss.cal_year,
-                cal_month  = ss.cal_month,
+                cal_year    = ss.cal_year,
+                cal_month   = ss.cal_month,
             )
 
             if nav_action == "prev":
@@ -634,37 +790,53 @@ def main():
                 ss.bnav_idx = docs.index(ed)
                 st.rerun()
 
-    # ── Download strip ─────────────────────────────────────────────────────────
-    dl_cols = st.columns([2, 2, 6])
+    # ── Azioni: Scarica HTML · (PDF) · Schermo intero · Condividi ──────────────
+    has_pdf = bool(doc["pdf_path"])
+    action_cols = st.columns(4 if has_pdf else 3)
+    ci = 0
+
     try:
         with open(doc["full_path"], "rb") as f:
             html_bytes = f.read()
-        with dl_cols[0]:
-            st.download_button(
-                label=f"⬇ HTML  {doc['size_html']}",
-                data=html_bytes,
-                file_name=doc["fname"],
-                mime="text/html",
-                use_container_width=True,
-            )
+        action_cols[ci].download_button(
+            label=f"⬇ HTML  {doc['size_html']}",
+            data=html_bytes,
+            file_name=doc["fname"],
+            mime="text/html",
+            use_container_width=True,
+        )
     except Exception:
-        pass
+        html_bytes = None
+    ci += 1
 
-    if doc["pdf_path"]:
+    if has_pdf:
         try:
             with open(doc["pdf_path"], "rb") as f:
                 pdf_bytes = f.read()
             pdf_fname = re.sub(r"\.html$", ".pdf", doc["fname"], flags=re.I)
-            with dl_cols[1]:
-                st.download_button(
-                    label=f"⬇ PDF  {doc['size_pdf']}",
-                    data=pdf_bytes,
-                    file_name=pdf_fname,
-                    mime="application/pdf",
-                    use_container_width=True,
-                )
+            action_cols[ci].download_button(
+                label=f"⬇ PDF  {doc['size_pdf']}",
+                data=pdf_bytes,
+                file_name=pdf_fname,
+                mime="application/pdf",
+                use_container_width=True,
+            )
         except Exception:
             pass
+        ci += 1
+
+    if action_cols[ci].button("⛶ Schermo intero", key="bnav_fs_btn", use_container_width=True):
+        ss.bnav_fs = True
+        st.rerun()
+    ci += 1
+
+    # Condividi → pulsante (dentro il componente) che copia il link al click.
+    # Funziona anche con l'app online, dove la copia automatica sarebbe bloccata.
+    bid = _bollettino_id(doc["full_path"])
+    base = _base_url()
+    share_url = f"{base}/?bollettino={quote(bid)}" if base else f"?bollettino={quote(bid)}"
+    with action_cols[ci]:
+        st.components.v1.html(_share_button_component(share_url), height=44)
 
     st.divider()
 
