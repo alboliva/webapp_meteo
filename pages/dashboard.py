@@ -155,6 +155,8 @@ STAZIONI = [
     (45.9383,  7.6267, "Breuil-Cervinia",       "breuil_cervinia",       "Nord",   "b-nord",   "Europe/Rome"),
     (45.9417,  7.6556, "Plan Maison",           "plan_maison",           "Nord",   "b-nord",   "Europe/Rome"),
     (45.9349,  7.7073, "Plateau Rosà",          "plateau_rosa",          "Nord",   "b-nord",   "Europe/Rome"),
+    (45.9271,  7.8771, "Capanna Margherita",    "capanna_margherita",    "Nord",   "b-nord",   "Europe/Rome"),
+    (45.8955,  7.8479, "Rifugio Mantova",       "rifugio_mantova",       "Nord",   "b-nord",   "Europe/Rome"),
     (46.5569, 11.7855, "Selva Val Gardena",     "selva_val_gardena",     "Nord",   "b-nord",   "Europe/Rome"),
     (46.5750, 11.6722, "Ortisei",               "ortisei",               "Nord",   "b-nord",   "Europe/Rome"),
     (44.4056,  8.9463, "Genova",                "genova",                "Nord",   "b-nord",   "Europe/Rome"),
