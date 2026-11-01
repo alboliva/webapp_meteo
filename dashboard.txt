@@ -5,51 +5,52 @@
 # Riga vuota dopo = → nessun link
 
 # ── ROMA ──────────────────────────────────────────────────────
-roma_centro=https://www.skylinewebcams.com/it/webcam/italia/lazio/roma/piazza-navona.html
+roma_centro=https://www.skylinewebcams.com/it/webcam/italia/lazio/roma/piazza-navona.html | Centro
 roma_pineta_sacchetti=
 roma_monte_mario=
 roma_gianicolo=
 
 # ── COSTA ─────────────────────────────────────────────────────
-marina_san_nicola=https://vedetta.org/webcam/italia/lazio/roma/marina-di-san-nicola
-capoliveri=https://imgproxy.windy.com/_/full/plain/current/1260360735/original.jpg
-marina_di_campo=https://imgproxy.windy.com/_/full/plain/current/1609073994/original.jpg
+marina_san_nicola=https://vedetta.org/webcam/italia/lazio/roma/marina-di-san-nicola | Centro, Mare
+capoliveri=https://imgproxy.windy.com/_/full/plain/current/1260360735/original.jpg | Centro, Mare
+marina_di_campo=https://imgproxy.windy.com/_/full/plain/current/1609073994/original.jpg | Centro, Mare
 
 # ── LAGHI ─────────────────────────────────────────────────────
-bracciano=https://imgproxy.windy.com/_/full/plain/current/1465657442/original.jpg
-trevignano_romano=https://vedetta.org/webcam/italia/lazio/roma/trevignano
+bracciano=https://imgproxy.windy.com/_/full/plain/current/1465657442/original.jpg | Centro, Lago
+trevignano_romano=https://vedetta.org/webcam/italia/lazio/roma/trevignano | Centro, Lago
 
 # ── MONTI & APPENNINO ─────────────────────────────────────────
-fano_adriano=https://imgproxy.windy.com/_/full/plain/current/1681211412/original.jpg
-pietracamela=https://imgproxy.windy.com/_/full/plain/current/1694696935/original.jpg
+fano_adriano=https://imgproxy.windy.com/_/full/plain/current/1681211412/original.jpg | Centro, Monti
+pietracamela=https://imgproxy.windy.com/_/full/plain/current/1694696935/original.jpg | Centro, Monti
 monte_cavo=
-pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg
-monte_livata=https://ramsat.it/webcam-montelivata
-prati_di_tivo=https://cdn.whatsupcams.com/snapshot/it_pratiditivo02.jpg
-campo_imperatore=https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php
-campo_di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg
+pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg | Centro, Monti
+monte_livata=https://ramsat.it/webcam-montelivata | Centro, Monti
+prati_di_tivo=https://cdn.whatsupcams.com/snapshot/it_pratiditivo02.jpg | Centro, Monti
+campo_imperatore=https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php | Centro, Monti
+campo_di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg | Centro, Monti
 roccaraso=
-forca_dacero=
+forca_dacero=https://imgproxy.windy.com/_/full/plain/current/1576777052/original.jpg?v=2 | Centro, Monti
+passo_godi=https://imgproxy.windy.com/_/full/plain/current/1503643628/original.jpg?v=2 | Centro, Monti
 
 # ── NORD ITALIA ───────────────────────────────────────────────
-breuil_cervinia=https://webtv.feratel.com/webtv/?cam=6351
-plan_maison=https://imgproxy.windy.com/_/full/plain/current/1742724160/original.jpg
+breuil_cervinia=https://webtv.feratel.com/webtv/?cam=6351 | Nord, Monti
+plan_maison=https://imgproxy.windy.com/_/full/plain/current/1742724160/original.jpg | Nord, Monti
 plateau_rosa=https://cervinia.panomax.com/plateau-rosa
-capanna_margherita=https://api.scenaridigitali.com/media/monterosa-capanna-regina-margherita-nord/image.jpg
-rifugio_mantova=https://api.scenaridigitali.com/media/monterosa-rifugio-mantova/image.jpg
-ciampinoi=https://imgproxy.windy.com/_/full/plain/current/1471514629/original.jpg
-ortisei=https://imgproxy.windy.com/_/full/plain/current/1199812053/original.jpg
+capanna_margherita=https://api.scenaridigitali.com/media/monterosa-capanna-regina-margherita-nord/image.jpg | Nord, Monti
+rifugio_mantova=https://api.scenaridigitali.com/media/monterosa-rifugio-mantova/image.jpg | Nord, Monti
+ciampinoi=https://imgproxy.windy.com/_/full/plain/current/1471514629/original.jpg | Nord, Monti
+ortisei=https://imgproxy.windy.com/_/full/plain/current/1199812053/original.jpg | Nord, Monti
 genova=https://imgproxy.windy.com/_/full/plain/current/1731006477/original.jpg
 sestriere=https://imgproxy.windy.com/_/full/plain/current/1666097812/original.jpg
 aosta=https://imgproxy.windy.com/_/full/plain/current/1201549102/original.jpg
 sondrio=https://imgproxy.windy.com/_/full/plain/current/1199821060/original.jpg
-stelvio=https://imgproxy.windy.com/_/full/plain/current/1203067577/original.jpg
+stelvio=https://imgproxy.windy.com/_/full/plain/current/1203067577/original.jpg | Nord, Monti
 
 # ── SUD ITALIA ────────────────────────────────────────────────
-messina=https://imgproxy.windy.com/_/full/plain/current/1560713889/original.jpg
+messina=https://imgproxy.windy.com/_/full/plain/current/1560713889/original.jpg | Sud, Mare
 reggio_calabria=
-palermo=https://imgproxy.windy.com/_/full/plain/current/1633099175/original.jpg
-lipari=https://imgproxy.windy.com/_/full/plain/current/1793900853/original.jpg
+palermo=https://imgproxy.windy.com/_/full/plain/current/1633099175/original.jpg | Sud, Mare
+lipari=https://imgproxy.windy.com/_/full/plain/current/1793900853/original.jpg | Sud, Mare
 siracusa=
 
 # ── ESTERO ────────────────────────────────────────────────────

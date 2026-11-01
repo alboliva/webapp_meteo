@@ -152,6 +152,7 @@ STAZIONI = [
     (41.9917, 14.1017, "Campo di Giove",        "campo_di_giove",        "Monti",  "b-monti",  "Europe/Rome"),
     (41.8500, 14.0667, "Roccaraso",             "roccaraso",             "Monti",  "b-monti",  "Europe/Rome"),
     (41.7833, 13.8167, "Forca d'Acero",         "forca_dacero",          "Monti",  "b-monti",  "Europe/Rome"),
+    (41.8375, 13.9304, "Passo Godi",            "passo_godi",            "Monti",  "b-monti",  "Europe/Rome"),
     (45.9383,  7.6267, "Breuil-Cervinia",       "breuil_cervinia",       "Nord",   "b-nord",   "Europe/Rome"),
     (45.9417,  7.6556, "Plan Maison",           "plan_maison",           "Nord",   "b-nord",   "Europe/Rome"),
     (45.9349,  7.7073, "Plateau Rosà",          "plateau_rosa",          "Nord",   "b-nord",   "Europe/Rome"),
