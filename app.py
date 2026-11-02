@@ -6,6 +6,8 @@ la pagina di amministrazione è registrata ma NON compare nel menu ed è
 raggiungibile solo digitando l'indirizzo:  https://<tua-app>.streamlit.app/nimda
 """
 
+from pathlib import Path
+
 import streamlit as st
 
 st.set_page_config(
@@ -15,20 +17,54 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-P_BOLL  = st.Page("views/bollettini_nav.py",  title="Bollettini",      icon="📄", default=True)
-P_DASH  = st.Page("views/dashboard.py",       title="Dashboard",       icon="🌡️", url_path="dashboard")
-P_PREV  = st.Page("views/previsioni_roma.py", title="Previsioni Roma", icon="🌦️", url_path="previsioni_roma")
-P_MAPPE = st.Page("views/mappe.py",           title="Mappe",           icon="🗺️", url_path="mappe")
-P_ADMIN = st.Page("views/admin.py",           title="Amministrazione", icon="🔒", url_path="nimda")
+BASE  = Path(__file__).resolve().parent
+VIEWS = BASE / "views"
 
-PUBBLICHE = [P_BOLL, P_DASH, P_PREV, P_MAPPE]
+PAGINE = [
+    # file                  titolo              icona  url_path           pubblica
+    ("bollettini_nav.py",  "Bollettini",       "📄", "bollettini",      True),
+    ("dashboard.py",       "Dashboard",        "🌡", "dashboard",       True),
+    ("previsioni_roma.py", "Previsioni Roma",  "🌦", "previsioni_roma", True),
+    ("mappe.py",           "Mappe",            "🗺", "mappe",           True),
+    ("admin.py",           "Amministrazione",  "🔒", "nimda",           False),
+]
 
-# position="hidden": il menu automatico non viene disegnato; costruiamo il nostro
-# con le sole pagine pubbliche, così /nimda resta "non mappata".
-nav = st.navigation(PUBBLICHE + [P_ADMIN], position="hidden")
+# ─── Controlli: Streamlit abbastanza recente e file presenti ─────────────────
+if not hasattr(st, "Page") or not hasattr(st, "navigation"):
+    st.error(
+        f"La versione di Streamlit installata ({st.__version__}) è troppo vecchia. "
+        "Nel file **requirements.txt** (nella root del repo) scrivi `streamlit>=1.50`, "
+        "poi da Streamlit Cloud fai **Reboot app**."
+    )
+    st.stop()
+
+mancanti = [f"views/{f}" for f, *_ in PAGINE if not (VIEWS / f).is_file()]
+if mancanti:
+    presenti = sorted(p.name for p in VIEWS.glob("*.py")) if VIEWS.is_dir() else []
+    st.error(
+        "Mancano questi file nel repo:\n\n"
+        + "\n".join(f"- `{m}`" for m in mancanti)
+        + f"\n\nCartella `views/` {'trovata' if VIEWS.is_dir() else '**NON trovata**'} in `{BASE}`"
+        + (f" — contiene: {', '.join(presenti)}" if presenti else "")
+        + "\n\nCarica la cartella **views** (con i 5 file dentro) nella root del repo, "
+          "accanto ad `app.py`."
+    )
+    st.stop()
+
+# ─── Navigazione ─────────────────────────────────────────────────────────────
+pagine, pubbliche = [], []
+for i, (f, titolo, icona, url, pubblica) in enumerate(PAGINE):
+    p = st.Page(VIEWS / f, title=titolo, icon=icona, url_path=url, default=(i == 0))
+    pagine.append(p)
+    if pubblica:
+        pubbliche.append(p)
+
+# position="hidden": niente menu automatico; disegniamo il nostro con le sole
+# pagine pubbliche, così /nimda resta "non mappata".
+nav = st.navigation(pagine, position="hidden")
 
 with st.sidebar:
-    for p in PUBBLICHE:
+    for p in pubbliche:
         st.page_link(p)
 
 nav.run()
