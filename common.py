@@ -16,10 +16,12 @@ FORMATO dashboard.txt (una webcam per riga):
     lo stesso in tutte le sezioni in cui compare.
 """
 
+import base64
 import os
 import re
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from zoneinfo import ZoneInfo
 
 import requests
@@ -100,6 +102,8 @@ DASHBOARD_CONF = os.path.join(ROOT, "dashboard.txt")
 IMG_EXT        = (".jpg", ".jpeg", ".png", ".gif", ".webp")
 IMG_PROXY      = "webcam_proxy.php"   # restituisce un'immagine anche senza estensione
 _ORE_RE        = re.compile(r"ore_\d{4}(?=\.jpg\b)", re.I)
+ORE_TENTATIVI  = 13                   # slot controllati: da adesso a 1 ora fa
+ORE_MAX_ETA    = timedelta(hours=3)   # oltre questa età è lo scatto di ieri, non di oggi
 
 
 
@@ -144,14 +148,55 @@ def cache_bust(url, cb):
     return f"{url}{sep}_cb={cb}"
 
 
+def _ora_italia():
+    try:
+        return datetime.now(ZoneInfo("Europe/Rome"))
+    except Exception:   # fusi orari non installati: serve "tzdata" in requirements.txt
+        return datetime.now()
+
+
 def url_ultimi_5_minuti(url, ora=None):
     """ore_1000.jpg → ultimo scatto a 5 minuti, ora italiana (10:02 → 1000, 10:06 → 1005)."""
-    if ora is None:
-        try:
-            ora = datetime.now(ZoneInfo("Europe/Rome"))
-        except Exception:   # fusi orari non installati: serve "tzdata" in requirements.txt
-            ora = datetime.now()
+    ora = ora or _ora_italia()
     return _ORE_RE.sub(f"ore_{ora.hour:02d}{ora.minute - ora.minute % 5:02d}", url)
+
+
+def _troppo_vecchio(last_modified):
+    """True se il file è di ieri: l'archivio è circolare e i nomi si ripetono ogni 24 ore."""
+    try:
+        data = parsedate_to_datetime(last_modified)
+        if data.tzinfo is None:
+            data = data.replace(tzinfo=timezone.utc)
+        return datetime.now(timezone.utc) - data > ORE_MAX_ETA
+    except Exception:
+        return False
+
+
+@st.cache_data(ttl=120, max_entries=30, show_spinner=False)
+def scatto_recente(url):
+    """
+    Cerca l'ultimo scatto davvero pubblicato, tornando indietro di 5 minuti alla volta.
+    Ritorna (url_scatto, immagine_data_uri, trovato).
+    L'immagine viene scaricata dal server, così si vede anche se il sito blocca l'anteprima.
+    Se il server non riesce a interrogare il sito, ritorna l'URL e lascia provare il browser.
+    """
+    ora = _ora_italia()
+    for i in range(ORE_TENTATIVI):
+        candidato = url_ultimi_5_minuti(url, ora - timedelta(minutes=5 * i))
+        try:
+            r = requests.get(candidato, timeout=6, headers={"User-Agent": "Mozilla/5.0"})
+        except Exception:
+            return url, None, True
+        if r.status_code in (403, 429) or r.status_code >= 500:
+            return url, None, True
+        tipo = r.headers.get("Content-Type", "").split(";")[0].strip()
+        if r.status_code != 200 or not tipo.startswith("image") or not r.content:
+            continue
+        if _troppo_vecchio(r.headers.get("Last-Modified", "")):
+            continue
+        dati = base64.b64encode(r.content).decode("ascii")
+        return candidato, f"data:{tipo};base64,{dati}", True
+    return url, None, False
 
 
 # ─── CONFIG WEBCAM ───────────────────────────────────────────────────────────
@@ -196,10 +241,15 @@ def build_webcams(dati, cfg):
     for chiave, c in cfg.items():
         st_ = by_key.get(chiave)
         zone = c["zone"] or ([st_["zona"]] if st_ else [DEFAULT_WEBCAM_ZONE])
+        url, src, trovato = c["url"], None, True
+        if _ORE_RE.search(url):
+            url, src, trovato = scatto_recente(url)
         cams.append({
             "chiave": chiave,
             "nome":   st_["nome"] if st_ else nome_da_chiave(chiave),
-            "url":    c["url"],
+            "url":    url,
+            "src":    src,       # immagine già scaricata (se disponibile)
+            "trovato": trovato,  # False = nessuno scatto recente sul sito
             "zone":   zone,
             "temp":   st_.get("temp") if st_ else None,
             "is_img": is_img_url(c["url"]),

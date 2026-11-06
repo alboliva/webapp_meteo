@@ -70,11 +70,17 @@ table.meteo-tbl tr.sep td {
 .tc-co { color:#06b6d4; font-weight:700; } .tc-m { color:#16a34a; font-weight:700; }
 .tc-w  { color:#ca8a04; font-weight:700; } .tc-h { color:#ea580c; font-weight:700; }
 .wcam-card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+.wcam-card a { display: block; }
 .wcam-card-title {
     font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600; color: #475569;
     padding: 6px 10px; background: #f8fafc; border-top: 1px solid #f1f5f9; text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.wcam-img { width: 100%; display: block; min-height: 120px; background: #f1f5f9; }
+.wcam-img { width: 100% !important; display: block; aspect-ratio: 4 / 3; object-fit: cover !important; background: #f1f5f9; }
+.wcam-na {
+    display: flex; align-items: center; justify-content: center; text-align: center; padding: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.78rem; color: #94a3b8;
+}
 .note-footer { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: #cbd5e1; margin-top: 2rem; line-height: 1.8; }
 </style>
 """, unsafe_allow_html=True)
@@ -113,15 +119,16 @@ else:
                 cols = st.columns(3)
                 for j, cam in enumerate(cams[i:i + 3]):
                     t_str = f" · {cam['temp']:.1f}°C" if cam.get("temp") is not None else ""
+                    if cam.get("trovato", True):
+                        src  = cam.get("src") or cache_bust(cam["url"], cb)
+                        foto = (f'<a href="{cam["url"]}" target="_blank">'
+                                f'<img src="{src}" class="wcam-img" alt="" referrerpolicy="no-referrer"></a>')
+                    else:
+                        foto = '<div class="wcam-img wcam-na">Nessuno scatto recente</div>'
                     with cols[j]:
-                        st.markdown(f"""
-                        <div class="wcam-card">
-                            <a href="{cam['url']}" target="_blank">
-                                <img src="{cache_bust(cam['url'], cb)}" class="wcam-img" alt="{cam['nome']}"
-                                     onerror="this.src='';this.style.minHeight='80px'">
-                            </a>
-                            <div class="wcam-card-title">{cam['nome']}{t_str}</div>
-                        </div>""", unsafe_allow_html=True)
+                        st.markdown(f'<div class="wcam-card">{foto}'
+                                    f'<div class="wcam-card-title">{cam["nome"]}{t_str}</div></div>',
+                                    unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # ESPORTA GALLERY (foto congelate al momento dell'export)
@@ -201,7 +208,7 @@ if ok_d:
             </div>""", unsafe_allow_html=True)
 
 # ─── TABELLA ─────────────────────────────────────────────────────────────────
-links = {k: c["url"] for k, c in webcam_cfg.items()}
+links = {c["chiave"]: c["url"] for c in webcams}
 rows = ""
 for zona in ZONE_ORDER:
     zona_dati = [d for d in dati if d.get("zona") == zona]
