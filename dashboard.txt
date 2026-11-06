@@ -26,11 +26,15 @@ monte_cavo=
 pescasseroli=https://imgproxy.windy.com/_/full/plain/current/1609880545/original.jpg | Centro, Monti
 monte_livata=https://ramsat.it/webcam-montelivata | Centro, Monti
 prati_di_tivo=https://cdn.whatsupcams.com/snapshot/it_pratiditivo02.jpg | Centro, Monti
+prati_di_tivo_2=https://www.caputfrigoris.it/webcam_proxy.php?k=a64 | Centro, Monti
+prati_di_tivo_3=https://www.caputfrigoris.it/rete-meteo/prati/foscam/FI9900P_00626E8666D9/snap/f24h/ore_1000.jpg | Centro, Monti
 campo_imperatore=https://www.meteoregioneabruzzo.it/rete-meteo/duca_abruzzi/webcam-ducadegliabruzzi.php | Centro, Monti
 campo_di_giove=https://imgproxy.windy.com/_/full/plain/current/1756755399/original.jpg | Centro, Monti
 roccaraso=
 forca_dacero=https://imgproxy.windy.com/_/full/plain/current/1576777052/original.jpg?v=2 | Centro, Monti
 passo_godi=https://imgproxy.windy.com/_/full/plain/current/1503643628/original.jpg?v=2 | Centro, Monti
+rifugio_franchetti=https://www.caputfrigoris.it/webcam_proxy.php?k=a61 | Centro, Monti
+la_madonnina=https://www.caputfrigoris.it/rete-meteo/prati/ipcam/FI9900P_00626EA7D6EC/snap/f24h/ore_1000.jpg | Centro, Monti
 
 # ── NORD ITALIA ───────────────────────────────────────────────
 breuil_cervinia=https://webtv.feratel.com/webtv/?cam=6351 | Nord, Monti

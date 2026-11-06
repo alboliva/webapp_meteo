@@ -17,8 +17,10 @@ FORMATO dashboard.txt (una webcam per riga):
 """
 
 import os
+import re
 from collections import defaultdict
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import requests
 import streamlit as st
@@ -45,6 +47,10 @@ STAZIONI = [
     (41.8500, 14.0667, "Roccaraso",             "roccaraso",             "Monti",  "b-monti",  "Europe/Rome"),
     (41.7833, 13.8167, "Forca d'Acero",         "forca_dacero",          "Monti",  "b-monti",  "Europe/Rome"),
     (41.8375, 13.9304, "Passo Godi",            "passo_godi",            "Monti",  "b-monti",  "Europe/Rome"),
+    (42.477064175108076, 13.565367956920705, "Rifugio Franchetti", "rifugio_franchetti", "Monti", "b-monti", "Europe/Rome"),
+    (42.49976459287265,  13.55813093025115,  "Prati di Tivo 2",    "prati_di_tivo_2",    "Monti", "b-monti", "Europe/Rome"),
+    (42.496257,          13.561939,          "Prati di Tivo 3",    "prati_di_tivo_3",    "Monti", "b-monti", "Europe/Rome"),
+    (42.48676792416478,  13.56747688527417,  "La Madonnina",       "la_madonnina",       "Monti", "b-monti", "Europe/Rome"),
     (45.9383,  7.6267, "Breuil-Cervinia",       "breuil_cervinia",       "Nord",   "b-nord",   "Europe/Rome"),
     (45.9417,  7.6556, "Plan Maison",           "plan_maison",           "Nord",   "b-nord",   "Europe/Rome"),
     (45.9349,  7.7073, "Plateau Rosà",          "plateau_rosa",          "Nord",   "b-nord",   "Europe/Rome"),
@@ -92,6 +98,8 @@ DEFAULT_WEBCAM_ZONE = "Centro"
 ROOT           = os.getcwd()
 DASHBOARD_CONF = os.path.join(ROOT, "dashboard.txt")
 IMG_EXT        = (".jpg", ".jpeg", ".png", ".gif", ".webp")
+IMG_PROXY      = "webcam_proxy.php"   # restituisce un'immagine anche senza estensione
+_ORE_RE        = re.compile(r"ore_\d{4}(?=\.jpg\b)", re.I)
 
 
 
@@ -127,12 +135,23 @@ def wdir(deg):
 
 def is_img_url(url):
     if not url: return False
-    return any(url.lower().split("?")[0].endswith(e) for e in IMG_EXT)
+    path = url.lower().split("?")[0]
+    return path.endswith(IMG_PROXY) or any(path.endswith(e) for e in IMG_EXT)
 
 
 def cache_bust(url, cb):
     sep = "&" if "?" in url else "?"
     return f"{url}{sep}_cb={cb}"
+
+
+def url_ultimi_5_minuti(url, ora=None):
+    """ore_1000.jpg → ultimo scatto a 5 minuti, ora italiana (10:02 → 1000, 10:06 → 1005)."""
+    if ora is None:
+        try:
+            ora = datetime.now(ZoneInfo("Europe/Rome"))
+        except Exception:   # fusi orari non installati: serve "tzdata" in requirements.txt
+            ora = datetime.now()
+    return _ORE_RE.sub(f"ore_{ora.hour:02d}{ora.minute - ora.minute % 5:02d}", url)
 
 
 # ─── CONFIG WEBCAM ───────────────────────────────────────────────────────────
@@ -157,7 +176,7 @@ def leggi_webcam_config(filepath=DASHBOARD_CONF):
                 if cand and all(c in _ZONE_CANON for c in cand):
                     zone = [_ZONE_CANON[c] for c in cand]
                     v = head.strip()
-            cfg[k] = {"url": v, "zone": zone}
+            cfg[k] = {"url": url_ultimi_5_minuti(v), "zone": zone}
     return cfg
 
 
