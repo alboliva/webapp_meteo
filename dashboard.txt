@@ -35,6 +35,15 @@ forca_dacero=https://imgproxy.windy.com/_/full/plain/current/1576777052/original
 passo_godi=https://imgproxy.windy.com/_/full/plain/current/1503643628/original.jpg?v=2 | Centro, Monti
 rifugio_franchetti=https://www.caputfrigoris.it/webcam_proxy.php?k=a61 | Centro, Monti
 la_madonnina=https://www.caputfrigoris.it/rete-meteo/prati/ipcam/FI9900P_00626EA7D6EC/snap/f24h/ore_1000.jpg | Centro, Monti
+civitella_alfedena=https://www.caputfrigoris.it/webcam_proxy.php?k=a54 | Centro, Monti
+tagliacozzo=https://www.caputfrigoris.it/webcam_proxy.php?k=a53 | Centro, Monti
+rifugio_sevice_1=https://www.caputfrigoris.it/rifugiosevice2/f24h/ore_1000.jpg | Centro, Monti
+rifugio_sevice_2=https://www.caputfrigoris.it/rifugiosevice3/f24h/ore_1000.jpg | Centro, Monti
+campo_imperatore_2=https://www.caputfrigoris.it/webcam_proxy.php?k=a2 | Centro, Monti
+campo_imperatore_funivia=https://www.caputfrigoris.it/webcam_proxy.php?k=a4 | Centro, Monti
+campo_imperatore_albergo=https://www.caputfrigoris.it/webcam_proxy.php?k=a6 | Centro, Monti
+rovere_vento_nel_vento=https://www.caputfrigoris.it/webcam_proxy.php?k=a22 | Centro, Monti
+lago_campotosto=https://www.caputfrigoris.it/webcam_proxy.php?k=a21 | Centro, Lago, Monti
 
 # ── NORD ITALIA ───────────────────────────────────────────────
 breuil_cervinia=https://webtv.feratel.com/webtv/?cam=6351 | Nord, Monti
